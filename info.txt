@@ -1,0 +1,4 @@
+name = Shotgun
+author = NLferdiNL
+description = Shotgun attempt
+tags = Tool
