@@ -30,6 +30,10 @@ local menuHeight = 0.6
 
 local spreadTextBox = nil
 local projectilesTextBox = nil
+local shotCooldownTimeTextBox = nil
+local maxReloadTimeTextBox = nil
+local minRndSpreadTextBox = nil
+local maxRndSpreadTextBox = nil
 
 function menu_init()
 	
@@ -119,7 +123,19 @@ function menu_draw(dt)
 		UiTranslate(0, 50)
 		
 		UiPush()
+			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
+			
+			if UiTextButton("Particles: " .. (particlesEnabled and enabledText or disabledText), 400, 40) then
+				particlesEnabled = not particlesEnabled
+			end
+		UiPop()
+		
+		UiTranslate(0, 50)
+		
+		UiPush()
 			local textBox01, newBox01 = textboxClass_getTextBox(1)
+			
+			UiTranslate(textBox01.width, 0)
 
 			if newBox01 then
 				textBox01.name = "Spread"
@@ -145,14 +161,82 @@ function menu_draw(dt)
 				projectilesTextBox = textBox02
 			end
 			
+			local textBox03, newBox03 = textboxClass_getTextBox(3)
+
+			if newBox03 then
+				textBox03.name = "Shot Cooldown Time"
+				textBox03.value = shotCooldownTime .. ""
+				textBox03.numbersOnly = true
+				textBox03.limitsActive = true
+				textBox03.numberMin = 0
+				textBox03.numberMax = 100
+				
+				shotCooldownTimeTextBox = textBox03
+			end
+			
+			local textBox04, newBox04 = textboxClass_getTextBox(4)
+
+			if newBox04 then
+				textBox04.name = "Max Reload Time"
+				textBox04.value = maxReloadTime .. ""
+				textBox04.numbersOnly = true
+				textBox04.limitsActive = true
+				textBox04.numberMin = 0
+				textBox04.numberMax = 100
+				
+				maxReloadTimeTextBox = textBox04
+			end
+			
+			local textBox05, newBox05 = textboxClass_getTextBox(5)
+
+			if newBox05 then
+				textBox05.name = "Min Rnd Spread"
+				textBox05.value = minRndSpread .. ""
+				textBox05.numbersOnly = true
+				textBox05.limitsActive = true
+				textBox05.numberMin = 0
+				textBox05.numberMax = 100
+				
+				minRndSpreadTextBox = textBox05
+			end
+			
+			local textBox06, newBox06 = textboxClass_getTextBox(6)
+
+			if newBox06 then
+				textBox06.name = "Max Rnd Spread"
+				textBox06.value = maxRndSpread .. ""
+				textBox06.numbersOnly = true
+				textBox06.limitsActive = true
+				textBox06.numberMin = 0
+				textBox06.numberMax = 100
+				
+				maxRndSpreadTextBox = textBox06
+			end
+			
 			textboxClass_render(textBox01)
 			
 			UiTranslate(0, 50)
 			
 			textboxClass_render(textBox02)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(textBox03)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(textBox04)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(textBox05)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(textBox06)
 		UiPop()
 		
-		UiTranslate(0, 100)
+		UiTranslate(0, 50 * 6)
 		
 		UiPush()
 			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
@@ -210,6 +294,10 @@ function menuCloseActions()
 	rebinding = nil
 	spread = tonumber(spreadTextBox.value)
 	projectiles = tonumber(projectilesTextBox.value)
+	shotCooldownTime = tonumber(shotCooldownTimeTextBox.value)
+	maxReloadTime = tonumber(maxReloadTimeTextBox.value)
+	minRndSpread = tonumber(minRndSpreadTextBox.value)
+	maxRndSpread = tonumber(maxRndSpreadTextBox.value)
 end
 
 function isMenuOpen()

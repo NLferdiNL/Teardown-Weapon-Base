@@ -25,6 +25,9 @@ shotCooldownTime = 0.2 -- max time between each shot
 currentShotCooldown = 0
 maxReloadTime = 3
 reloadTime = 0
+minRndSpread = 1
+maxRndSpread = 10
+maxDistance = 100
 
 local hitForce = 4000
 
@@ -36,6 +39,7 @@ local firedShots = {}
 
 infiniteAmmo = false
 infiniteMag = false
+particlesEnabled = true
 
 function init()
 	saveFileInit()
@@ -236,9 +240,22 @@ end
 
 -- Action functions
 
+function posAroundCircle(i, points, originPos, radius)
+	local x = originPos[1] + radius * math.cos(2 * i * math.pi / points)
+	local z = originPos[3] - radius * math.sin(2 * i * math.pi / points)
+	
+	return {x, originPos[2], z}
+end
+
 function GenerateRandomSpread()
-	local xSpread = math.random(-spread * 100, spread * 100) / 100
-	local ySpread = math.random(-spread * 100, spread * 100) / 100
+	local index = math.random(0, 360)
+	local endPos = posAroundCircle(index, 360, Vec(0, 0, 0), spread)
+
+	--[[local xSpread = math.random(-spread * 100, spread * 100) / 100
+	local ySpread = math.random(-spread * 100, spread * 100) / 100]]--
+	
+	local xSpread = endPos[1] * (math.random(minRndSpread, maxRndSpread) / 10)
+	local ySpread = endPos[3] * (math.random(minRndSpread, maxRndSpread) / 10)
 	
 	return Vec(xSpread, ySpread, 0)
 end
@@ -275,7 +292,7 @@ function applyForceToHitObject(shape, hitPoint, shotDirection)
 end
 
 function doHitScanShot(shotStartPos, shotDirection)
-	local hit, hitPoint, distance, normal, shape = raycast(shotStartPos, shotDirection)
+	local hit, hitPoint, distance, normal, shape = raycast(shotStartPos, shotDirection, maxDistance)
 	
 	if hit then
 		local softRadius = math.random(3, 4) / 10
@@ -286,7 +303,10 @@ function doHitScanShot(shotStartPos, shotDirection)
 		
 		MakeHole(hitPoint, softRadius, mediumRadius, hardRadius)
 		
-		SpawnParticle(hitPoint, normal, 5)
+		if particlesEnabled then
+			SpawnParticle(hitPoint, normal, 5)
+		end
+		
 		applyForceToHitObject(shape, hitPoint, shotDirection)
 		return hitPoint
 	end
@@ -309,7 +329,7 @@ function shootLogic()
 			
 			local hitPoint = doHitScanShot(shotStartPos, shotDirection)
 			
-			if i == 1 then
+			if i == 1 and particlesEnabled then
 				SpawnParticle(gunFrontPos, gunFrontDir, 3)
 			end
 			
