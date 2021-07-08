@@ -30,11 +30,14 @@ function textboxClass_render(me)
 UiPush()
 	local labelString = me.name .. ": " 
 	local nameWidth, nameHeight = UiGetTextSize(labelString)
-
+	
 	UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
-	UiTranslate(-me.width - nameWidth / 2, 0)
-	UiText(labelString)
-	UiTranslate(me.width + nameWidth / 2, 0)
+	
+	UiPush()
+		UiAlign("center right")
+		UiTranslate(-nameWidth / 2 - me.width / 2, me.height / 5)
+		UiText(labelString)
+	UiPop()
 	
 	if textboxClass_checkMouseInRect(me) and not me.inputActive then
 		UiColor(1,1,0)

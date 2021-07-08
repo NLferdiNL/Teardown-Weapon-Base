@@ -26,7 +26,7 @@ local rebinding = nil
 local erasingBinds = 0
 
 local menuWidth = 0.25
-local menuHeight = 0.6
+local menuHeight = 0.725
 
 local spreadTextBox = nil
 local projectilesTextBox = nil
@@ -34,6 +34,7 @@ local shotCooldownTimeTextBox = nil
 local maxReloadTimeTextBox = nil
 local minRndSpreadTextBox = nil
 local maxRndSpreadTextBox = nil
+local bulletVelocityTextBox = nil
 
 function menu_init()
 	
@@ -80,11 +81,11 @@ function menu_draw(dt)
 		
 		UiWordWrap(UiWidth() * menuWidth)
 		
-		UiTranslate(0, -UiHeight() * menuWidth)
+		UiTranslate(0, -UiHeight() * (menuHeight / 2))
 		
 		UiFont("bold.ttf", 45)
 		
-		UiTranslate(0, 10)
+		UiTranslate(0, 40)
 		
 		UiText(toolReadableName .. " Settings")
 		
@@ -133,6 +134,36 @@ function menu_draw(dt)
 		UiTranslate(0, 50)
 		
 		UiPush()
+			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
+			
+			if UiTextButton("Hitscan bullets: " .. (hitscanBullets and enabledText or disabledText), 400, 40) then
+				hitscanBullets = not hitscanBullets
+			end
+		UiPop()
+		
+		UiTranslate(0, 50)
+		
+		UiPush()
+			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
+			
+			if UiTextButton("Explosive Bullets: " .. (explosiveBullets and enabledText or disabledText), 400, 40) then
+				explosiveBullets = not explosiveBullets
+			end
+		UiPop()
+		
+		UiTranslate(0, 50)
+		
+		UiPush()
+			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
+			
+			if UiTextButton("Apply Force To Hit Objects: " .. (applyForceOnHit and enabledText or disabledText), 400, 40) then
+				applyForceOnHit = not applyForceOnHit
+			end
+		UiPop()
+		
+		UiTranslate(0, 50)
+		
+		UiPush()
 			local textBox01, newBox01 = textboxClass_getTextBox(1)
 			
 			UiTranslate(textBox01.width, 0)
@@ -143,7 +174,7 @@ function menu_draw(dt)
 				textBox01.numbersOnly = true
 				textBox01.limitsActive = true
 				textBox01.numberMin = 0
-				textBox01.numberMax = 0.1
+				textBox01.numberMax = 5
 				
 				spreadTextBox = textBox01
 			end
@@ -213,6 +244,19 @@ function menu_draw(dt)
 				maxRndSpreadTextBox = textBox06
 			end
 			
+			local textBox07, newBox07 = textboxClass_getTextBox(7)
+
+			if newBox07 then
+				textBox07.name = "Projectile Bullet Velocity"
+				textBox07.value = projectileBulletSpeed .. ""
+				textBox07.numbersOnly = true
+				textBox07.limitsActive = true
+				textBox07.numberMin = 0
+				textBox07.numberMax = 10000
+				
+				bulletVelocityTextBox = textBox07
+			end
+			
 			textboxClass_render(textBox01)
 			
 			UiTranslate(0, 50)
@@ -234,14 +278,18 @@ function menu_draw(dt)
 			UiTranslate(0, 50)
 			
 			textboxClass_render(textBox06)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(textBox07)
 		UiPop()
 		
-		UiTranslate(0, 50 * 6)
+		UiTranslate(0, 50 * 7)
 		
 		UiPush()
 			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
 			
-			if erasingBinds > 0 then
+			--[[if erasingBinds > 0 then
 				UiPush()
 				c_UiColor(Color4.Red)
 				if UiTextButton("Are you sure?" , 400, 40) then
@@ -255,7 +303,7 @@ function menu_draw(dt)
 				end
 			end
 			
-			UiTranslate(0, 50)
+			UiTranslate(0, 50)]]--
 			
 			if UiTextButton("Close" , 400, 40) then
 				menuCloseActions()

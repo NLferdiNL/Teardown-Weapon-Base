@@ -8,14 +8,6 @@
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
 
---TODO FIX PARTICLE NOT RESETTING
-
-local firedShotClass = {
-	lifetime = 0.4,
-	startPos = nil,
-	endPos = nil,
-}
-
 magSize = 30
 currMag = magSize
 maxAmmo = 300
@@ -28,18 +20,43 @@ reloadTime = 0
 minRndSpread = 1
 maxRndSpread = 10
 maxDistance = 100
-
-local hitForce = 4000
-
-local hitscanBullets = true -- TODO: Make projectile bullets
-
-local firedShots = {}
+hitForce = 4000
+hitscanBullets = true
+explosiveBullets = false
+explosiveBulletMinSize = 0.3 -- TODO: Add option to menu
+explosiveBulletMaxSize = 0.5 -- TODO: Add option to menu
+projectileBulletSpeed = 100
+applyForceOnHit = true
+softRadiusMin = 3
+softRadiusMax = 4
+mediumRadiusMin = 10
+mediumRadiusMax = 15
+hardRadiusMin = 10
+hardRadiusMax = 15
 
 -- CHEATS:
 
 infiniteAmmo = false
 infiniteMag = false
 particlesEnabled = true
+
+--TODO: FIX PARTICLE NOT RESETTING
+
+local firedShotLineClass = {
+	lifetime = 0.4,
+	startPos = nil,
+	endPos = nil,
+}
+
+local bulletProjectileClass = {
+	lifetime = maxDistance,
+	currentPos = nil,
+	lastPos = nil,
+	velocity = nil,
+}
+
+local firedProjectiles = {}
+local firedShotLines = {}
 
 function init()
 	saveFileInit()
@@ -60,7 +77,8 @@ function tick(dt)
 	
 	cooldownLogic(dt)
 	
-	handleAllFiredShots(dt)
+	handleAllFiredShotLines(dt)
+	handleAllProjectiles(dt)
 	
 	if not isHoldingGun() then
 		if reloadTime > 0 then
@@ -102,8 +120,18 @@ end
 
 -- Creation Functions
 
+function createProjectileBullet(startPos, direction)
+	local firedProjectile = deepcopy(bulletProjectileClass)
+	
+	firedProjectile.currentPos = startPos
+	firedProjectile.lastPos = startPos
+	firedProjectile.velocity = VecScale(direction, projectileBulletSpeed)
+	
+	return firedProjectile
+end
+
 function createFiredShot(startPos, endPos)
-	local firedShot = deepcopy(firedShotClass)
+	local firedShot = deepcopy(firedShotLineClass)
 	
 	firedShot.startPos = startPos
 	firedShot.endPos = endPos
@@ -113,20 +141,63 @@ end
 
 -- Object handlers
 
-function handleAllFiredShots(dt)
-	if #firedShots <= 0 then
+function handleAllProjectiles(dt)
+	if #firedProjectiles <= 0 then
 		return
 	end
 	
-	for i = #firedShots, 1, -1 do
-		local currShot = firedShots[i]
+	for i = #firedProjectiles, 1, -1 do
+		local currShot = firedProjectiles[i]
+		
+		local currPos = currShot.currentPos
+		
+		currShot.lastPos = VecCopy(currPos)
+		
+		local nextPos = VecAdd(currPos, VecScale(currShot.velocity, dt * 10))
+		
+		local directionToNextPos = VecDir(currPos, nextPos)
+		
+		local distanceTraveled = VecDist(currPos, nextPos)
+		
+		local hit, hitPoint, distance, normal, shape = raycast(currPos, directionToNextPos, distanceTraveled)
+		
+		if hit then
+			currShot.lifetime = 0
+			doBulletHoleAt(hitPoint, normal)
+			
+			if applyForceOnHit then
+				applyForceToHitObject(shape, hitPoint, directionToNextPos)
+			end
+			
+			DrawLine(currPos, hitPoint)
+		else
+			DrawLine(currPos, nextPos)
+		end
+		
+		currShot.currentPos = nextPos
+		
+		currShot.lifetime = currShot.lifetime - distanceTraveled
+		
+		if currShot.lifetime <= 0 then
+			table.remove(firedProjectiles, i, 1)
+		end
+	end
+end
+
+function handleAllFiredShotLines(dt)
+	if #firedShotLines <= 0 then
+		return
+	end
+	
+	for i = #firedShotLines, 1, -1 do
+		local currShot = firedShotLines[i]
 		
 		currShot.lifetime = currShot.lifetime - dt
 		
 		if currShot.lifetime <= 0 then
-			table.remove(firedShots, i, 1)
+			table.remove(firedShotLines, i, 1)
 		else
-			local alpha = currShot.lifetime / firedShotClass.lifetime
+			local alpha = currShot.lifetime / firedShotLineClass.lifetime
 		
 			DrawLine(currShot.startPos, currShot.endPos, 1, 1, 1, alpha)
 		end
@@ -291,23 +362,34 @@ function applyForceToHitObject(shape, hitPoint, shotDirection)
 	ApplyBodyImpulse(shapeBody, hitPoint, VecScale(shotDirection, hitForce))
 end
 
+function doBulletHoleAt(hitPoint, normal)
+	local softRadius = math.random(softRadiusMin, softRadiusMax) / 10
+	local mediumRadius = softRadius - math.random(mediumRadiusMin, mediumRadiusMax) / 100
+	local hardRadius = mediumRadius - math.random(hardRadiusMin, hardRadiusMax) / 100
+	
+	setupHitParticle()
+	
+	if particlesEnabled then
+		SpawnParticle(hitPoint, normal, 5)
+	end
+	
+	if explosiveBullets then
+		Explosion(hitPoint, math.random(explosiveBulletMinSize, explosiveBulletMaxSize))
+	else
+		MakeHole(hitPoint, softRadius, mediumRadius, hardRadius)
+	end
+end
+
 function doHitScanShot(shotStartPos, shotDirection)
 	local hit, hitPoint, distance, normal, shape = raycast(shotStartPos, shotDirection, maxDistance)
 	
 	if hit then
-		local softRadius = math.random(3, 4) / 10
-		local mediumRadius = softRadius - math.random(10, 15) / 100
-		local hardRadius = mediumRadius - math.random(10, 15) / 100
+		doBulletHoleAt(hitPoint, normal)
 		
-		setupHitParticle()
-		
-		MakeHole(hitPoint, softRadius, mediumRadius, hardRadius)
-		
-		if particlesEnabled then
-			SpawnParticle(hitPoint, normal, 5)
+		if applyForceOnHit then
+			applyForceToHitObject(shape, hitPoint, shotDirection)
 		end
 		
-		applyForceToHitObject(shape, hitPoint, shotDirection)
 		return hitPoint
 	end
 	
@@ -323,19 +405,27 @@ function shootLogic()
 	
 	setupShotParticle()
 	
-	if hitscanBullets then
-		for i = 1, projectiles do
-			local gunFrontPos, gunFrontDir, shotStartPos, shotDirection = GenerateBulletTrajectory()
-			
-			local hitPoint = doHitScanShot(shotStartPos, shotDirection)
-			
-			if i == 1 and particlesEnabled then
-				SpawnParticle(gunFrontPos, gunFrontDir, 3)
-			end
-			
+	for i = 1, projectiles do
+		local gunFrontPos, gunFrontDir, shotStartPos, shotDirection = GenerateBulletTrajectory()
+		
+		local hitPoint = nil
+		
+		if hitscanBullets then
+			hitPoint = doHitScanShot(shotStartPos, shotDirection)
+		end
+		
+		if i == 1 and particlesEnabled then
+			SpawnParticle(gunFrontPos, gunFrontDir, 3)
+		end
+		
+		if hitscanBullets then
 			local firedShot = createFiredShot(gunFrontPos, hitPoint)
 			
-			table.insert(firedShots, firedShot)
+			table.insert(firedShotLines, firedShot)
+		else
+			local firedProjectile = createProjectileBullet(shotStartPos, shotDirection)
+			
+			table.insert(firedProjectiles, firedProjectile)
 		end
 	end
 end
