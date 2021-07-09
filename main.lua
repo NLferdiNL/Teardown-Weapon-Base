@@ -4,35 +4,40 @@
 #include "scripts/ui.lua"
 #include "scripts/menu.lua"
 #include "datascripts/inputList.lua"
+#include "customlist.lua"
 
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
 
-magSize = 30
-currMag = magSize
-maxAmmo = 300
+name = "Shotgun"
+magSize = 30 -- TODO: Add option to menu
+currMag = magSize -- TODO: Add visual
+maxAmmo = 300 -- TODO: Add option to menu
 spread = 0.05
 projectiles = 10 -- 1 for single bullet, multiple for buckshot
 shotCooldownTime = 0.2 -- max time between each shot
 currentShotCooldown = 0
+fullAuto = false  -- TODO: Add option to menu
+burstFireMax = 0  -- TODO: Add option to menu
+burstFire = burstFireMax
 maxReloadTime = 3
 reloadTime = 0
 minRndSpread = 1
 maxRndSpread = 10
 maxDistance = 100
-hitForce = 4000
+hitForce = 4000 -- TODO: Add option to menu
 hitscanBullets = true
 explosiveBullets = false
 explosiveBulletMinSize = 0.3 -- TODO: Add option to menu
 explosiveBulletMaxSize = 0.5 -- TODO: Add option to menu
 projectileBulletSpeed = 100
 applyForceOnHit = true
-softRadiusMin = 3
-softRadiusMax = 4
-mediumRadiusMin = 10
-mediumRadiusMax = 15
-hardRadiusMin = 10
-hardRadiusMax = 15
+softRadiusMin = 3 -- TODO: Add option to menu
+softRadiusMax = 4 -- TODO: Add option to menu
+mediumRadiusMin = 10 -- TODO: Add option to menu
+mediumRadiusMax = 15 -- TODO: Add option to menu
+hardRadiusMin = 10 -- TODO: Add option to menu
+hardRadiusMax = 15 -- TODO: Add option to menu
 
 -- CHEATS:
 
@@ -57,6 +62,11 @@ local bulletProjectileClass = {
 
 local firedProjectiles = {}
 local firedShotLines = {}
+local currentSelectedWeapon = 1
+local prevFrameSelectedWeapon = 1
+
+name = GetNameByIndex(currentSelectedWeapon)
+ApplySettingsByIndex(currentSelectedWeapon)
 
 function init()
 	saveFileInit()
@@ -88,6 +98,10 @@ function tick(dt)
 		return
 	end
 	
+	prevFrameSelectedWeapon = currentSelectedWeapon
+	
+	weaponTypeSelectionHandler()
+	
 	if needsReload() then
 		if getAmmoCount() <= 0 then
 			return
@@ -96,6 +110,8 @@ function tick(dt)
 		reloadLogic(dt)
 		return
 	end
+	
+	handleBurstFire()
 	
 	if not isReadyToFire() then
 		return
@@ -115,7 +131,38 @@ end
 -- UI Functions (excludes sound specific functions)
 
 function drawUI(dt)
+	if not isHoldingGun() then
+		return
+	end
 	
+	drawWeaponSelection()
+end
+
+function drawWeaponSelection()
+	local prevIndex = currentSelectedWeapon - 1
+	local nextIndex = currentSelectedWeapon + 1
+	
+	local listCount = GetListCount()
+	
+	if prevIndex <= 0 then
+		prevIndex = listCount
+	end
+	
+	if nextIndex > listCount then
+		nextIndex = 1
+	end
+	
+	local prevWeaponName = GetNameByIndex(prevIndex)
+	local currWeaponName = name
+	local nextWeaponName = GetNameByIndex(nextIndex)
+	
+	UiPush()
+		UiAlign("center bottom")
+		UiTranslate(UiWidth() * 0.5, UiHeight() * 0.95)
+		UiFont("regular.ttf", 26)
+		UiTextShadow(0, 0, 0, 0.5, 2.0)
+		UiText("[" .. binds["Prev_Weapon"]:upper() .. "] " .. prevWeaponName .. " | " .. currWeaponName .. " | [" .. binds["Next_Weapon"]:upper() .. "] " .. nextWeaponName)
+	UiPop()
 end
 
 -- Creation Functions
@@ -204,9 +251,45 @@ function handleAllFiredShotLines(dt)
 	end
 end
 
+function handleBurstFire()
+	if burstFireMax > 0 and burstFire < burstFireMax and not isFiringGun() then
+		burstFire = burstFireMax
+	end
+end
+
 -- World Sound functions
 
 -- Tool Functions
+
+function weaponTypeSelectionHandler()
+	local movement = 0
+	
+	if InputPressed(binds["Prev_Weapon"]) then
+		movement = movement - 1
+	end
+	
+	if InputPressed(binds["Next_Weapon"]) then
+		movement = movement + 1
+	end
+	
+	local newIndex = currentSelectedWeapon + movement
+	local listCount = GetListCount()
+	
+	if newIndex < 1 then
+		newIndex = listCount
+	elseif newIndex > GetListCount() then
+		newIndex = 1
+	end
+	
+	if movement == 0 then
+		return
+	end
+	
+	currentSelectedWeapon = newIndex
+	
+	name = GetNameByIndex(currentSelectedWeapon)
+	ApplySettingsByIndex(currentSelectedWeapon)
+end
 
 function getAmmoCount()
 	if infiniteAmmo then
@@ -239,11 +322,26 @@ function isHoldingGun()
 end
 
 function isFiringGun()
-	return InputDown("usetool") and GetString("game.player.tool") == toolName
+	local isHoldingGun = GetString("game.player.tool") == toolName
+	local isFiringFullAuto = fullAuto and InputDown("usetool")
+	local isFiringSingleFire = not fullAuto and InputPressed("usetool") and burstFireMax <= 0
+	local isBurstFiring = not fullAuto and InputDown("usetool") and burstFireMax > 0
+	
+	return (isFiringFullAuto or isFiringSingleFire or isBurstFiring) and isHoldingGun
+end
+
+function hasChangedSettings()
+	return currentSelectedWeapon ~= prevFrameSelectedWeapon
 end
 
 function isReadyToFire()
-	return reloadTime <= 0 and currMag > 0 and currentShotCooldown <= 0 and not isMenuOpen()
+	local required = reloadTime <= 0 and currMag > 0 and currentShotCooldown <= 0 and not isMenuOpen() and GetPlayerVehicle() == 0
+
+	if burstFireMax > 0 then
+		return required and burstFire > 0
+	end
+	
+	return required
 end
 
 function needsReload(dt)
@@ -364,8 +462,8 @@ end
 
 function doBulletHoleAt(hitPoint, normal)
 	local softRadius = math.random(softRadiusMin, softRadiusMax) / 10
-	local mediumRadius = softRadius - math.random(mediumRadiusMin, mediumRadiusMax) / 100
-	local hardRadius = mediumRadius - math.random(hardRadiusMin, hardRadiusMax) / 100
+	local mediumRadius = math.random(mediumRadiusMin, mediumRadiusMax) / 10
+	local hardRadius = math.random(hardRadiusMin, hardRadiusMax) / 10
 	
 	setupHitParticle()
 	
@@ -401,6 +499,10 @@ function shootLogic()
 	
 	if not infiniteMag then
 		currMag = currMag - 1
+	end
+	
+	if burstFireMax > 0 then
+		burstFire = burstFire - 1
 	end
 	
 	setupShotParticle()

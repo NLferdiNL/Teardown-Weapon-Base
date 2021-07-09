@@ -5,6 +5,9 @@
 #include "scripts/utils.lua"
 
 binds = {
+	Prev_Weapon = "z",
+	Next_Weapon = "x",
+	Reload = "r",
 	Open_Menu = "m", -- Only one that can't be changed!
 }
 
@@ -14,6 +17,9 @@ local bindOrder = {
 }
 		
 local bindNames = {
+	Prev_Weapon = "Previous Weapon",
+	Next_Weapon = "Next Weapon",
+	Reload = "Reload",
 	Open_Menu = "Open Menu",
 }
 
@@ -21,6 +27,8 @@ local enabledText = "Enabled"
 local disabledText = "Disabled"
 
 local menuOpened = false
+local menuOpenLastFrame = false
+
 local rebinding = nil
 
 local erasingBinds = 0
@@ -34,7 +42,7 @@ local shotCooldownTimeTextBox = nil
 local maxReloadTimeTextBox = nil
 local minRndSpreadTextBox = nil
 local maxRndSpreadTextBox = nil
-local bulletVelocityTextBox = nil
+local projectileBulletSpeedTextBox = nil
 
 function menu_init()
 	
@@ -48,6 +56,17 @@ function menu_tick(dt)
 			menuCloseActions()
 		end
 	end
+	
+	if menuOpened and hasChangedSettings() then
+		menuOpenActions()
+	end
+	
+	
+	if menuOpened and not menuOpenLastFrame then
+		menuOpenActions()
+	end
+	
+	menuOpenLastFrame = menuOpened
 	
 	if rebinding ~= nil then
 		local lastKeyPressed = getKeyPressed()
@@ -183,7 +202,7 @@ function menu_draw(dt)
 
 			if newBox02 then
 				textBox02.name = "Projectiles"
-				textBox02.value = projectiles .. ""
+				textBox02.value = projectiles .. "" 
 				textBox02.numbersOnly = true
 				textBox02.limitsActive = true
 				textBox02.numberMin = 1
@@ -247,14 +266,14 @@ function menu_draw(dt)
 			local textBox07, newBox07 = textboxClass_getTextBox(7)
 
 			if newBox07 then
-				textBox07.name = "Projectile Bullet Velocity"
+				textBox07.name = "Projectile Bullet Speed"
 				textBox07.value = projectileBulletSpeed .. ""
 				textBox07.numbersOnly = true
 				textBox07.limitsActive = true
 				textBox07.numberMin = 0
 				textBox07.numberMax = 10000
 				
-				bulletVelocityTextBox = textBox07
+				projectileBulletSpeedTextBox = textBox07
 			end
 			
 			textboxClass_render(textBox01)
@@ -335,6 +354,36 @@ function drawRebindable(id, key)
 			rebinding = id
 		end
 	UiPop()
+end
+
+function menuOpenActions()
+	if spreadTextBox ~= nil then
+		spreadTextBox.value =  spread .. ""
+	end
+	
+	if projectilesTextBox ~= nil then
+		projectilesTextBox.value = projectiles .. ""
+	end
+	
+	if shotCooldownTimeTextBox ~= nil then
+		shotCooldownTimeTextBox.value = shotCooldownTime .. ""
+	end
+	
+	if maxReloadTimeTextBox ~= nil then
+		maxReloadTimeTextBox.value = maxReloadTime .. ""
+	end
+	
+	if minRndSpreadTextBox ~= nil then
+		minRndSpreadTextBox.value = minRndSpread .. ""
+	end
+	
+	if maxRndSpreadTextBox ~= nil then
+		maxRndSpreadTextBox.value = maxRndSpread .. ""
+	end
+	
+	if projectileBulletSpeedTextBox ~= nil then
+		projectileBulletSpeedTextBox.value = projectileBulletSpeed .. ""
+	end
 end
 
 function menuCloseActions()
