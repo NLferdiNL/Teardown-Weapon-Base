@@ -17,7 +17,7 @@ spread = 0.05
 projectiles = 10 -- 1 for single bullet, multiple for buckshot
 shotCooldownTime = 0.2 -- max time between each shot
 currentShotCooldown = 0
-fullAuto = false  -- TODO: Add option to menu
+fullAuto = false
 burstFireMax = 0  -- TODO: Add option to menu
 burstFire = burstFireMax
 maxReloadTime = 3
@@ -38,14 +38,16 @@ mediumRadiusMin = 10 -- TODO: Add option to menu
 mediumRadiusMax = 15 -- TODO: Add option to menu
 hardRadiusMin = 10 -- TODO: Add option to menu
 hardRadiusMax = 15 -- TODO: Add option to menu
+sfx = {}
 
 -- CHEATS:
 
 infiniteAmmo = false
 infiniteMag = false
 particlesEnabled = true
+soundEnabled = true
 
---TODO: FIX PARTICLE NOT RESETTING
+--TODO: Shotgun reload/additive reload
 
 local firedShotLineClass = {
 	lifetime = 0.4,
@@ -299,6 +301,12 @@ function getAmmoCount()
 	return GetInt("game.tool." .. toolName .. ".ammo")
 end
 
+function addToAmmo(addedAmmo)
+	local currAmmo = getAmmoCount() + addedAmmo
+	
+	SetInt("game.tool." .. toolName .. ".ammo", currAmmo)
+end
+
 function subFromAmmo(removedAmmo)
 	local currAmmo = getAmmoCount()
 	local loadedAmmo = removedAmmo
@@ -353,6 +361,13 @@ function needsReload(dt)
 		return true
 	end
 	
+	if InputPressed(binds["Reload"]) then
+		addToAmmo(currMag)
+		
+		currMag = 0
+		return true
+	end
+	
 	return false
 end
 
@@ -399,11 +414,24 @@ function setupHitParticle()
 	ParticleCollide(1)
 end
 
-function setupShotParticle()	
+function setupShotSmokeParticle()	
 	ParticleReset()
 	ParticleType("smoke")
 	ParticleRadius(0.1, 0.3)
 	ParticleGravity(0.4)
+	ParticleColor(1, 1, 1, 0, 0, 0)
+	ParticleCollide(1)
+end
+
+function setupShotFireParticle()	
+	ParticleReset()
+	ParticleType("plain")
+	ParticleTile(5)
+	ParticleStretch(1, 0.3)
+	ParticleColor(1, 0.6, 0.2, 0, 0, 0)
+	ParticleRadius(0.4, 0.2, "smooth")
+	ParticleEmissive(1, 0, "smooth")
+	ParticleGravity(0)
 	ParticleCollide(1)
 end
 
@@ -505,7 +533,7 @@ function shootLogic()
 		burstFire = burstFire - 1
 	end
 	
-	setupShotParticle()
+	
 	
 	for i = 1, projectiles do
 		local gunFrontPos, gunFrontDir, shotStartPos, shotDirection = GenerateBulletTrajectory()
@@ -516,8 +544,17 @@ function shootLogic()
 			hitPoint = doHitScanShot(shotStartPos, shotDirection)
 		end
 		
-		if i == 1 and particlesEnabled then
-			SpawnParticle(gunFrontPos, gunFrontDir, 3)
+		if i == 1 then
+			if sfx["shot"] ~= nil and soundEnabled then
+				PlaySound(sfx["shot"], gunFrontPos, math.random(7, 10) / 10)
+			end
+			
+			if particlesEnabled then
+				setupShotSmokeParticle()
+				SpawnParticle(gunFrontPos, gunFrontDir, 3)
+				setupShotFireParticle()
+				SpawnParticle(gunFrontPos, gunFrontDir, 0.5)
+			end
 		end
 		
 		if hitscanBullets then

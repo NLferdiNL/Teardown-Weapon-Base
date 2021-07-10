@@ -33,7 +33,7 @@ local rebinding = nil
 
 local erasingBinds = 0
 
-local menuWidth = 0.25
+local menuWidth = 0.5
 local menuHeight = 0.725
 
 local spreadTextBox = nil
@@ -84,104 +84,44 @@ function menu_tick(dt)
 	end
 end
 
-function menu_draw(dt)
-	if not isMenuOpen() then
-		return
-	end
-	
-	UiMakeInteractive()
-	
+function drawToggle(label, value, callback)
 	UiPush()
-		UiBlur(0.75)
+		UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
 		
-		UiAlign("center middle")
-		UiTranslate(UiWidth() * 0.5, UiHeight() * 0.5)
-		UiImageBox("ui/hud/infobox.png", UiWidth() * menuWidth, UiHeight() * menuHeight, 10, 10)
+		if UiTextButton(label .. (value and enabledText or disabledText), 400, 40) then
+			callback(not value)
+		end
+	UiPop()
+end
+
+function leftsideMenu(dt)
+	UiPush()
+		UiTranslate(-UiWidth() * (menuWidth / 4.5), 50)
 		
-		UiWordWrap(UiWidth() * menuWidth)
-		
-		UiTranslate(0, -UiHeight() * (menuHeight / 2))
-		
-		UiFont("bold.ttf", 45)
-		
-		UiTranslate(0, 40)
-		
-		UiText(toolReadableName .. " Settings")
-		
-		UiFont("regular.ttf", 26)
-	
-		UiPush()
-			UiTranslate(-UiWidth() * (menuWidth / 2), 50)
-			for i = 1, #bindOrder do
-				local id = bindOrder[i]
-				local key = binds[id]
-				drawRebindable(id, key)
-				UiTranslate(0, 50)
-			end
-		UiPop()
-		
-		UiTranslate(0, 50 * (#bindOrder + 1))
-		
-		UiPush()
-			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
-			
-			if UiTextButton("Infinite Ammo: " .. (infiniteAmmo and enabledText or disabledText), 400, 40) then
-				infiniteAmmo = not infiniteAmmo
-			end
-		UiPop()
+		drawToggle("Infinite Ammo: ", infiniteAmmo, function (i) infiniteAmmo = i end)
 		
 		UiTranslate(0, 50)
 		
-		UiPush()
-			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
-			
-			if UiTextButton("Infinite Mag: " .. (infiniteMag and enabledText or disabledText), 400, 40) then
-				infiniteMag = not infiniteMag
-			end
-		UiPop()
+		drawToggle("Infinite Mag: ", infiniteMag, function (i) infiniteMag = i end)
 		
 		UiTranslate(0, 50)
 		
-		UiPush()
-			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
-			
-			if UiTextButton("Particles: " .. (particlesEnabled and enabledText or disabledText), 400, 40) then
-				particlesEnabled = not particlesEnabled
-			end
-		UiPop()
+		drawToggle("Particles: ", particlesEnabled, function (i) particlesEnabled = i end)
 		
 		UiTranslate(0, 50)
 		
-		UiPush()
-			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
-			
-			if UiTextButton("Hitscan bullets: " .. (hitscanBullets and enabledText or disabledText), 400, 40) then
-				hitscanBullets = not hitscanBullets
-			end
-		UiPop()
+		drawToggle("Hitscan bullets: ", hitscanBullets, function (i) hitscanBullets = i end)
 		
 		UiTranslate(0, 50)
 		
-		UiPush()
-			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
-			
-			if UiTextButton("Explosive Bullets: " .. (explosiveBullets and enabledText or disabledText), 400, 40) then
-				explosiveBullets = not explosiveBullets
-			end
-		UiPop()
+		drawToggle("Explosive Bullets: ", explosiveBullets, function (i) explosiveBullets = i end)
 		
 		UiTranslate(0, 50)
 		
-		UiPush()
-			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
-			
-			if UiTextButton("Apply Force To Hit Objects: " .. (applyForceOnHit and enabledText or disabledText), 400, 40) then
-				applyForceOnHit = not applyForceOnHit
-			end
-		UiPop()
+		drawToggle("Apply Force To Hit Objects: ", applyForceOnHit, function (i) applyForceOnHit = i end)
 		
 		UiTranslate(0, 50)
-		
+			
 		UiPush()
 			local textBox01, newBox01 = textboxClass_getTextBox(1)
 			
@@ -302,8 +242,65 @@ function menu_draw(dt)
 			
 			textboxClass_render(textBox07)
 		UiPop()
+	UiPop()
+end
+
+function rightsideMenu(dt)
+	UiPush()
+	UiTranslate(UiWidth() * (menuWidth / 4.5), 0)
+		UiPush()
+			UiTranslate(-UiWidth() * (menuWidth / 2), 50)
+			for i = 1, #bindOrder do
+				local id = bindOrder[i]
+				local key = binds[id]
+				drawRebindable(id, key)
+				UiTranslate(0, 50)
+			end
+		UiPop()
 		
-		UiTranslate(0, 50 * 7)
+		UiTranslate(0, 50 * (#bindOrder + 1))
+		
+		drawToggle("Sound: ", soundEnabled, function (i) soundEnabled = i end)
+		
+		UiTranslate(0, 50)
+		
+		drawToggle("Full Auto: ", fullAuto, function (i) fullAuto = i end)
+		
+		UiTranslate(0, 50)
+		
+	UiPop()
+end
+
+function menu_draw(dt)
+	if not isMenuOpen() then
+		return
+	end
+	
+	UiMakeInteractive()
+	
+	UiPush()
+		UiBlur(0.75)
+		
+		UiAlign("center middle")
+		UiTranslate(UiWidth() * 0.5, UiHeight() * 0.5)
+		UiImageBox("ui/hud/infobox.png", UiWidth() * menuWidth, UiHeight() * menuHeight, 10, 10)
+		
+		UiWordWrap(UiWidth() * menuWidth)
+		
+		UiTranslate(0, -UiHeight() * (menuHeight / 2))
+		
+		UiFont("bold.ttf", 45)
+		
+		UiTranslate(0, 40)
+		
+		UiText(toolReadableName .. " Settings")
+		
+		UiFont("regular.ttf", 26)
+	
+		leftsideMenu(dt)
+		rightsideMenu(dt)
+		
+		UiTranslate(0, UiHeight() * menuHeight * 0.9)
 		
 		UiPush()
 			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)

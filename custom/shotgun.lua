@@ -25,4 +25,5 @@ shotgun = {
 	mediumRadiusMax = 3,
 	hardRadiusMin = 1,
 	hardRadiusMax = 2,
+	sfx = {shot = "sfx/shotgun.ogg", },
 }

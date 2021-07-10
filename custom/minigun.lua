@@ -25,4 +25,5 @@ minigun = {
 	mediumRadiusMax = 2.5,
 	hardRadiusMin = 0.5,
 	hardRadiusMax = 1,
+	sfx = {shot = "sfx/minigun.ogg", },
 }

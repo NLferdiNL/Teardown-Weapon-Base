@@ -25,4 +25,5 @@ pistol = {
 	mediumRadiusMax = 2,
 	hardRadiusMin = 1,
 	hardRadiusMax = 1.5,
+	sfx = {shot = "sfx/pistol.ogg", },
 }

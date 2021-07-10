@@ -11,6 +11,8 @@ local customList = {
 	burstsmg,
 }
 
+local loadedSfx = {}
+
 local listSize = #customList
 
 --local customList_backup = deepcopy(customList)
@@ -20,7 +22,23 @@ function GetSettingsByIndex(index)
 		return nil
 	end
 	
-	return customList[index]
+	local settings = customList[index]
+	
+	local sfx = {}
+	
+	for key, path in pairs(settings.sfx) do
+		local handle = nil
+		if loadedSfx[path] ~= nil then
+			handle = loadedSfx[path]
+		else
+			handle = LoadSound(path)
+			loadedSfx[path] = handle
+		end
+		
+		sfx[key] = handle
+	end
+	
+	return settings, sfx
 end
 
 function GetNameByIndex(index)
@@ -42,7 +60,7 @@ function GetList()
 end
 
 function ApplySettingsByIndex(index)
-	local newSettings = GetSettingsByIndex(index)
+	local newSettings, newSfx = GetSettingsByIndex(index)
 	
 	if newSettings == nil then
 		return
@@ -76,6 +94,7 @@ function ApplySettingsByIndex(index)
 	mediumRadiusMax = newSettings.mediumRadiusMax
 	hardRadiusMin = newSettings.hardRadiusMin
 	hardRadiusMax = newSettings.hardRadiusMax
+	sfx = newSfx
 end
 
 --[[

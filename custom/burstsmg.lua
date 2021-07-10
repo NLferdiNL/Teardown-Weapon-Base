@@ -25,4 +25,5 @@ burstsmg = {
 	mediumRadiusMax = 3,
 	hardRadiusMin = 2,
 	hardRadiusMax = 2.5,
+	sfx = {shot = "sfx/assaultrifle.ogg", },
 }
