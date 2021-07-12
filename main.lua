@@ -28,16 +28,16 @@ maxDistance = 100
 hitForce = 4000 -- TODO: Add option to menu
 hitscanBullets = true
 explosiveBullets = false
-explosiveBulletMinSize = 0.3 -- TODO: Add option to menu
-explosiveBulletMaxSize = 0.5 -- TODO: Add option to menu
+explosiveBulletMinSize = 0.3
+explosiveBulletMaxSize = 0.5
 projectileBulletSpeed = 100
 applyForceOnHit = true
-softRadiusMin = 3 -- TODO: Add option to menu
-softRadiusMax = 4 -- TODO: Add option to menu
-mediumRadiusMin = 10 -- TODO: Add option to menu
-mediumRadiusMax = 15 -- TODO: Add option to menu
-hardRadiusMin = 10 -- TODO: Add option to menu
-hardRadiusMax = 15 -- TODO: Add option to menu
+softRadiusMin = 3
+softRadiusMax = 4
+mediumRadiusMin = 10
+mediumRadiusMax = 15
+hardRadiusMin = 10
+hardRadiusMax = 15
 sfx = {}
 
 -- CHEATS:

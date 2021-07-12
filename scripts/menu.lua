@@ -4,6 +4,8 @@
 #include "scripts/textbox.lua"
 #include "scripts/utils.lua"
 
+-- TODO: Add new settings to menu open actions
+
 binds = {
 	Prev_Weapon = "z",
 	Next_Weapon = "x",
@@ -43,6 +45,17 @@ local maxReloadTimeTextBox = nil
 local minRndSpreadTextBox = nil
 local maxRndSpreadTextBox = nil
 local projectileBulletSpeedTextBox = nil
+local explosiveBulletMinSizeTextBox = nil
+local explosiveBulletMaxSizeTextBox = nil
+
+local softRadiusMinTextBox = nil
+local softRadiusMaxTextBox = nil
+
+local mediumRadiusMinTextBox = nil
+local mediumRadiusMaxTextBox = nil
+
+local hardRadiusMinTextBox = nil
+local hardRadiusMaxTextBox = nil
 
 function menu_init()
 	
@@ -94,6 +107,193 @@ function drawToggle(label, value, callback)
 	UiPop()
 end
 
+function setupTextBoxes()
+	local textBox01, newBox01 = textboxClass_getTextBox(1) -- spread
+	local textBox02, newBox02 = textboxClass_getTextBox(2) -- projectiles
+	local textBox03, newBox03 = textboxClass_getTextBox(3) -- shotCooldownTime
+	local textBox04, newBox04 = textboxClass_getTextBox(4) -- maxReloadTime
+	local textBox05, newBox05 = textboxClass_getTextBox(5) -- minRndSpread
+	local textBox06, newBox06 = textboxClass_getTextBox(6) -- maxRndSpread
+	local textBox07, newBox07 = textboxClass_getTextBox(7) -- projectileBulletSpeed
+	
+	local textBox08, newBox08 = textboxClass_getTextBox(8) -- explosiveBulletMinSize
+	local textBox09, newBox09 = textboxClass_getTextBox(9) -- explosiveBulletMaxSize
+	
+	local textBox10, newBox10 = textboxClass_getTextBox(10) -- softRadiusMin
+	local textBox11, newBox11 = textboxClass_getTextBox(11) -- softRadiusMax
+	
+	local textBox12, newBox12 = textboxClass_getTextBox(12) -- mediumRadiusMin
+	local textBox13, newBox13 = textboxClass_getTextBox(13) -- mediumRadiusMax
+	
+	local textBox14, newBox14 = textboxClass_getTextBox(14) -- hardRadiusMin
+	local textBox15, newBox15 = textboxClass_getTextBox(15) -- hardRadiusMax
+
+	if newBox01 then
+		textBox01.name = "Spread"
+		textBox01.value = spread .. ""
+		textBox01.numbersOnly = true
+		textBox01.limitsActive = true
+		textBox01.numberMin = 0
+		textBox01.numberMax = 5
+		
+		spreadTextBox = textBox01
+	end
+
+	if newBox02 then
+		textBox02.name = "Projectiles"
+		textBox02.value = projectiles .. "" 
+		textBox02.numbersOnly = true
+		textBox02.limitsActive = true
+		textBox02.numberMin = 1
+		textBox02.numberMax = 100
+		
+		projectilesTextBox = textBox02
+	end
+
+	if newBox03 then
+		textBox03.name = "Shot Cooldown Time"
+		textBox03.value = shotCooldownTime .. ""
+		textBox03.numbersOnly = true
+		textBox03.limitsActive = true
+		textBox03.numberMin = 0
+		textBox03.numberMax = 100
+		
+		shotCooldownTimeTextBox = textBox03
+	end
+
+	if newBox04 then
+		textBox04.name = "Max Reload Time"
+		textBox04.value = maxReloadTime .. ""
+		textBox04.numbersOnly = true
+		textBox04.limitsActive = true
+		textBox04.numberMin = 0
+		textBox04.numberMax = 100
+		
+		maxReloadTimeTextBox = textBox04
+	end
+
+	if newBox05 then
+		textBox05.name = "Min Rnd Spread"
+		textBox05.value = minRndSpread .. ""
+		textBox05.numbersOnly = true
+		textBox05.limitsActive = true
+		textBox05.numberMin = 0
+		textBox05.numberMax = 100
+		
+		minRndSpreadTextBox = textBox05
+	end
+
+	if newBox06 then
+		textBox06.name = "Max Rnd Spread"
+		textBox06.value = maxRndSpread .. ""
+		textBox06.numbersOnly = true
+		textBox06.limitsActive = true
+		textBox06.numberMin = 0
+		textBox06.numberMax = 100
+		
+		maxRndSpreadTextBox = textBox06
+	end
+
+	if newBox07 then
+		textBox07.name = "Projectile Bullet Speed"
+		textBox07.value = projectileBulletSpeed .. ""
+		textBox07.numbersOnly = true
+		textBox07.limitsActive = true
+		textBox07.numberMin = 0
+		textBox07.numberMax = 10000
+		
+		projectileBulletSpeedTextBox = textBox07
+	end
+
+	if newBox08 then
+		textBox08.name = "Explosive Bullet Min"
+		textBox08.value = explosiveBulletMinSize .. ""
+		textBox08.numbersOnly = true
+		textBox08.limitsActive = true
+		textBox08.numberMin = 0.5
+		textBox08.numberMax = 4
+		
+		explosiveBulletMinSizeTextBox = textBox08
+	end
+	
+	if newBox09 then
+		textBox09.name = "Explosive Bullet Max"
+		textBox09.value = explosiveBulletMaxSize .. ""
+		textBox09.numbersOnly = true
+		textBox09.limitsActive = true
+		textBox09.numberMin = 0.5
+		textBox09.numberMax = 4
+		
+		explosiveBulletMaxSizeTextBox = textBox09
+	end
+	
+	if newBox10 then
+		textBox10.name = "Soft Radius Min"
+		textBox10.value = softRadiusMin .. ""
+		textBox10.numbersOnly = true
+		textBox10.limitsActive = true
+		textBox10.numberMin = 0
+		textBox10.numberMax = 1000
+		
+		softRadiusMinTextBox = textBox10
+	end
+	
+	if newBox11 then
+		textBox11.name = "Soft Radius Max"
+		textBox11.value = softRadiusMax .. ""
+		textBox11.numbersOnly = true
+		textBox11.limitsActive = true
+		textBox11.numberMin = 0
+		textBox11.numberMax = 1000
+		
+		softRadiusMaxTextBox = textBox11
+	end
+	
+	if newBox12 then
+		textBox12.name = "Medium Radius Min"
+		textBox12.value = mediumRadiusMin .. ""
+		textBox12.numbersOnly = true
+		textBox12.limitsActive = true
+		textBox12.numberMin = 0
+		textBox12.numberMax = 1000
+		
+		mediumRadiusMinTextBox = textBox12
+	end
+	
+	if newBox13 then
+		textBox13.name = "Medium Radius Max"
+		textBox13.value = mediumRadiusMax .. ""
+		textBox13.numbersOnly = true
+		textBox13.limitsActive = true
+		textBox13.numberMin = 0
+		textBox13.numberMax = 1000
+		
+		mediumRadiusMaxTextBox = textBox13
+	end
+	
+	if newBox14 then
+		textBox14.name = "Hard Radius Min"
+		textBox14.value = hardRadiusMin .. ""
+		textBox14.numbersOnly = true
+		textBox14.limitsActive = true
+		textBox14.numberMin = 0
+		textBox14.numberMax = 1000
+		
+		hardRadiusMinTextBox = textBox14
+	end
+	
+	if newBox15 then
+		textBox15.name = "Hard Radius Max"
+		textBox15.value = hardRadiusMax .. ""
+		textBox15.numbersOnly = true
+		textBox15.limitsActive = true
+		textBox15.numberMin = 0
+		textBox15.numberMax = 1000
+		
+		hardRadiusMaxTextBox = textBox15
+	end
+end
+
 function leftsideMenu(dt)
 	UiPush()
 		UiTranslate(-UiWidth() * (menuWidth / 4.5), 50)
@@ -123,124 +323,33 @@ function leftsideMenu(dt)
 		UiTranslate(0, 50)
 			
 		UiPush()
-			local textBox01, newBox01 = textboxClass_getTextBox(1)
-			
-			UiTranslate(textBox01.width, 0)
+			UiTranslate(spreadTextBox.width, 0)
 
-			if newBox01 then
-				textBox01.name = "Spread"
-				textBox01.value = spread .. ""
-				textBox01.numbersOnly = true
-				textBox01.limitsActive = true
-				textBox01.numberMin = 0
-				textBox01.numberMax = 5
-				
-				spreadTextBox = textBox01
-			end
-			
-			local textBox02, newBox02 = textboxClass_getTextBox(2)
-
-			if newBox02 then
-				textBox02.name = "Projectiles"
-				textBox02.value = projectiles .. "" 
-				textBox02.numbersOnly = true
-				textBox02.limitsActive = true
-				textBox02.numberMin = 1
-				textBox02.numberMax = 100
-				
-				projectilesTextBox = textBox02
-			end
-			
-			local textBox03, newBox03 = textboxClass_getTextBox(3)
-
-			if newBox03 then
-				textBox03.name = "Shot Cooldown Time"
-				textBox03.value = shotCooldownTime .. ""
-				textBox03.numbersOnly = true
-				textBox03.limitsActive = true
-				textBox03.numberMin = 0
-				textBox03.numberMax = 100
-				
-				shotCooldownTimeTextBox = textBox03
-			end
-			
-			local textBox04, newBox04 = textboxClass_getTextBox(4)
-
-			if newBox04 then
-				textBox04.name = "Max Reload Time"
-				textBox04.value = maxReloadTime .. ""
-				textBox04.numbersOnly = true
-				textBox04.limitsActive = true
-				textBox04.numberMin = 0
-				textBox04.numberMax = 100
-				
-				maxReloadTimeTextBox = textBox04
-			end
-			
-			local textBox05, newBox05 = textboxClass_getTextBox(5)
-
-			if newBox05 then
-				textBox05.name = "Min Rnd Spread"
-				textBox05.value = minRndSpread .. ""
-				textBox05.numbersOnly = true
-				textBox05.limitsActive = true
-				textBox05.numberMin = 0
-				textBox05.numberMax = 100
-				
-				minRndSpreadTextBox = textBox05
-			end
-			
-			local textBox06, newBox06 = textboxClass_getTextBox(6)
-
-			if newBox06 then
-				textBox06.name = "Max Rnd Spread"
-				textBox06.value = maxRndSpread .. ""
-				textBox06.numbersOnly = true
-				textBox06.limitsActive = true
-				textBox06.numberMin = 0
-				textBox06.numberMax = 100
-				
-				maxRndSpreadTextBox = textBox06
-			end
-			
-			local textBox07, newBox07 = textboxClass_getTextBox(7)
-
-			if newBox07 then
-				textBox07.name = "Projectile Bullet Speed"
-				textBox07.value = projectileBulletSpeed .. ""
-				textBox07.numbersOnly = true
-				textBox07.limitsActive = true
-				textBox07.numberMin = 0
-				textBox07.numberMax = 10000
-				
-				projectileBulletSpeedTextBox = textBox07
-			end
-			
-			textboxClass_render(textBox01)
+			textboxClass_render(spreadTextBox)
 			
 			UiTranslate(0, 50)
 			
-			textboxClass_render(textBox02)
+			textboxClass_render(projectilesTextBox)
 			
 			UiTranslate(0, 50)
 			
-			textboxClass_render(textBox03)
+			textboxClass_render(shotCooldownTimeTextBox)
 			
 			UiTranslate(0, 50)
 			
-			textboxClass_render(textBox04)
+			textboxClass_render(maxReloadTimeTextBox)
 			
 			UiTranslate(0, 50)
 			
-			textboxClass_render(textBox05)
+			textboxClass_render(minRndSpreadTextBox)
 			
 			UiTranslate(0, 50)
 			
-			textboxClass_render(textBox06)
+			textboxClass_render(maxRndSpreadTextBox)
 			
 			UiTranslate(0, 50)
 			
-			textboxClass_render(textBox07)
+			textboxClass_render(projectileBulletSpeedTextBox)
 		UiPop()
 	UiPop()
 end
@@ -267,6 +376,40 @@ function rightsideMenu(dt)
 		drawToggle("Full Auto: ", fullAuto, function (i) fullAuto = i end)
 		
 		UiTranslate(0, 50)
+		
+		UiPush()
+			UiTranslate(explosiveBulletMinSizeTextBox.width, 0)
+			
+			textboxClass_render(explosiveBulletMinSizeTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(explosiveBulletMaxSizeTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(softRadiusMinTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(softRadiusMaxTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(mediumRadiusMinTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(mediumRadiusMaxTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(hardRadiusMinTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(hardRadiusMaxTextBox)
+		UiPop()
 		
 	UiPop()
 end
@@ -296,7 +439,9 @@ function menu_draw(dt)
 		UiText(toolReadableName .. " Settings")
 		
 		UiFont("regular.ttf", 26)
-	
+		
+		setupTextBoxes()
+		
 		leftsideMenu(dt)
 		rightsideMenu(dt)
 		
@@ -392,6 +537,15 @@ function menuCloseActions()
 	maxReloadTime = tonumber(maxReloadTimeTextBox.value)
 	minRndSpread = tonumber(minRndSpreadTextBox.value)
 	maxRndSpread = tonumber(maxRndSpreadTextBox.value)
+	projectileBulletSpeed = tonumber(projectileBulletSpeedTextBox.value)
+	explosiveBulletMinSize = tonumber(explosiveBulletMinSizeTextBox.value)
+	explosiveBulletMaxSize = tonumber(explosiveBulletMaxSizeTextBox.value)
+	softRadiusMin = tonumber(softRadiusMinTextBox.value)
+	softRadiusMax = tonumber(softRadiusMaxTextBox.value)
+	mediumRadiusMin = tonumber(mediumRadiusMinTextBox.value)
+	mediumRadiusMax = tonumber(mediumRadiusMaxTextBox.value)
+	hardRadiusMin = tonumber(hardRadiusMinTextBox.value)
+	hardRadiusMax = tonumber(hardRadiusMaxTextBox.value)
 end
 
 function isMenuOpen()
