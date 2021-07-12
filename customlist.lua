@@ -3,12 +3,14 @@
 #include "custom/minigun.lua"
 #include "custom/pistol.lua"
 #include "custom/burstsmg.lua"
+#include "custom/rocketlauncher.lua"
 
 local customList = {
 	shotgun,
 	minigun,
 	pistol,
 	burstsmg,
+	rocketlauncher,
 }
 
 local loadedSfx = {}

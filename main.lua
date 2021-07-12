@@ -60,6 +60,9 @@ local bulletProjectileClass = {
 	currentPos = nil,
 	lastPos = nil,
 	velocity = nil,
+	explosive = false,
+	explosiveMin = 0.5,
+	explosiveMax = 1,
 }
 
 local firedProjectiles = {}
@@ -172,9 +175,13 @@ end
 function createProjectileBullet(startPos, direction)
 	local firedProjectile = deepcopy(bulletProjectileClass)
 	
+	firedProjectile.lifetime = maxDistance
 	firedProjectile.currentPos = startPos
 	firedProjectile.lastPos = startPos
 	firedProjectile.velocity = VecScale(direction, projectileBulletSpeed)
+	firedProjectile.explosive = explosiveBullets
+	firedProjectile.explosiveMin = explosiveBulletMinSize
+	firedProjectile.explosiveMax = explosiveBulletMaxSize
 	
 	return firedProjectile
 end
@@ -212,7 +219,7 @@ function handleAllProjectiles(dt)
 		
 		if hit then
 			currShot.lifetime = 0
-			doBulletHoleAt(hitPoint, normal)
+			doBulletHoleAt(currShot, hitPoint, normal, true)
 			
 			if applyForceOnHit then
 				applyForceToHitObject(shape, hitPoint, directionToNextPos)
@@ -228,6 +235,7 @@ function handleAllProjectiles(dt)
 		currShot.lifetime = currShot.lifetime - distanceTraveled
 		
 		if currShot.lifetime <= 0 then
+			doBulletHoleAt(currShot, currPos, VecDir(currPos, GetPlayerTransform().pos), false)
 			table.remove(firedProjectiles, i, 1)
 		end
 	end
@@ -482,26 +490,32 @@ function GenerateBulletTrajectory()
 	return gunFrontPos, gunFrontDir, cameraTransform.pos, shotDirection
 end
 
+function fakeHitScanBullet()
+	local newBullet = createProjectileBullet(Vec(0, 0, 0), Vec(0, 0, 0))
+
+	return newBullet
+end
+
 function applyForceToHitObject(shape, hitPoint, shotDirection)
 	local shapeBody = GetShapeBody(shape)
 	
 	ApplyBodyImpulse(shapeBody, hitPoint, VecScale(shotDirection, hitForce))
 end
 
-function doBulletHoleAt(hitPoint, normal)
-	local softRadius = math.random(softRadiusMin, softRadiusMax) / 10
-	local mediumRadius = math.random(mediumRadiusMin, mediumRadiusMax) / 10
-	local hardRadius = math.random(hardRadiusMin, hardRadiusMax) / 10
-	
+function doBulletHoleAt(bullet, hitPoint, normal, hitParticles)
 	setupHitParticle()
 	
-	if particlesEnabled then
+	if particlesEnabled and hitParticles then
 		SpawnParticle(hitPoint, normal, 5)
 	end
 	
-	if explosiveBullets then
-		Explosion(hitPoint, math.random(explosiveBulletMinSize, explosiveBulletMaxSize))
+	if bullet.explosive then
+		Explosion(hitPoint, math.random(bullet.explosiveMin, bullet.explosiveMax))
 	else
+		local softRadius = math.random(softRadiusMin, softRadiusMax) / 10
+		local mediumRadius = math.random(mediumRadiusMin, mediumRadiusMax) / 10
+		local hardRadius = math.random(hardRadiusMin, hardRadiusMax) / 10
+	
 		MakeHole(hitPoint, softRadius, mediumRadius, hardRadius)
 	end
 end
@@ -509,17 +523,18 @@ end
 function doHitScanShot(shotStartPos, shotDirection)
 	local hit, hitPoint, distance, normal, shape = raycast(shotStartPos, shotDirection, maxDistance)
 	
-	if hit then
-		doBulletHoleAt(hitPoint, normal)
-		
-		if applyForceOnHit then
-			applyForceToHitObject(shape, hitPoint, shotDirection)
-		end
-		
-		return hitPoint
+	if not hit then
+		hitPoint = VecAdd(shotStartPos, VecScale(shotDirection, 500))
+		normal = VecDir(hitPoint, shotStartPos)
 	end
+
+	doBulletHoleAt(fakeHitScanBullet(), hitPoint, normal, hit)
 	
-	return VecAdd(shotStartPos, VecScale(shotDirection, 500))
+	if applyForceOnHit and hit then
+		applyForceToHitObject(shape, hitPoint, shotDirection)
+	end
+		
+	return hitPoint
 end
 
 function shootLogic()
@@ -532,8 +547,6 @@ function shootLogic()
 	if burstFireMax > 0 then
 		burstFire = burstFire - 1
 	end
-	
-	
 	
 	for i = 1, projectiles do
 		local gunFrontPos, gunFrontDir, shotStartPos, shotDirection = GenerateBulletTrajectory()

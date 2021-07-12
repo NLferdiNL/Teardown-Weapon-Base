@@ -57,6 +57,8 @@ local mediumRadiusMaxTextBox = nil
 local hardRadiusMinTextBox = nil
 local hardRadiusMaxTextBox = nil
 
+local maxDistanceTextBox = nil
+
 function menu_init()
 	
 end
@@ -127,6 +129,8 @@ function setupTextBoxes()
 	
 	local textBox14, newBox14 = textboxClass_getTextBox(14) -- hardRadiusMin
 	local textBox15, newBox15 = textboxClass_getTextBox(15) -- hardRadiusMax
+	
+	local textBox16, newBox16 = textboxClass_getTextBox(16) -- maxDistance
 
 	if newBox01 then
 		textBox01.name = "Spread"
@@ -292,6 +296,17 @@ function setupTextBoxes()
 		
 		hardRadiusMaxTextBox = textBox15
 	end
+	
+	if newBox16 then
+		textBox16.name = "Max Distance"
+		textBox16.value = maxDistance .. ""
+		textBox16.numbersOnly = true
+		textBox16.limitsActive = true
+		textBox16.numberMin = 1
+		textBox16.numberMax = 1000
+		
+		maxDistanceTextBox = textBox16
+	end
 end
 
 function leftsideMenu(dt)
@@ -409,6 +424,10 @@ function rightsideMenu(dt)
 			UiTranslate(0, 50)
 			
 			textboxClass_render(hardRadiusMaxTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(maxDistanceTextBox)
 		UiPop()
 		
 	UiPop()
@@ -526,6 +545,42 @@ function menuOpenActions()
 	if projectileBulletSpeedTextBox ~= nil then
 		projectileBulletSpeedTextBox.value = projectileBulletSpeed .. ""
 	end
+	
+	if explosiveBulletMinSizeTextBox ~= nil then
+		explosiveBulletMinSizeTextBox.value = explosiveBulletMinSize .. ""
+	end
+	
+	if explosiveBulletMaxSizeTextBox ~= nil then
+		explosiveBulletMaxSizeTextBox.value = explosiveBulletMaxSize .. ""
+	end
+	
+	if softRadiusMinTextBox ~= nil then
+		softRadiusMinTextBox.value = softRadiusMin .. ""
+	end
+	
+	if softRadiusMaxTextBox ~= nil then
+		softRadiusMaxTextBox.value = softRadiusMax .. ""
+	end
+	
+	if mediumRadiusMinTextBox ~= nil then
+		mediumRadiusMinTextBox.value = mediumRadiusMin .. ""
+	end
+	
+	if mediumRadiusMaxTextBox ~= nil then
+		mediumRadiusMaxTextBox.value = mediumRadiusMax .. ""
+	end
+	
+	if hardRadiusMinTextBox ~= nil then
+		hardRadiusMinTextBox.value = hardRadiusMin .. ""
+	end
+	
+	if hardRadiusMaxTextBox ~= nil then
+		hardRadiusMaxTextBox.value = hardRadiusMax .. ""
+	end
+	
+	if maxDistanceTextBox ~= nil then
+		maxDistanceTextBox.value = maxDistance .. ""
+	end
 end
 
 function menuCloseActions()
@@ -546,6 +601,7 @@ function menuCloseActions()
 	mediumRadiusMax = tonumber(mediumRadiusMaxTextBox.value)
 	hardRadiusMin = tonumber(hardRadiusMinTextBox.value)
 	hardRadiusMax = tonumber(hardRadiusMaxTextBox.value)
+	maxDistance = tonumber(maxDistanceTextBox.value)
 end
 
 function isMenuOpen()
