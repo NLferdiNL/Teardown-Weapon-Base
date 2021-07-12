@@ -125,7 +125,10 @@ function textboxClass_setActiveState(me, newState)
 			
 			if me.limitsActive then
 				local tempVal = tonumber(me.value)
-				if tempVal < me.numberMin then
+				
+				if tempVal == nil then
+					me.value = me.numberMin
+				elseif tempVal < me.numberMin then
 					me.value = me.numberMin .. ""
 				elseif tempVal > me.numberMax then
 					me.value = me.numberMax .. ""

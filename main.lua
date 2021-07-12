@@ -217,6 +217,8 @@ function handleAllProjectiles(dt)
 		
 		local hit, hitPoint, distance, normal, shape = raycast(currPos, directionToNextPos, distanceTraveled)
 		
+		local holeMade = false
+		
 		if hit then
 			currShot.lifetime = 0
 			doBulletHoleAt(currShot, hitPoint, normal, true)
@@ -226,6 +228,7 @@ function handleAllProjectiles(dt)
 			end
 			
 			DrawLine(currPos, hitPoint)
+			holeMade = true
 		else
 			DrawLine(currPos, nextPos)
 		end
@@ -234,7 +237,7 @@ function handleAllProjectiles(dt)
 		
 		currShot.lifetime = currShot.lifetime - distanceTraveled
 		
-		if currShot.lifetime <= 0 then
+		if currShot.lifetime <= 0 and not holeMade then
 			doBulletHoleAt(currShot, currPos, VecDir(currPos, GetPlayerTransform().pos), false)
 			table.remove(firedProjectiles, i, 1)
 		end
