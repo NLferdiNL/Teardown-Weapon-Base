@@ -97,6 +97,7 @@ function ApplySettingsByIndex(index)
 	hardRadiusMin = newSettings.hardRadiusMin
 	hardRadiusMax = newSettings.hardRadiusMax
 	sfx = newSfx
+	infinitePenetration = newSettings.infinitePenetration
 end
 
 --[[

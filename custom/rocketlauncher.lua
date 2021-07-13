@@ -25,5 +25,6 @@ rocketlauncher = {
 	mediumRadiusMax = 3,
 	hardRadiusMin = 1,
 	hardRadiusMax = 2,
-	sfx = {shot = "sfx/shotgun.ogg", },
+	sfx = {shot = "sfx/rpg.ogg", },
+	infinitePenetration = false,
 }

@@ -26,4 +26,5 @@ minigun = {
 	hardRadiusMin = 0.5,
 	hardRadiusMax = 1,
 	sfx = {shot = "sfx/minigun.ogg", },
+	infinitePenetration = false,
 }

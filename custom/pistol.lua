@@ -25,5 +25,6 @@ pistol = {
 	mediumRadiusMax = 2,
 	hardRadiusMin = 1,
 	hardRadiusMax = 1.5,
-	sfx = {shot = "sfx/pistol.ogg", },
+	sfx = {shot = "sfx/pistol.ogg", reload = "sfx/pistol_reload.ogg"},
+	infinitePenetration = false,
 }

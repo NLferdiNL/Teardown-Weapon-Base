@@ -392,6 +392,10 @@ function rightsideMenu(dt)
 		
 		UiTranslate(0, 50)
 		
+		drawToggle("Infinite Penetration: ", infinitePenetration, function (i) infinitePenetration = i end)
+		
+		UiTranslate(0, 50)
+		
 		UiPush()
 			UiTranslate(explosiveBulletMinSizeTextBox.width, 0)
 			

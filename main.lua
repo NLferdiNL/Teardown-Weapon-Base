@@ -38,6 +38,7 @@ mediumRadiusMin = 10
 mediumRadiusMax = 15
 hardRadiusMin = 10
 hardRadiusMax = 15
+infinitePenetration = false -- TODO: Hitscan (simply make holes between 0 and maxdistance for all same hardnessvalues), Fix for projectiles to make sure it actually all hits(or just force it to hitscan?)
 sfx = {}
 
 -- CHEATS:
@@ -211,7 +212,7 @@ function handleAllProjectiles(dt)
 		
 		local nextPos = VecAdd(currPos, VecScale(currShot.velocity, dt * 10))
 		
-		local directionToNextPos = VecDir(currPos, nextPos)
+		local directionToNextPos = VecNormalize(currShot.velocity)
 		
 		local distanceTraveled = VecDist(currPos, nextPos)
 		
@@ -220,7 +221,6 @@ function handleAllProjectiles(dt)
 		local holeMade = false
 		
 		if hit then
-			currShot.lifetime = 0
 			doBulletHoleAt(currShot, hitPoint, normal, true)
 			
 			if applyForceOnHit then
@@ -228,6 +228,7 @@ function handleAllProjectiles(dt)
 			end
 			
 			DrawLine(currPos, hitPoint)
+			
 			holeMade = true
 		else
 			DrawLine(currPos, nextPos)
@@ -237,7 +238,9 @@ function handleAllProjectiles(dt)
 		
 		currShot.lifetime = currShot.lifetime - distanceTraveled
 		
-		if currShot.lifetime <= 0 and not holeMade then
+		DebugPrint(holeMade and not infinitePenetration)
+		
+		if currShot.lifetime <= 0 or (holeMade and not infinitePenetration) then
 			doBulletHoleAt(currShot, currPos, VecDir(currPos, GetPlayerTransform().pos), false)
 			table.remove(firedProjectiles, i, 1)
 		end
@@ -390,17 +393,26 @@ function reloadLogic(dt)
 			reloadTime = 0
 			finishReload()
 		else
-			local gunBody = GetToolBody()
+			--[[local gunBody = GetToolBody()
 			local gunTransform = GetBodyTransform(gunBody)
 			
-			local rotation = QuatEuler(45, 0, 0)
+			local lookAtPos = TransformToParentPoint(gunTransform, Vec(0, -1, -1))
 			
-			local gunRot = QuatSlerp(gunTransform.rot, rotation, 1)
+			DebugPrint(VecToString(gunTransform.pos))
 			
-			SetToolTransform(Transform(gunTransform.pos, gunRot))
+			local rotation = QuatLookAt(gunTransform.pos, lookAtPos)
+			
+			local gunRot = rotation --QuatSlerp(gunTransform.rot, rotation, 1)]]--
+			
+			local gunRot = QuatEuler(-30, 10, 20)
+			
+			SetToolTransform(Transform(Vec(0,0,0), gunRot))
 		end
 	elseif currMag <= 0 then
 		reloadTime = maxReloadTime
+		if sfx["reload"] ~= nil then
+			PlaySound(sfx["reload"], GetPlayerTransform().pos)
+		end
 	end
 end
 
