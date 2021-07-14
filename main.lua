@@ -40,11 +40,11 @@ mediumRadiusMin = 10
 mediumRadiusMax = 15
 hardRadiusMin = 10
 hardRadiusMax = 15
-infinitePenetration = false -- TODO: Fix for projectiles to make sure it actually all hits(or just force it to hitscan?) or just makeholes between each currPos
+infinitePenetration = false
 sfx = {}
 
 -- MISC/UNSORTED:
-infinitePenetrationHitScanStart = 3
+infinitePenetrationHitScanStart = 5
 infinitePenetrationHitScanDamageStep = 0.2
 
 -- CHEATS:
@@ -220,22 +220,30 @@ function handleAllProjectiles(dt)
 		
 		local distanceTraveled = VecDist(currPos, nextPos)
 		
-		local hit, hitPoint, distance, normal, shape = raycast(currPos, directionToNextPos, distanceTraveled)
-		
 		local holeMade = false
 		
-		if hit then
-			doBulletHoleAt(currShot, hitPoint, normal, true)
-			
-			if applyForceOnHit then
-				applyForceToHitObject(shape, hitPoint, directionToNextPos)
-			end
-			
-			DrawLine(currPos, hitPoint)
-			
-			holeMade = true
-		else
+		if infinitePenetration then
 			DrawLine(currPos, nextPos)
+			for i = 0, distanceTraveled, infinitePenetrationHitScanDamageStep do
+				local damageStepPos = VecAdd(currPos, VecScale(directionToNextPos, i))
+				doBulletHoleAt(currShot, damageStepPos, VecDir(damageStepPos, GetPlayerTransform().pos), false)
+			end
+		else
+			local hit, hitPoint, distance, normal, shape = raycast(currPos, directionToNextPos, distanceTraveled)
+			
+			if hit then
+				doBulletHoleAt(currShot, hitPoint, normal, true)
+				
+				if applyForceOnHit then
+					applyForceToHitObject(shape, hitPoint, directionToNextPos)
+				end
+				
+				DrawLine(currPos, hitPoint)
+				
+				holeMade = true
+			else
+				DrawLine(currPos, nextPos)
+			end
 		end
 		
 		currShot.currentPos = nextPos
@@ -415,10 +423,22 @@ function reloadLogic(dt)
 	if additiveReload then
 		if reloadTime > 0 and currMag < magSize and additiveReloading then
 			reloadTime = reloadTime - dt
+			
+			local gunRot = QuatEuler(-30, 10, 20)
+				
+			SetToolTransform(Transform(Vec(0,0,0), gunRot))
+			
 			if reloadTime <= 0 then
 				local loadedAmmo = subFromAmmo(1)
 				currMag = currMag + loadedAmmo
 				reloadTime = maxReloadTime
+				if sfx["reload"] ~= nil then
+					PlaySound(sfx["reload"], GetPlayerTransform().pos)
+				end
+				
+				local gunRot = QuatEuler(-25, 10, 20)
+				
+				SetToolTransform(Transform(Vec(0,0,0), gunRot))
 			end
 			
 			if currMag >= magSize then
@@ -576,6 +596,8 @@ function doHitScanShot(shotStartPos, shotDirection)
 	
 	if infinitePenetration then
 		local fakeBullet = fakeHitScanBullet()
+		local startIndex = infinitePenetrationHitScanStart and explosiveBullets or 0
+		
 		for i = infinitePenetrationHitScanStart, maxDistance, infinitePenetrationHitScanDamageStep do
 			local currPos = VecAdd(shotStartPos, VecScale(shotDirection, i))
 			

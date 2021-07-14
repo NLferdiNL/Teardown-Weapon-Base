@@ -317,7 +317,7 @@ function setupTextBoxes()
 		textBox17.value = burstFireMax .. ""
 		textBox17.numbersOnly = true
 		textBox17.limitsActive = true
-		textBox17.numberMin = 1
+		textBox17.numberMin = 0
 		textBox17.numberMax = 1000
 		
 		burstFireMaxTextBox = textBox17
