@@ -1,5 +1,6 @@
 minigun = {
 	name = "Minigun",
+	additiveReload = false,
 	magSize = 300,
 	maxAmmo = 3000,
 	spread = 0.03,

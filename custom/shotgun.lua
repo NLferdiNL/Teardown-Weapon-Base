@@ -1,5 +1,6 @@
 shotgun = {
 	name = "Shotgun",
+	additiveReload = true,
 	magSize = 7,
 	maxAmmo = 300,
 	spread = 0.05,
@@ -8,7 +9,7 @@ shotgun = {
 	fullAuto = false,
 	burstFireMax = 0,
 	currentShotCooldown = 0,
-	maxReloadTime = 3,
+	maxReloadTime = 0.3,
 	minRndSpread = 1,
 	maxRndSpread = 10,
 	maxDistance = 100,

@@ -10,6 +10,8 @@ toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
 
 name = "Shotgun"
+additiveReload = true -- TODO: Add option to menu
+additiveReloading = false
 magSize = 30 -- TODO: Add option to menu
 currMag = magSize -- TODO: Add visual
 maxAmmo = 300 -- TODO: Add option to menu
@@ -103,6 +105,13 @@ function tick(dt)
 		
 		return
 	end
+	
+	DebugWatch("Mag ", currMag)
+	DebugWatch("Bag ",getAmmoCount())
+	DebugWatch("AddRel ", additiveReload)
+	DebugWatch("IsAddRel ", additiveReloading)
+	DebugWatch("ReloadTime ", maxReloadTime)
+	DebugWatch("CurrReloadTime ", reloadTime)
 	
 	prevFrameSelectedWeapon = currentSelectedWeapon
 	
@@ -237,9 +246,7 @@ function handleAllProjectiles(dt)
 		currShot.currentPos = nextPos
 		
 		currShot.lifetime = currShot.lifetime - distanceTraveled
-		
-		DebugPrint(holeMade and not infinitePenetration)
-		
+
 		if currShot.lifetime <= 0 or (holeMade and not infinitePenetration) then
 			doBulletHoleAt(currShot, currPos, VecDir(currPos, GetPlayerTransform().pos), false)
 			table.remove(firedProjectiles, i, 1)
@@ -368,17 +375,41 @@ end
 
 function needsReload(dt)
 	if currMag <= 0 then
+		if additiveReload and not additiveReloading then
+			reloadTime = maxReloadTime
+			additiveReloading = true
+		end
+		
 		return true
 	end
 	
-	if reloadTime > 0 then
+	if reloadTime > 0 and not additiveReload then
+		return true
+	end
+	
+	if additiveReloading and isFiringGun() and currMag > 0 then
+		additiveReloading = false
+		reloadTime = 0
+		
+		return false
+	end
+	
+	if additiveReloading then
 		return true
 	end
 	
 	if InputPressed(binds["Reload"]) then
-		addToAmmo(currMag)
+		if additiveReload then
+			if not additiveReloading then
+				reloadTime = maxReloadTime
+				additiveReloading = true
+			end
+		elseif not additiveReload then
+			addToAmmo(currMag)
+			
+			currMag = 0
+		end
 		
-		currMag = 0
 		return true
 	end
 	
@@ -386,32 +417,41 @@ function needsReload(dt)
 end
 
 function reloadLogic(dt)
-	if reloadTime > 0 then
-		reloadTime = reloadTime - dt
-		
-		if reloadTime <= 0 then
-			reloadTime = 0
-			finishReload()
-		else
-			--[[local gunBody = GetToolBody()
-			local gunTransform = GetBodyTransform(gunBody)
+	if additiveReload then
+		DebugPrint("---")
+		DebugPrint("1: " .. tostring(reloadTime > 0))
+		DebugPrint("2: " .. tostring(currMag < magSize))
+		DebugPrint("3: " .. tostring(additiveReloading))
+		if reloadTime > 0 and currMag < magSize and additiveReloading then
+			reloadTime = reloadTime - dt
+			if reloadTime <= 0 then
+				local loadedAmmo = subFromAmmo(1)
+				currMag = currMag + loadedAmmo
+				reloadTime = maxReloadTime
+			end
 			
-			local lookAtPos = TransformToParentPoint(gunTransform, Vec(0, -1, -1))
-			
-			DebugPrint(VecToString(gunTransform.pos))
-			
-			local rotation = QuatLookAt(gunTransform.pos, lookAtPos)
-			
-			local gunRot = rotation --QuatSlerp(gunTransform.rot, rotation, 1)]]--
-			
-			local gunRot = QuatEuler(-30, 10, 20)
-			
-			SetToolTransform(Transform(Vec(0,0,0), gunRot))
+			if currMag >= magSize then
+				additiveReloading = false
+				reloadTime = 0
+			end
 		end
-	elseif currMag <= 0 then
-		reloadTime = maxReloadTime
-		if sfx["reload"] ~= nil then
-			PlaySound(sfx["reload"], GetPlayerTransform().pos)
+	else
+		if reloadTime > 0 then
+			reloadTime = reloadTime - dt
+			
+			if reloadTime <= 0 then
+				reloadTime = 0
+				finishReload()
+			else
+				local gunRot = QuatEuler(-30, 10, 20)
+				
+				SetToolTransform(Transform(Vec(0,0,0), gunRot))
+			end
+		elseif currMag <= 0 then
+			reloadTime = maxReloadTime
+			if sfx["reload"] ~= nil then
+				PlaySound(sfx["reload"], GetPlayerTransform().pos)
+			end
 		end
 	end
 end
@@ -542,8 +582,12 @@ function doHitScanShot(shotStartPos, shotDirection)
 		hitPoint = VecAdd(shotStartPos, VecScale(shotDirection, 500))
 		normal = VecDir(hitPoint, shotStartPos)
 	end
-
-	doBulletHoleAt(fakeHitScanBullet(), hitPoint, normal, hit)
+	
+	if infinitePenetration then
+		DebugPrint("Infinite Penetration not supported by hitscan yet!")
+	else
+		doBulletHoleAt(fakeHitScanBullet(), hitPoint, normal, hit)
+	end
 	
 	if applyForceOnHit and hit then
 		applyForceToHitObject(shape, hitPoint, shotDirection)

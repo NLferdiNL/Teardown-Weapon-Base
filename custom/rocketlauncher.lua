@@ -1,5 +1,6 @@
 rocketlauncher = {
 	name = "Rocket Launcher",
+	additiveReload = false,
 	magSize = 1,
 	maxAmmo = 300,
 	spread = 0.01,

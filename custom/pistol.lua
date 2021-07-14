@@ -1,5 +1,6 @@
 pistol = {
 	name = "Pistol",
+	additiveReload = false,
 	magSize = 15,
 	maxAmmo = 300,
 	spread = 0.01,

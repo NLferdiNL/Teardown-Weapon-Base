@@ -69,6 +69,8 @@ function ApplySettingsByIndex(index)
 	end
 	
 	name = newSettings.name
+	additiveReload = newSettings.additiveReload
+	additiveReloading = false
 	magSize = newSettings.magSize
 	currMag = magSize
 	maxAmmo = newSettings.maxAmmo

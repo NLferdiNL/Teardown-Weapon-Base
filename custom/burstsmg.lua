@@ -1,5 +1,6 @@
 burstsmg = {
 	name = "Burst SMG",
+	additiveReload = false,
 	magSize = 30,
 	maxAmmo = 300,
 	spread = 0.02,

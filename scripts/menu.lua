@@ -59,6 +59,8 @@ local hardRadiusMaxTextBox = nil
 
 local maxDistanceTextBox = nil
 
+local burstFireMaxTextBox = nil
+
 function menu_init()
 	
 end
@@ -131,6 +133,8 @@ function setupTextBoxes()
 	local textBox15, newBox15 = textboxClass_getTextBox(15) -- hardRadiusMax
 	
 	local textBox16, newBox16 = textboxClass_getTextBox(16) -- maxDistance
+	
+	local textBox17, newBox17 = textboxClass_getTextBox(17) -- burstFireMax
 
 	if newBox01 then
 		textBox01.name = "Spread"
@@ -307,6 +311,17 @@ function setupTextBoxes()
 		
 		maxDistanceTextBox = textBox16
 	end
+	
+	if newBox17 then
+		textBox17.name = "Burst Fire Max"
+		textBox17.value = burstFireMax .. ""
+		textBox17.numbersOnly = true
+		textBox17.limitsActive = true
+		textBox17.numberMin = 1
+		textBox17.numberMax = 1000
+		
+		burstFireMaxTextBox = textBox17
+	end
 end
 
 function leftsideMenu(dt)
@@ -432,6 +447,10 @@ function rightsideMenu(dt)
 			UiTranslate(0, 50)
 			
 			textboxClass_render(maxDistanceTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(burstFireMaxTextBox)
 		UiPop()
 		
 	UiPop()
@@ -585,6 +604,10 @@ function menuOpenActions()
 	if maxDistanceTextBox ~= nil then
 		maxDistanceTextBox.value = maxDistance .. ""
 	end
+	
+	if burstFireMaxTextBox ~= nil then
+		burstFireMaxTextBox.value = burstFireMax .. ""
+	end
 end
 
 function menuCloseActions()
@@ -606,6 +629,7 @@ function menuCloseActions()
 	hardRadiusMin = tonumber(hardRadiusMinTextBox.value)
 	hardRadiusMax = tonumber(hardRadiusMaxTextBox.value)
 	maxDistance = tonumber(maxDistanceTextBox.value)
+	burstFireMax = tonumber(burstFireMaxTextBox.value)
 end
 
 function isMenuOpen()
