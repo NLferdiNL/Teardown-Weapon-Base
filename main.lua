@@ -43,14 +43,16 @@ hardRadiusMax = 15
 infinitePenetration = false -- TODO: Hitscan (simply make holes between 0 and maxdistance for all same hardnessvalues), Fix for projectiles to make sure it actually all hits(or just force it to hitscan?)
 sfx = {}
 
+-- MISC/UNSORTED:
+infinitePenetrationHitScanStart = 3
+infinitePenetrationHitScanDamageStep = 0.2
+
 -- CHEATS:
 
 infiniteAmmo = false
 infiniteMag = false
 particlesEnabled = true
 soundEnabled = true
-
---TODO: Shotgun reload/additive reload
 
 local firedShotLineClass = {
 	lifetime = 0.4,
@@ -573,7 +575,12 @@ function doHitScanShot(shotStartPos, shotDirection)
 	end
 	
 	if infinitePenetration then
-		DebugPrint("Infinite Penetration not supported by hitscan yet!")
+		local fakeBullet = fakeHitScanBullet()
+		for i = infinitePenetrationHitScanStart, maxDistance, infinitePenetrationHitScanDamageStep do
+			local currPos = VecAdd(shotStartPos, VecScale(shotDirection, i))
+			
+			doBulletHoleAt(fakeBullet, currPos, normal, i >= maxDistance)
+		end
 	else
 		doBulletHoleAt(fakeHitScanBullet(), hitPoint, normal, hit)
 	end
