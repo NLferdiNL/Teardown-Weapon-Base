@@ -40,7 +40,7 @@ mediumRadiusMin = 10
 mediumRadiusMax = 15
 hardRadiusMin = 10
 hardRadiusMax = 15
-infinitePenetration = false -- TODO: Hitscan (simply make holes between 0 and maxdistance for all same hardnessvalues), Fix for projectiles to make sure it actually all hits(or just force it to hitscan?)
+infinitePenetration = false -- TODO: Fix for projectiles to make sure it actually all hits(or just force it to hitscan?)
 sfx = {}
 
 -- MISC/UNSORTED:
