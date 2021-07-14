@@ -106,13 +106,6 @@ function tick(dt)
 		return
 	end
 	
-	DebugWatch("Mag ", currMag)
-	DebugWatch("Bag ",getAmmoCount())
-	DebugWatch("AddRel ", additiveReload)
-	DebugWatch("IsAddRel ", additiveReloading)
-	DebugWatch("ReloadTime ", maxReloadTime)
-	DebugWatch("CurrReloadTime ", reloadTime)
-	
 	prevFrameSelectedWeapon = currentSelectedWeapon
 	
 	weaponTypeSelectionHandler()
@@ -418,10 +411,6 @@ end
 
 function reloadLogic(dt)
 	if additiveReload then
-		DebugPrint("---")
-		DebugPrint("1: " .. tostring(reloadTime > 0))
-		DebugPrint("2: " .. tostring(currMag < magSize))
-		DebugPrint("3: " .. tostring(additiveReloading))
 		if reloadTime > 0 and currMag < magSize and additiveReloading then
 			reloadTime = reloadTime - dt
 			if reloadTime <= 0 then
