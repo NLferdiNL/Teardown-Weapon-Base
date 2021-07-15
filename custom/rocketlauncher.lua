@@ -8,7 +8,6 @@ rocketlauncher = {
 	shotCooldownTime = 0.01,
 	fullAuto = false,
 	burstFireMax = 0,
-	currentShotCooldown = 0,
 	maxReloadTime = 4,
 	minRndSpread = 1,
 	maxRndSpread = 10,

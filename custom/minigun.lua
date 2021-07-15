@@ -8,7 +8,6 @@ minigun = {
 	shotCooldownTime = 0.05,
 	fullAuto = true,
 	burstFireMax = 0,
-	currentShotCooldown = 0,
 	maxReloadTime = 10,
 	minRndSpread = 1,
 	maxRndSpread = 10,

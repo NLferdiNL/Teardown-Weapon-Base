@@ -4,6 +4,7 @@
 #include "custom/pistol.lua"
 #include "custom/burstsmg.lua"
 #include "custom/rocketlauncher.lua"
+#include "custom/assaultrifle.lua"
 
 local customList = {
 	shotgun,
@@ -11,6 +12,7 @@ local customList = {
 	pistol,
 	burstsmg,
 	rocketlauncher,
+	assaultrifle,
 }
 
 local loadedSfx = {}
@@ -82,6 +84,7 @@ function ApplySettingsByIndex(index)
 	burstFireMax = newSettings.burstFireMax
 	burstFire = burstFireMax
 	maxReloadTime = newSettings.maxReloadTime
+	reloadTime = 0
 	minRndSpread = newSettings.minRndSpread
 	maxRndSpread = newSettings.maxRndSpread
 	maxDistance = newSettings.maxDistance
