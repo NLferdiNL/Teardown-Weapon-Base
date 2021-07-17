@@ -5,6 +5,7 @@
 #include "custom/burstsmg.lua"
 #include "custom/rocketlauncher.lua"
 #include "custom/assaultrifle.lua"
+#include "custom/railgun.lua"
 
 local customList = {
 	shotgun,
@@ -13,6 +14,7 @@ local customList = {
 	burstsmg,
 	rocketlauncher,
 	assaultrifle,
+	railgun,
 }
 
 local loadedSfx = {}
@@ -81,6 +83,10 @@ function ApplySettingsByIndex(index)
 	shotCooldownTime = newSettings.shotCooldownTime
 	currentShotCooldown = 0
 	fullAuto = newSettings.fullAuto
+	warmupTimeMax = newSettings.warmupTimeMax
+	warmupTime = 0
+	warmupWindDown = newSettings.warmupWindDown
+	warmupSingleFireShot = false
 	burstFireMax = newSettings.burstFireMax
 	burstFire = burstFireMax
 	maxReloadTime = newSettings.maxReloadTime

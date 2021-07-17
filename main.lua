@@ -20,6 +20,10 @@ projectiles = 10 -- 1 for single bullet, multiple for buckshot
 shotCooldownTime = 0.2 -- max time between each shot
 currentShotCooldown = 0
 fullAuto = false
+warmupTimeMax = 0
+warmupWindDown = false
+warmupSingleFireShot = false
+warmupTime = 0
 burstFireMax = 0  -- TODO: Add option to menu
 burstFire = burstFireMax
 maxReloadTime = 3
@@ -66,8 +70,10 @@ local bulletProjectileClass = {
 	lastPos = nil,
 	velocity = nil,
 	explosive = false,
-	explosiveMin = 0.5,
-	explosiveMax = 1,
+	explosiveSize = 0.5,
+	softRadius = 0,
+	mediumRadius = 0,
+	hardRadius = 0,
 }
 
 local firedProjectiles = {}
@@ -122,6 +128,7 @@ function tick(dt)
 	end
 	
 	handleBurstFire()
+	handleWarmup(dt)
 	
 	if not isReadyToFire() then
 		return
@@ -185,8 +192,10 @@ function createProjectileBullet(startPos, direction)
 	firedProjectile.lastPos = startPos
 	firedProjectile.velocity = VecScale(direction, projectileBulletSpeed)
 	firedProjectile.explosive = explosiveBullets
-	firedProjectile.explosiveMin = explosiveBulletMinSize
-	firedProjectile.explosiveMax = explosiveBulletMaxSize
+	firedProjectile.explosiveSize = math.random(explosiveBulletMinSize * 100, explosiveBulletMaxSize * 100) / 100
+	firedProjectile.softRadius = math.random(softRadiusMin, softRadiusMax) / 10
+	firedProjectile.mediumRadius = math.random(mediumRadiusMin, mediumRadiusMax) / 10
+	firedProjectile.hardRadius = math.random(hardRadiusMin, hardRadiusMax) / 10
 	
 	return firedProjectile
 end
@@ -283,6 +292,25 @@ function handleBurstFire()
 	end
 end
 
+function handleWarmup(dt)
+	DebugWatch("wt", warmupTime)
+	if warmupTime < warmupTimeMax and isFiringGun() then
+		warmupTime = warmupTime + dt
+	elseif not isFiringGun() and warmupTime > 0 then
+		if warmupWindDown then
+			warmupTime = warmupTime - dt
+			warmupSingleFireShot = false
+			
+			if warmupTime < 0 then
+				warmupTime = 0
+			end
+		else
+			warmupSingleFireShot = false
+			warmupTime = 0
+		end
+	end
+end
+
 -- World Sound functions
 
 -- Tool Functions
@@ -356,7 +384,7 @@ end
 function isFiringGun()
 	local isHoldingGun = GetString("game.player.tool") == toolName
 	local isFiringFullAuto = fullAuto and InputDown("usetool")
-	local isFiringSingleFire = not fullAuto and InputPressed("usetool") and burstFireMax <= 0
+	local isFiringSingleFire = not fullAuto and ((InputPressed("usetool") and warmupTimeMax == 0) or (InputDown("usetool") and warmupTimeMax > 0)) and burstFireMax <= 0
 	local isBurstFiring = not fullAuto and InputDown("usetool") and burstFireMax > 0
 	
 	return (isFiringFullAuto or isFiringSingleFire or isBurstFiring) and isHoldingGun
@@ -370,7 +398,15 @@ function isReadyToFire()
 	local required = reloadTime <= 0 and currMag > 0 and currentShotCooldown <= 0 and not isMenuOpen() and GetPlayerVehicle() == 0
 
 	if burstFireMax > 0 then
-		return required and burstFire > 0
+		required = required and burstFire > 0
+	end
+	
+	if warmupTimeMax > 0 then
+		required = required and warmupTime > warmupTimeMax
+		
+		if not fullAuto then
+			required = required and not warmupSingleFireShot
+		end
 	end
 	
 	return required
@@ -500,9 +536,9 @@ end
 function setupShotFireParticle()	
 	ParticleReset()
 	ParticleType("plain")
-	ParticleTile(5)
+	ParticleTile(3)
 	ParticleStretch(1, 0.3)
-	ParticleColor(1, 0.6, 0.2, 0, 0, 0)
+	ParticleColor(1, 0.75, 0.4, 0, 0, 0)
 	ParticleRadius(0.4, 0.2, "smooth")
 	ParticleEmissive(1, 0, "smooth")
 	ParticleGravity(0)
@@ -576,11 +612,11 @@ function doBulletHoleAt(bullet, hitPoint, normal, hitParticles)
 	end
 	
 	if bullet.explosive then
-		Explosion(hitPoint, math.random(bullet.explosiveMin, bullet.explosiveMax))
+		Explosion(hitPoint, bullet.explosiveSize)
 	else
-		local softRadius = math.random(softRadiusMin, softRadiusMax) / 10
-		local mediumRadius = math.random(mediumRadiusMin, mediumRadiusMax) / 10
-		local hardRadius = math.random(hardRadiusMin, hardRadiusMax) / 10
+		local softRadius = bullet.softRadius
+		local mediumRadius = bullet.mediumRadius
+		local hardRadius = bullet.hardRadius
 	
 		MakeHole(hitPoint, softRadius, mediumRadius, hardRadius)
 	end
@@ -625,6 +661,10 @@ function shootLogic()
 		burstFire = burstFire - 1
 	end
 	
+	if warmupTimeMax > 0 and not fullAuto then
+		warmupSingleFireShot = true
+	end
+	
 	for i = 1, projectiles do
 		local gunFrontPos, gunFrontDir, shotStartPos, shotDirection = GenerateBulletTrajectory()
 		
@@ -643,7 +683,7 @@ function shootLogic()
 				setupShotSmokeParticle()
 				SpawnParticle(gunFrontPos, gunFrontDir, 3)
 				setupShotFireParticle()
-				SpawnParticle(gunFrontPos, gunFrontDir, 0.5)
+				SpawnParticle(gunFrontPos, gunFrontDir, 0.3)
 			end
 		end
 		
