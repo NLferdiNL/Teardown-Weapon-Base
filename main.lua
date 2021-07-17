@@ -293,7 +293,6 @@ function handleBurstFire()
 end
 
 function handleWarmup(dt)
-	DebugWatch("wt", warmupTime)
 	if warmupTime < warmupTimeMax and isFiringGun() then
 		warmupTime = warmupTime + dt
 	elseif not isFiringGun() and warmupTime > 0 then
