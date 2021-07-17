@@ -24,6 +24,10 @@ local listSize = #customList
 --local customList_backup = deepcopy(customList)
 
 function GetSettingsByIndex(index)
+	if index == nil then
+		return nil
+	end
+	
 	if index < 1 or index > #customList then
 		return nil
 	end
@@ -37,7 +41,11 @@ function GetSettingsByIndex(index)
 		if loadedSfx[path] ~= nil then
 			handle = loadedSfx[path]
 		else
-			handle = LoadSound(path)
+			if string.find(key, "loop") ~= nil then
+				handle = LoadLoop(path)
+			else
+				handle = LoadSound(path)
+			end
 			loadedSfx[path] = handle
 		end
 		
@@ -48,6 +56,10 @@ function GetSettingsByIndex(index)
 end
 
 function GetNameByIndex(index)
+	if index == nil then
+		return nil
+	end
+	
 	local settings = GetSettingsByIndex(index)
 	
 	if settings == nil then
@@ -108,6 +120,7 @@ function ApplySettingsByIndex(index)
 	hardRadiusMin = newSettings.hardRadiusMin
 	hardRadiusMax = newSettings.hardRadiusMax
 	sfx = newSfx
+	sfxLength = newSettings.sfxLength
 	infinitePenetration = newSettings.infinitePenetration
 end
 

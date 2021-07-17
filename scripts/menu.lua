@@ -61,6 +61,11 @@ local maxDistanceTextBox = nil
 
 local burstFireMaxTextBox = nil
 
+local weaponListScrollPosition = 0
+local isMouseInWeaponList = false
+local listScreenHeight = 0
+local listScreenMaxScroll = 0
+
 function menu_init()
 	
 end
@@ -75,11 +80,11 @@ function menu_tick(dt)
 	end
 	
 	if menuOpened and hasChangedSettings() then
-		menuOpenActions()
+		menuUpdateActions()
 	end
 	
-	
 	if menuOpened and not menuOpenLastFrame then
+		menuUpdateActions()
 		menuOpenActions()
 	end
 	
@@ -98,6 +103,10 @@ function menu_tick(dt)
 	
 	if erasingBinds > 0 then
 		erasingBinds = erasingBinds - dt
+	end
+	
+	if isMenuOpen() then
+		checkMouseScroll()
 	end
 end
 
@@ -456,13 +465,7 @@ function rightsideMenu(dt)
 	UiPop()
 end
 
-function menu_draw(dt)
-	if not isMenuOpen() then
-		return
-	end
-	
-	UiMakeInteractive()
-	
+function centralMenu()
 	UiPush()
 		UiBlur(0.75)
 		
@@ -515,6 +518,109 @@ function menu_draw(dt)
 	UiPop()
 end
 
+function weaponQuickMenu()
+	UiPush()
+		UiWordWrap(330)
+		UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
+		UiFont("regular.ttf", 26)
+
+		UiTranslate(0, UiHeight())
+
+		UiAlign("bottom left")
+
+		UiColor(0, 0, 0, 0.75)
+
+		UiRect(350, UiMiddle())
+
+		UiAlign("top center")
+
+		UiTranslate(175, -UiMiddle())
+
+		UiColor(1, 1, 1, 0.75)
+
+		UiRect(350, 30)
+
+		UiColor(0, 0, 0, 1)
+
+		UiText("Weapon Select")
+
+		UiTranslate(-175, 30)
+
+		UiAlign("top left")
+		
+		UiPush()
+			isMouseInWeaponList = UiIsMouseInRect(350, UiMiddle() - 30)
+
+			UiWindow(350, UiMiddle() - 30, true)
+
+			UiColor(1, 1, 1, 1)
+
+			for i = 0, GetListCount() - 1 do
+				local weapon = GetNameByIndex(i + 1)
+				UiPush()
+					UiTranslate(0, i * 30 + 2 - weaponListScrollPosition)
+					
+					local textWidth, textHeight = UiGetTextSize(weapon)
+					local fontSize = 26
+					local fontDecreaseIncrement = 2
+					
+					while textWidth > 320 do
+						fontSize = fontSize - fontDecreaseIncrement
+
+						UiFont("regular.ttf", fontSize)
+						
+						textWidth, textHeight = UiGetTextSize(weapon)
+					end
+					
+					if UiTextButton(weapon, 330, 30) then
+						selectNewWeapon(i + 1)
+					end
+
+					i = i + 1
+
+				UiPop()
+			end
+
+			UiAlign("right middle")
+
+			UiTranslate(350, (weaponListScrollPosition / listScreenMaxScroll) * 2 * UiMiddle())
+
+			UiRect(20, 40)
+		UiPop()
+
+	UiPop()
+end
+
+function menu_draw(dt)
+	if not isMenuOpen() then
+		return
+	end
+	
+	UiMakeInteractive()
+	
+	centralMenu()
+	
+	weaponQuickMenu()
+end
+
+function checkMouseScroll()
+	if not isMouseInWeaponList then
+		return
+	end
+	
+	if listScreenMaxScroll < UiHeight() / 2 + 2 - listScreenHeight + 15 then
+		return
+	end
+
+	weaponListScrollPosition = weaponListScrollPosition + -InputValue("mousewheel") * 10
+
+	if weaponListScrollPosition < 0 then
+		weaponListScrollPosition = 0
+	elseif weaponListScrollPosition > listScreenMaxScroll then
+		weaponListScrollPosition = listScreenMaxScroll
+	end
+end
+
 function drawRebindable(id, key)
 	UiPush()
 		UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
@@ -541,6 +647,11 @@ function drawRebindable(id, key)
 end
 
 function menuOpenActions()
+	listScreenHeight = UiMiddle() - 20
+	listScreenMaxScroll = (GetListCount() * 30 + 2) - listScreenHeight + 15
+end
+
+function menuUpdateActions()
 	if spreadTextBox ~= nil then
 		spreadTextBox.value =  spread .. ""
 	end

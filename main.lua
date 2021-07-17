@@ -46,6 +46,8 @@ hardRadiusMin = 10
 hardRadiusMax = 15
 infinitePenetration = false
 sfx = {}
+sfxLength = {}
+fireTime = 0
 
 -- MISC/UNSORTED:
 infinitePenetrationHitScanStart = 5
@@ -114,9 +116,17 @@ function tick(dt)
 		return
 	end
 	
+	if isMenuOpen() then
+		return
+	end
+	
 	prevFrameSelectedWeapon = currentSelectedWeapon
 	
 	weaponTypeSelectionHandler()
+	
+	shootingSoundLogic()
+	handleFireTime(dt)
+	handleWarmup(dt)
 	
 	if needsReload() then
 		if getAmmoCount() <= 0 then
@@ -128,7 +138,6 @@ function tick(dt)
 	end
 	
 	handleBurstFire()
-	handleWarmup(dt)
 	
 	if not isReadyToFire() then
 		return
@@ -293,15 +302,30 @@ function handleBurstFire()
 end
 
 function handleWarmup(dt)
-	if warmupTime < warmupTimeMax and isFiringGun() then
+	if warmupTime < warmupTimeMax and isFiringGun() and not needsReload() then
+		if soundEnabled then
+			if warmupTime == 0 and sfx["warmup_start"] ~= nil then
+				PlaySound(sfx["warmup_start"], GetPlayerTransform().pos)
+			elseif sfx["warmup_loop"] ~= nil and warmupTime > sfxLength["warmup_start"] then
+				PlayLoop(sfx["warmup_loop"], GetPlayerTransform().pos)
+			end
+		end
+		
 		warmupTime = warmupTime + dt
 	elseif not isFiringGun() and warmupTime > 0 then
-		if warmupWindDown then
+		if warmupWindDown and not needsReload() then
 			warmupTime = warmupTime - dt
 			warmupSingleFireShot = false
 			
+			if sfx["warmup_loop"] ~= nil and fireTime <= 0 and soundEnabled then
+				PlayLoop(sfx["warmup_loop"], GetPlayerTransform().pos)
+			end
+			
 			if warmupTime < 0 then
 				warmupTime = 0
+				if fireTime <= 0 and soundEnabled then
+					PlaySound(sfx["warmup_stop"], GetPlayerTransform().pos)
+				end
 			end
 		else
 			warmupSingleFireShot = false
@@ -310,7 +334,13 @@ function handleWarmup(dt)
 	end
 end
 
--- World Sound functions
+function handleFireTime(dt)
+	if fullAuto and isFiringGun() and warmupTime >= warmupTimeMax and not needsReload() then
+		fireTime = fireTime + dt
+	else
+		fireTime = 0
+	end
+end
 
 -- Tool Functions
 
@@ -338,6 +368,10 @@ function weaponTypeSelectionHandler()
 		return
 	end
 	
+	selectNewWeapon(newIndex)
+end
+
+function selectNewWeapon(newIndex)
 	currentSelectedWeapon = newIndex
 	
 	name = GetNameByIndex(currentSelectedWeapon)
@@ -403,7 +437,7 @@ function isReadyToFire()
 	if warmupTimeMax > 0 then
 		required = required and warmupTime > warmupTimeMax
 		
-		if not fullAuto then
+		if not fullAuto and burstFireMax == 0 then
 			required = required and not warmupSingleFireShot
 		end
 	end
@@ -467,7 +501,7 @@ function reloadLogic(dt)
 				local loadedAmmo = subFromAmmo(1)
 				currMag = currMag + loadedAmmo
 				reloadTime = maxReloadTime
-				if sfx["reload"] ~= nil then
+				if sfx["reload"] ~= nil and soundEnabled then
 					PlaySound(sfx["reload"], GetPlayerTransform().pos)
 				end
 				
@@ -495,7 +529,7 @@ function reloadLogic(dt)
 			end
 		elseif currMag <= 0 then
 			reloadTime = maxReloadTime
-			if sfx["reload"] ~= nil then
+			if sfx["reload"] ~= nil and soundEnabled then
 				PlaySound(sfx["reload"], GetPlayerTransform().pos)
 			end
 		end
@@ -674,10 +708,6 @@ function shootLogic()
 		end
 		
 		if i == 1 then
-			if sfx["shot"] ~= nil and soundEnabled then
-				PlaySound(sfx["shot"], gunFrontPos, math.random(7, 10) / 10)
-			end
-			
 			if particlesEnabled then
 				setupShotSmokeParticle()
 				SpawnParticle(gunFrontPos, gunFrontDir, 3)
@@ -695,6 +725,38 @@ function shootLogic()
 			
 			table.insert(firedProjectiles, firedProjectile)
 		end
+	end
+end
+
+function shootingSoundLogic()
+	if not soundEnabled then
+		return
+	end
+	
+	if not isReadyToFire() and sfx["shot_loop"] == nil then
+		return
+	end
+	
+	if sfx["shot"] ~= nil and isFiringGun() then
+		PlaySound(sfx["shot"], GetPlayerTransform().pos, math.random(7, 10) / 10)
+		return
+	end
+	
+	if not isFiringGun() or needsReload() then
+		if fireTime > 0 and sfx["shot_stop"] ~= nil then
+			PlaySound(sfx["shot_stop"], GetPlayerTransform().pos)
+		end
+		return
+	end
+	
+	if warmupTimeMax > 0 and warmupTime < warmupTimeMax then
+		return
+	end
+
+	if sfx["shot_start"] ~= nil and fireTime == 0 then
+		PlaySound(sfx["shot_start"], GetPlayerTransform().pos)
+	elseif sfx["shot_loop"] ~= nil and fireTime > sfxLength["shot_start"] then
+		PlayLoop(sfx["shot_loop"], GetPlayerTransform().pos)
 	end
 end
 
