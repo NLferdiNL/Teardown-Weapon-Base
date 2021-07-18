@@ -25,9 +25,6 @@ local bindNames = {
 	Open_Menu = "Open Menu",
 }
 
-local enabledText = "Enabled"
-local disabledText = "Disabled"
-
 local menuOpened = false
 local menuOpenLastFrame = false
 
@@ -108,16 +105,6 @@ function menu_tick(dt)
 	if isMenuOpen() then
 		checkMouseScroll()
 	end
-end
-
-function drawToggle(label, value, callback)
-	UiPush()
-		UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
-		
-		if UiTextButton(label .. (value and enabledText or disabledText), 400, 40) then
-			callback(not value)
-		end
-	UiPop()
 end
 
 function setupTextBoxes()

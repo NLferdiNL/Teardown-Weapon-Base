@@ -34,3 +34,16 @@ end
 function c_UiButtonPressColor(color4)
 	UiButtonPressColor(color4.r, color4.g, color4.b, color4.a)
 end
+
+function drawToggle(label, value, callback)
+	local enabledText = "Enabled"
+	local disabledText = "Disabled"
+
+	UiPush()
+		UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
+		
+		if UiTextButton(label .. (value and enabledText or disabledText), 400, 40) then
+			callback(not value)
+		end
+	UiPop()
+end
