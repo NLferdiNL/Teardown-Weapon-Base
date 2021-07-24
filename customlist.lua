@@ -69,6 +69,32 @@ function GetNameByIndex(index)
 	return settings.name
 end
 
+function getAmmoCount(index)
+	if index == nil then
+		return nil
+	end
+	
+	local settings = GetSettingsByIndex(index)
+	
+	return settings.currAmmo
+end
+
+function setAmmoCountInSettings(index, newCount)
+	if index == nil or newCount == nil or newCount < 0 then
+		return nil
+	end
+	
+	GetSettingsByIndex(index).currAmmo = newCount
+end
+
+function setMagCountInSettings(index, newCount)
+	if index == nil or newCount == nil or newCount < 0 then
+		return nil
+	end
+	
+	GetSettingsByIndex(index).currMag = newCount
+end
+
 function GetListCount()
 	return listSize
 end
@@ -84,12 +110,18 @@ function ApplySettingsByIndex(index)
 		return
 	end
 	
+	if newSettings.currAmmo == -1 then
+		newSettings.currAmmo = newSettings.maxAmmo - newSettings.magSize
+		newSettings.currMag = newSettings.magSize
+	end
+	
 	name = newSettings.name
 	additiveReload = newSettings.additiveReload
 	additiveReloading = false
 	magSize = newSettings.magSize
-	currMag = magSize
+	currMag = newSettings.currMag
 	maxAmmo = newSettings.maxAmmo
+	currAmmo = newSettings.currAmmo
 	spread = newSettings.spread
 	projectiles = newSettings.projectiles
 	shotCooldownTime = newSettings.shotCooldownTime
@@ -108,6 +140,7 @@ function ApplySettingsByIndex(index)
 	maxDistance = newSettings.maxDistance
 	hitForce = newSettings.hitForce
 	hitscanBullets = newSettings.hitscanBullets
+	incendiaryBullets = newSettings.incendiaryBullets
 	explosiveBullets = newSettings.explosiveBullets
 	explosiveBulletMinSize = newSettings.explosiveBulletMinSize
 	explosiveBulletMaxSize = newSettings.explosiveBulletMaxSize

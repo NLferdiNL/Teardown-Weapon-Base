@@ -3,6 +3,7 @@ pistol = {
 	additiveReload = false,
 	magSize = 15,
 	maxAmmo = 300,
+	currAmmo = -1,
 	spread = 0.01,
 	projectiles = 1,
 	shotCooldownTime = 0.2,
@@ -16,6 +17,7 @@ pistol = {
 	maxDistance = 100,
 	hitForce = 1500,
 	hitscanBullets = false,
+	incendiaryBullets = false,
 	explosiveBullets = false,
 	explosiveBulletMinSize = 0.3,
 	explosiveBulletMaxSize = 0.5,
@@ -28,5 +30,6 @@ pistol = {
 	hardRadiusMin = 1,
 	hardRadiusMax = 1.5,
 	sfx = {shot = "sfx/pistol.ogg", reload = "sfx/pistol_reload.ogg"},
+	sfxLength = {},
 	infinitePenetration = false,
 }

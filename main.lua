@@ -13,8 +13,9 @@ name = "Shotgun"
 additiveReload = true -- TODO: Add option to menu
 additiveReloading = false
 magSize = 30 -- TODO: Add option to menu
-currMag = magSize -- TODO: Add visual
-maxAmmo = 300 -- TODO: Add option to menu
+currMag = 0
+maxAmmo = 300
+currAmmo = maxAmmo
 spread = 0.05
 projectiles = 10 -- 1 for single bullet, multiple for buckshot
 shotCooldownTime = 0.2 -- max time between each shot
@@ -24,7 +25,7 @@ warmupTimeMax = 0
 warmupWindDown = false
 warmupSingleFireShot = false
 warmupTime = 0
-burstFireMax = 0  -- TODO: Add option to menu
+burstFireMax = 0
 burstFire = burstFireMax
 maxReloadTime = 3
 reloadTime = 0
@@ -33,6 +34,7 @@ maxRndSpread = 10
 maxDistance = 100
 hitForce = 4000 -- TODO: Add option to menu
 hitscanBullets = true
+incendiaryBullets = false
 explosiveBullets = false
 explosiveBulletMinSize = 0.3
 explosiveBulletMaxSize = 0.5
@@ -71,6 +73,7 @@ local bulletProjectileClass = {
 	currentPos = nil,
 	lastPos = nil,
 	velocity = nil,
+	incendiary = false,
 	explosive = false,
 	explosiveSize = 0.5,
 	softRadius = 0,
@@ -90,14 +93,8 @@ function init()
 	saveFileInit()
 	menu_init()
 	
-	if infiniteAmmo then
-		maxAmmo = 999
-	end
-	
 	RegisterTool(toolName, "Moddy Weapon", "MOD/vox/tool.vox")
 	SetBool("game.tool." .. toolName .. ".enabled", true)
-
-	SetInt("game.tool." .. toolName .. ".ammo", maxAmmo)
 end
 
 function tick(dt)
@@ -111,6 +108,15 @@ function tick(dt)
 	if not isHoldingGun() then
 		if reloadTime > 0 then
 			reloadTime = maxReloadTime
+		end
+		
+		if warmupTimeMax > 0 then
+			warmupTime = 0
+		end
+		
+		if additiveReloading then
+			additiveReloading = false
+			reloadTime = 0
 		end
 		
 		return
@@ -162,6 +168,21 @@ function drawUI(dt)
 	end
 	
 	drawWeaponSelection()
+	drawAmmoCount()
+end
+
+function drawAmmoCount()
+	if infiniteAmmo and infiniteMag then
+		return
+	end
+	
+	UiPush()
+		UiAlign("center bottom")
+		UiTranslate(UiWidth() * 0.5, UiHeight() * 0.95)
+		UiFont("regular.ttf", 26)
+		UiTextShadow(0, 0, 0, 0.5, 2.0)
+		UiText(getMagCount() .. " / " .. getAmmoCount())
+	UiPop()
 end
 
 function drawWeaponSelection()
@@ -184,7 +205,13 @@ function drawWeaponSelection()
 	
 	UiPush()
 		UiAlign("center bottom")
-		UiTranslate(UiWidth() * 0.5, UiHeight() * 0.95)
+		local yPosAdd = 0
+		
+		if infiniteAmmo and infiniteMag then
+			yPosAdd = 0.02
+		end
+		
+		UiTranslate(UiWidth() * 0.5, UiHeight() * (0.93 + yPosAdd))
 		UiFont("regular.ttf", 26)
 		UiTextShadow(0, 0, 0, 0.5, 2.0)
 		UiText("[" .. binds["Prev_Weapon"]:upper() .. "] " .. prevWeaponName .. " | " .. currWeaponName .. " | [" .. binds["Next_Weapon"]:upper() .. "] " .. nextWeaponName)
@@ -200,6 +227,7 @@ function createProjectileBullet(startPos, direction)
 	firedProjectile.currentPos = startPos
 	firedProjectile.lastPos = startPos
 	firedProjectile.velocity = VecScale(direction, projectileBulletSpeed)
+	firedProjectile.incendiary = incendiaryBullets
 	firedProjectile.explosive = explosiveBullets
 	firedProjectile.explosiveSize = math.random(explosiveBulletMinSize * 100, explosiveBulletMaxSize * 100) / 100
 	firedProjectile.softRadius = math.random(softRadiusMin, softRadiusMax) / 10
@@ -302,6 +330,10 @@ function handleBurstFire()
 end
 
 function handleWarmup(dt)
+	if warmupTime >= warmupTimeMax and (not fullAuto and warmupSingleFireShot) then
+		warmupTime = 0
+	end
+	
 	if warmupTime < warmupTimeMax and isFiringGun() and not needsReload() then
 		if soundEnabled then
 			if warmupTime == 0 and sfx["warmup_start"] ~= nil then
@@ -312,7 +344,7 @@ function handleWarmup(dt)
 		end
 		
 		warmupTime = warmupTime + dt
-	elseif not isFiringGun() and warmupTime > 0 then
+	elseif not isFiringGun() and (warmupSingleFireShot or warmupTime > 0) then
 		if warmupWindDown and not needsReload() then
 			warmupTime = warmupTime - dt
 			warmupSingleFireShot = false
@@ -372,6 +404,9 @@ function weaponTypeSelectionHandler()
 end
 
 function selectNewWeapon(newIndex)
+	setMagCountInSettings(currentSelectedWeapon, currMag)
+	setAmmoCountInSettings(currentSelectedWeapon, currAmmo)
+
 	currentSelectedWeapon = newIndex
 	
 	name = GetNameByIndex(currentSelectedWeapon)
@@ -383,41 +418,51 @@ function getAmmoCount()
 		return 9999
 	end
 
-	return GetInt("game.tool." .. toolName .. ".ammo")
+	return currAmmo
+end
+
+function getMagCount()
+	if infiniteMag then
+		return 9999
+	end
+
+	return currMag
+end
+
+function setAmmoCount(newCount)
+	currAmmo = newCount
 end
 
 function addToAmmo(addedAmmo)
-	local currAmmo = getAmmoCount() + addedAmmo
-	
-	SetInt("game.tool." .. toolName .. ".ammo", currAmmo)
+	currAmmo = currAmmo + addedAmmo
 end
 
 function subFromAmmo(removedAmmo)
-	local currAmmo = getAmmoCount()
+	local currAmmoCount = getAmmoCount()
 	local loadedAmmo = removedAmmo
 	
-	if removedAmmo > currAmmo then
-		loadedAmmo = currAmmo
-		currAmmo = 0
+	if removedAmmo > currAmmoCount then
+		loadedAmmo = currAmmoCount
+		currAmmoCount = 0
 	else
-		currAmmo = currAmmo - removedAmmo
+		currAmmoCount = currAmmoCount - removedAmmo
 	end
 	
 	if not infiniteAmmo then
-		SetInt("game.tool." .. toolName .. ".ammo", currAmmo)
+		setAmmoCount(currAmmoCount)
 	end
 	
 	return loadedAmmo
 end
 
 function isHoldingGun()
-	return GetString("game.player.tool") == toolName
+	return GetString("game.player.tool") == toolName and GetBool("game.player.canusetool")
 end
 
 function isFiringGun()
 	local isHoldingGun = GetString("game.player.tool") == toolName
 	local isFiringFullAuto = fullAuto and InputDown("usetool")
-	local isFiringSingleFire = not fullAuto and ((InputPressed("usetool") and warmupTimeMax == 0) or (InputDown("usetool") and warmupTimeMax > 0)) and burstFireMax <= 0
+	local isFiringSingleFire = not fullAuto and ((InputPressed("usetool") and warmupTimeMax == 0) or (InputDown("usetool") and warmupTimeMax > 0 and not warmupSingleFireShot)) and burstFireMax <= 0
 	local isBurstFiring = not fullAuto and InputDown("usetool") and burstFireMax > 0
 	
 	return (isFiringFullAuto or isFiringSingleFire or isBurstFiring) and isHoldingGun
@@ -428,7 +473,7 @@ function hasChangedSettings()
 end
 
 function isReadyToFire()
-	local required = reloadTime <= 0 and currMag > 0 and currentShotCooldown <= 0 and not isMenuOpen() and GetPlayerVehicle() == 0
+	local required = reloadTime <= 0 and currMag > 0 and currentShotCooldown <= 0 and not isMenuOpen()
 
 	if burstFireMax > 0 then
 		required = required and burstFire > 0
@@ -497,7 +542,7 @@ function reloadLogic(dt)
 				
 			SetToolTransform(Transform(Vec(0,0,0), gunRot))
 			
-			if reloadTime <= 0 then
+			if reloadTime <= 0 and getAmmoCount() >= 1 then
 				local loadedAmmo = subFromAmmo(1)
 				currMag = currMag + loadedAmmo
 				reloadTime = maxReloadTime
@@ -510,7 +555,7 @@ function reloadLogic(dt)
 				SetToolTransform(Transform(Vec(0,0,0), gunRot))
 			end
 			
-			if currMag >= magSize then
+			if currMag >= magSize or getAmmoCount() <= 0  then
 				additiveReloading = false
 				reloadTime = 0
 			end
@@ -580,13 +625,6 @@ end
 
 -- Action functions
 
-function posAroundCircle(i, points, originPos, radius)
-	local x = originPos[1] + radius * math.cos(2 * i * math.pi / points)
-	local z = originPos[3] - radius * math.sin(2 * i * math.pi / points)
-	
-	return {x, originPos[2], z}
-end
-
 function GenerateRandomSpread()
 	local index = math.random(0, 360)
 	local endPos = posAroundCircle(index, 360, Vec(0, 0, 0), spread)
@@ -642,6 +680,10 @@ function doBulletHoleAt(bullet, hitPoint, normal, hitParticles)
 	
 	if particlesEnabled and hitParticles then
 		SpawnParticle(hitPoint, normal, 5)
+	end
+	
+	if bullet.incendiary then
+		SpawnFire(hitPoint)
 	end
 	
 	if bullet.explosive then
@@ -733,11 +775,16 @@ function shootingSoundLogic()
 		return
 	end
 	
-	if not isReadyToFire() and sfx["shot_loop"] == nil then
+	--[[if sfx["shot"] ~= nil and warmupTimeMax > 0 and warmupTime >= warmupTimeMax and isFiringGun() and isReadyToFire() then
+		PlaySound(sfx["shot"], GetPlayerTransform().pos, math.random(7, 10) / 10)
+		return
+	end]]--
+	
+	if not isReadyToFire() and sfx["shot_loop"] == nil and warmupTimeMax <= 0 then
 		return
 	end
 	
-	if sfx["shot"] ~= nil and isFiringGun() then
+	if sfx["shot"] ~= nil and isFiringGun() and (warmupTimeMax <= 0 or (warmupTimeMax > 0 and warmupTime >= warmupTimeMax and warmupSingleFireShot)) then
 		PlaySound(sfx["shot"], GetPlayerTransform().pos, math.random(7, 10) / 10)
 		return
 	end
@@ -746,6 +793,7 @@ function shootingSoundLogic()
 		if fireTime > 0 and sfx["shot_stop"] ~= nil then
 			PlaySound(sfx["shot_stop"], GetPlayerTransform().pos)
 		end
+		
 		return
 	end
 	

@@ -21,6 +21,13 @@ function roundToTwoDecimals(a) -- To support older mods incase I update the util
 	return roundToDecimal(a, 2)
 end
 
+function posAroundCircle(i, points, originPos, radius)
+	local x = originPos[1] + radius * math.cos(2 * i * math.pi / points)
+	local z = originPos[3] - radius * math.sin(2 * i * math.pi / points)
+	
+	return {x, originPos[2], z}
+end
+
 function rndVec(length)
 	local v = VecNormalize(Vec(math.random(-100,100), math.random(-100,100), math.random(-100,100)))
 	return VecScale(v, length)	

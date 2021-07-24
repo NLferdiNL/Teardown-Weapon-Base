@@ -1,4 +1,4 @@
-name = Shotgun
+name = Moddy Weapon
 author = NLferdiNL
-description = Shotgun attempt
+description = Multi-purpose weapon base
 tags = Tool

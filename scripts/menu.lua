@@ -32,7 +32,7 @@ local rebinding = nil
 
 local erasingBinds = 0
 
-local menuWidth = 0.5
+local menuWidth = 0.6
 local menuHeight = 0.725
 
 local spreadTextBox = nil
@@ -320,33 +320,59 @@ function setupTextBoxes()
 	end
 end
 
-function leftsideMenu(dt)
+function toggleButtons(dt)
 	UiPush()
-		UiTranslate(-UiWidth() * (menuWidth / 4.5), 50)
-		
-		drawToggle("Infinite Ammo: ", infiniteAmmo, function (i) infiniteAmmo = i end)
-		
 		UiTranslate(0, 50)
 		
-		drawToggle("Infinite Mag: ", infiniteMag, function (i) infiniteMag = i end)
+		UiPush()
+			UiTranslate(-UiWidth() * (menuWidth / 4.5), 0)
 		
-		UiTranslate(0, 50)
+			drawToggle("Infinite Ammo: ", infiniteAmmo, function (i) infiniteAmmo = i end)
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Infinite Mag: ", infiniteMag, function (i) infiniteMag = i end)
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Particles: ", particlesEnabled, function (i) particlesEnabled = i end)
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Hitscan bullets: ", hitscanBullets, function (i) hitscanBullets = i end)
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Apply Force To Hit Objects: ", applyForceOnHit, function (i) applyForceOnHit = i end)
+		UiPop()
 		
-		drawToggle("Particles: ", particlesEnabled, function (i) particlesEnabled = i end)
-		
-		UiTranslate(0, 50)
-		
-		drawToggle("Hitscan bullets: ", hitscanBullets, function (i) hitscanBullets = i end)
-		
-		UiTranslate(0, 50)
-		
-		drawToggle("Explosive Bullets: ", explosiveBullets, function (i) explosiveBullets = i end)
-		
-		UiTranslate(0, 50)
-		
-		drawToggle("Apply Force To Hit Objects: ", applyForceOnHit, function (i) applyForceOnHit = i end)
-		
-		UiTranslate(0, 50)
+		UiPush()
+			UiTranslate(UiWidth() * (menuWidth / 4.5), 0)
+			
+			drawToggle("Sound: ", soundEnabled, function (i) soundEnabled = i end)
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Full Auto: ", fullAuto, function (i) fullAuto = i end)
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Infinite Penetration: ", infinitePenetration, function (i) infinitePenetration = i end)
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Explosive Bullets: ", explosiveBullets, function (i) explosiveBullets = i end)
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Incendiary Bullets: ", incendiaryBullets, function (i) incendiaryBullets = i end)
+		UiPop()
+	UiPop()
+end
+
+function leftsideTextInputMenu(dt)
+	UiPush()
+		UiTranslate(-UiWidth() * (menuWidth / 3.5), 6 * 50)
 			
 		UiPush()
 			UiTranslate(spreadTextBox.width, 0)
@@ -376,13 +402,52 @@ function leftsideMenu(dt)
 			UiTranslate(0, 50)
 			
 			textboxClass_render(projectileBulletSpeedTextBox)
+			
+			UiTranslate(0, 50)
+		
+			textboxClass_render(maxDistanceTextBox)
 		UiPop()
 	UiPop()
 end
 
-function rightsideMenu(dt)
+function middleSideTextInputMenu(dt)
+	UiPush()	
+		UiTranslate(UiWidth() * (menuWidth / 10), 6 * 50)
+		textboxClass_render(softRadiusMinTextBox)
+			
+		UiTranslate(0, 50)
+		
+		textboxClass_render(softRadiusMaxTextBox)
+		
+		UiTranslate(0, 50)
+		
+		textboxClass_render(mediumRadiusMinTextBox)
+		
+		UiTranslate(0, 50)
+		
+		textboxClass_render(mediumRadiusMaxTextBox)
+		
+		UiTranslate(0, 50)
+		
+		textboxClass_render(hardRadiusMinTextBox)
+		
+		UiTranslate(0, 50)
+		
+		textboxClass_render(hardRadiusMaxTextBox)
+		
+		UiTranslate(0, 50)
+		
+		textboxClass_render(explosiveBulletMinSizeTextBox)
+			
+		UiTranslate(0, 50)
+		
+		textboxClass_render(explosiveBulletMaxSizeTextBox)
+	UiPop()
+end
+
+function rightsideTextInputMenu(dt)
 	UiPush()
-	UiTranslate(UiWidth() * (menuWidth / 4.5), 0)
+		UiTranslate(UiWidth() * (menuWidth / 3.5), 5 * 50)
 		UiPush()
 			UiTranslate(-UiWidth() * (menuWidth / 2), 50)
 			for i = 1, #bindOrder do
@@ -395,56 +460,8 @@ function rightsideMenu(dt)
 		
 		UiTranslate(0, 50 * (#bindOrder + 1))
 		
-		drawToggle("Sound: ", soundEnabled, function (i) soundEnabled = i end)
-		
-		UiTranslate(0, 50)
-		
-		drawToggle("Full Auto: ", fullAuto, function (i) fullAuto = i end)
-		
-		UiTranslate(0, 50)
-		
-		drawToggle("Infinite Penetration: ", infinitePenetration, function (i) infinitePenetration = i end)
-		
-		UiTranslate(0, 50)
-		
 		UiPush()
 			UiTranslate(explosiveBulletMinSizeTextBox.width, 0)
-			
-			textboxClass_render(explosiveBulletMinSizeTextBox)
-			
-			UiTranslate(0, 50)
-			
-			textboxClass_render(explosiveBulletMaxSizeTextBox)
-			
-			UiTranslate(0, 50)
-			
-			textboxClass_render(softRadiusMinTextBox)
-			
-			UiTranslate(0, 50)
-			
-			textboxClass_render(softRadiusMaxTextBox)
-			
-			UiTranslate(0, 50)
-			
-			textboxClass_render(mediumRadiusMinTextBox)
-			
-			UiTranslate(0, 50)
-			
-			textboxClass_render(mediumRadiusMaxTextBox)
-			
-			UiTranslate(0, 50)
-			
-			textboxClass_render(hardRadiusMinTextBox)
-			
-			UiTranslate(0, 50)
-			
-			textboxClass_render(hardRadiusMaxTextBox)
-			
-			UiTranslate(0, 50)
-			
-			textboxClass_render(maxDistanceTextBox)
-			
-			UiTranslate(0, 50)
 			
 			textboxClass_render(burstFireMaxTextBox)
 		UiPop()
@@ -474,8 +491,11 @@ function centralMenu()
 		
 		setupTextBoxes()
 		
-		leftsideMenu(dt)
-		rightsideMenu(dt)
+		toggleButtons(dt)
+		
+		leftsideTextInputMenu(dt)
+		middleSideTextInputMenu(dt)
+		rightsideTextInputMenu(dt)
 		
 		UiTranslate(0, UiHeight() * menuHeight * 0.9)
 		

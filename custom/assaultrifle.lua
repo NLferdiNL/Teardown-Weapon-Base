@@ -3,6 +3,7 @@ assaultrifle = {
 	additiveReload = false,
 	magSize = 32,
 	maxAmmo = 300,
+	currAmmo = -1,
 	spread = 0.02,
 	projectiles = 1,
 	shotCooldownTime = 0.125,
@@ -16,6 +17,7 @@ assaultrifle = {
 	maxDistance = 100,
 	hitForce = 2000,
 	hitscanBullets = false,
+	incendiaryBullets = false,
 	explosiveBullets = false,
 	explosiveBulletMinSize = 0.3,
 	explosiveBulletMaxSize = 0.5,
@@ -28,5 +30,6 @@ assaultrifle = {
 	hardRadiusMin = 2,
 	hardRadiusMax = 2.5,
 	sfx = {shot = "sfx/assaultrifle.ogg", },
+	sfxLength = {},
 	infinitePenetration = false,
 }

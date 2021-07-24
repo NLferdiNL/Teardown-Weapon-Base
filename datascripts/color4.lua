@@ -31,6 +31,12 @@ Color4.New = function(r, g, b, a)
 	return newColor
 end
 
+Color4.Copy = function(color)
+	local newColor = deepcopy(color)
+	
+	return newColor
+end
+
 Color4.White = Color4.New(1, 1, 1, 1)
 
 Color4.LightGray = Color4.New(0.75, 0.75, 0.75, 1)

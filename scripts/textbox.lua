@@ -28,7 +28,7 @@ end
 
 function textboxClass_render(me)
 UiPush()
-	local labelString = me.name .. ": " 
+	local labelString = me.name
 	local nameWidth, nameHeight = UiGetTextSize(labelString)
 	
 	UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)

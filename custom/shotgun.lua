@@ -3,6 +3,8 @@ shotgun = {
 	additiveReload = true,
 	magSize = 7,
 	maxAmmo = 300,
+	currAmmo = -1,
+	currMag = -1,
 	spread = 0.05,
 	projectiles = 10,
 	shotCooldownTime = 0.5,
@@ -16,6 +18,7 @@ shotgun = {
 	maxDistance = 100,
 	hitForce = 3000,
 	hitscanBullets = false,
+	incendiaryBullets = false,
 	explosiveBullets = false,
 	explosiveBulletMinSize = 0.3,
 	explosiveBulletMaxSize = 0.5,
@@ -28,5 +31,6 @@ shotgun = {
 	hardRadiusMin = 1,
 	hardRadiusMax = 2,
 	sfx = {shot = "sfx/shotgun.ogg", reload = "sfx/shotgun_reload.ogg" },
+	sfxLength = {},
 	infinitePenetration = false,
 }
