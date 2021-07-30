@@ -32,4 +32,5 @@ burstsmg = {
 	sfx = {shot = "sfx/burstsmg.ogg", },
 	sfxLength = {},
 	infinitePenetration = false,
+	particlesEnabled = true,
 }

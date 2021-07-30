@@ -33,4 +33,5 @@ shotgun = {
 	sfx = {shot = "sfx/shotgun.ogg", reload = "sfx/shotgun_reload.ogg" },
 	sfxLength = {},
 	infinitePenetration = false,
+	particlesEnabled = true,
 }

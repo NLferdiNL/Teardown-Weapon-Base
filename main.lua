@@ -50,6 +50,7 @@ infinitePenetration = false
 sfx = {}
 sfxLength = {}
 fireTime = 0
+particlesEnabled = true
 
 -- MISC/UNSORTED:
 infinitePenetrationHitScanStart = 5
@@ -59,7 +60,6 @@ infinitePenetrationHitScanDamageStep = 0.2
 
 infiniteAmmo = false
 infiniteMag = false
-particlesEnabled = true
 soundEnabled = true
 
 local firedShotLineClass = {

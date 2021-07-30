@@ -41,4 +41,5 @@ minigun = {
 				  shot_stop = 2.151, 
 				},
 	infinitePenetration = false,
+	particlesEnabled = true,
 }

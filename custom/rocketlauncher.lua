@@ -32,4 +32,5 @@ rocketlauncher = {
 	sfx = {shot = "sfx/rpg.ogg", },
 	sfxLength = {},
 	infinitePenetration = false,
+	particlesEnabled = true,
 }

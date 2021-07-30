@@ -32,4 +32,5 @@ assaultrifle = {
 	sfx = {shot = "sfx/assaultrifle.ogg", },
 	sfxLength = {},
 	infinitePenetration = false,
+	particlesEnabled = true,
 }

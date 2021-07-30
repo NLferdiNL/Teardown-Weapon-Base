@@ -32,4 +32,5 @@ railgun = {
 	sfx = {warmup_start = "sfx/railgun_warmup.ogg", shot = "sfx/railgun_shot.ogg" },
 	sfxLength = { warmup_start = 4.841 },
 	infinitePenetration = true,
+	particlesEnabled = true,
 }

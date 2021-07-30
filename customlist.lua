@@ -6,6 +6,7 @@
 #include "custom/rocketlauncher.lua"
 #include "custom/assaultrifle.lua"
 #include "custom/railgun.lua"
+#include "custom/lasercutter.lua"
 
 local customList = {
 	shotgun,
@@ -15,6 +16,7 @@ local customList = {
 	rocketlauncher,
 	assaultrifle,
 	railgun,
+	lasercutter,
 }
 
 local loadedSfx = {}
@@ -155,6 +157,7 @@ function ApplySettingsByIndex(index)
 	sfx = newSfx
 	sfxLength = newSettings.sfxLength
 	infinitePenetration = newSettings.infinitePenetration
+	particlesEnabled = newSettings.particlesEnabled
 end
 
 --[[
