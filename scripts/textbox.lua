@@ -28,6 +28,8 @@ end
 
 function textboxClass_render(me)
 UiPush()
+	UiFont("regular.ttf", 26)
+	
 	local labelString = me.name
 	local nameWidth, nameHeight = UiGetTextSize(labelString)
 	
@@ -47,18 +49,25 @@ UiPush()
 		UiColor(1,1,1)
 	end
 	
-	local tempVal = me.value
-	
-	if tempVal == "" then
-		tempVal = " "
-	end
-	
-	if UiTextButton(tempVal, me.width, me.height) then
-		me.inputActive = not me.inputActive
-	end
-	
-	UiColor(1,1,1)
-	
+	UiPush()
+		local fontSize = getMaxTextSize(me.value, 26, me.width - 2)
+		
+		if fontSize ~= 26 then
+			DebugWatch("size", fontSize)
+		end
+		
+		UiFont("regular.ttf", fontSize)
+		
+		local tempVal = me.value
+		
+		if tempVal == "" then
+			tempVal = " "
+		end
+		
+		if UiTextButton(tempVal, me.width, me.height) then
+			me.inputActive = not me.inputActive
+		end
+	UiPop()
 UiPop()
 end
 
