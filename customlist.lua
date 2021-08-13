@@ -7,6 +7,7 @@
 #include "custom/assaultrifle.lua"
 #include "custom/railgun.lua"
 #include "custom/lasercutter.lua"
+#include "custom/forcegun.lua"
 
 local customList = {
 	shotgun,
@@ -17,6 +18,7 @@ local customList = {
 	assaultrifle,
 	railgun,
 	lasercutter,
+	forcegun,
 }
 
 local loadedSfx = {}

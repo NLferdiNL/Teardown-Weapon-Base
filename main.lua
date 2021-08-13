@@ -149,6 +149,8 @@ function tick(dt)
 		return
 	end
 	
+	checkRandomValues()
+	
 	if isFiringGun() then
 		shootLogic()
 	end
@@ -808,6 +810,40 @@ function shootingSoundLogic()
 	end
 end
 
--- Sprite functions
+-- Sprite Functions
 
 -- UI Sound Functions
+
+-- Misc Functions
+
+function checkRandomValues()
+	if minRndSpread > maxRndSpread then
+		local backup = minRndSpread
+		minRndSpread = maxRndSpread
+		maxRndSpread = backup
+	end
+
+	if explosiveBulletMinSize > explosiveBulletMaxSize then
+		local backup = explosiveBulletMinSize
+		explosiveBulletMinSize = explosiveBulletMaxSize
+		explosiveBulletMaxSize = backup
+	end
+
+	if softRadiusMin > softRadiusMax then
+		local backup = softRadiusMin
+		softRadiusMin = softRadiusMax
+		softRadiusMax = backup
+	end
+
+	if mediumRadiusMin > softRadiusMax then
+		local backup = mediumRadiusMin
+		mediumRadiusMin = softRadiusMax
+		softRadiusMax = backup
+	end
+
+	if hardRadiusMin > hardRadiusMax then
+		local backup = hardRadiusMin
+		minRndhardRadiusMinSpread = hardRadiusMax
+		hardRadiusMax = backup
+	end
+end
