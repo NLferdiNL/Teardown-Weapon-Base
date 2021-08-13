@@ -105,6 +105,8 @@ function tick(dt)
 	handleAllFiredShotLines(dt)
 	handleAllProjectiles(dt)
 	
+	prevFrameSelectedWeapon = currentSelectedWeapon
+	
 	if not isHoldingGun() then
 		if reloadTime > 0 then
 			reloadTime = maxReloadTime
@@ -125,8 +127,6 @@ function tick(dt)
 	if isMenuOpen() then
 		return
 	end
-	
-	prevFrameSelectedWeapon = currentSelectedWeapon
 	
 	weaponTypeSelectionHandler()
 	
