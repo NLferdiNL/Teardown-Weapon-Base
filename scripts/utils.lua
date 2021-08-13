@@ -93,6 +93,21 @@ function raycast(origin, direction, maxDistance, radius, rejectTransparant)
 	return false, nil, nil, nil, nil
 end
 
+function getMaxTextSize(text, fontSize, maxSize)
+	UiPush()
+		UiFont("regular.ttf", fontSize)
+		
+		local currentSize = UiGetTextSize(text)
+		
+		while currentSize > maxSize do
+			fontSize = fontSize - 0.1
+			UiFont("regular.ttf", fontSize)
+			currentSize = UiGetTextSize(text)
+		end
+	UiPop()
+	return fontSize
+end
+
 function deepcopy(orig)
     local orig_type = type(orig)
     local copy

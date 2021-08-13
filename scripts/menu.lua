@@ -58,6 +58,8 @@ local maxDistanceTextBox = nil
 
 local burstFireMaxTextBox = nil
 
+local hitForceTextBox = nil
+
 local weaponListScrollPosition = 0
 local isMouseInWeaponList = false
 local listScreenHeight = 0
@@ -132,6 +134,8 @@ function setupTextBoxes()
 	
 	local textBox17, newBox17 = textboxClass_getTextBox(17) -- burstFireMax
 
+	local textBox18, newBox18 = textboxClass_getTextBox(18) -- hitForce
+
 	if newBox01 then
 		textBox01.name = "Spread"
 		textBox01.value = spread .. ""
@@ -203,7 +207,7 @@ function setupTextBoxes()
 		textBox07.value = projectileBulletSpeed .. ""
 		textBox07.numbersOnly = true
 		textBox07.limitsActive = true
-		textBox07.numberMin = 0
+		textBox07.numberMin = 1
 		textBox07.numberMax = 10000
 		
 		projectileBulletSpeedTextBox = textBox07
@@ -214,7 +218,7 @@ function setupTextBoxes()
 		textBox08.value = explosiveBulletMinSize .. ""
 		textBox08.numbersOnly = true
 		textBox08.limitsActive = true
-		textBox08.numberMin = 0.5
+		textBox08.numberMin = 0
 		textBox08.numberMax = 4
 		
 		explosiveBulletMinSizeTextBox = textBox08
@@ -225,7 +229,7 @@ function setupTextBoxes()
 		textBox09.value = explosiveBulletMaxSize .. ""
 		textBox09.numbersOnly = true
 		textBox09.limitsActive = true
-		textBox09.numberMin = 0.5
+		textBox09.numberMin = 0
 		textBox09.numberMax = 4
 		
 		explosiveBulletMaxSizeTextBox = textBox09
@@ -317,6 +321,17 @@ function setupTextBoxes()
 		textBox17.numberMax = 1000
 		
 		burstFireMaxTextBox = textBox17
+	end
+	
+	if newBox18 then
+		textBox18.name = "Hit Force"
+		textBox18.value = hitForce .. ""
+		textBox18.numbersOnly = true
+		textBox18.limitsActive = true
+		textBox18.numberMin = 0
+		textBox18.numberMax = 100000
+		
+		hitForceTextBox = textBox18
 	end
 end
 
@@ -464,6 +479,10 @@ function rightsideTextInputMenu(dt)
 			UiTranslate(explosiveBulletMinSizeTextBox.width, 0)
 			
 			textboxClass_render(burstFireMaxTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(hitForceTextBox)
 		UiPop()
 		
 	UiPop()
@@ -726,6 +745,10 @@ function menuUpdateActions()
 	if burstFireMaxTextBox ~= nil then
 		burstFireMaxTextBox.value = burstFireMax .. ""
 	end
+	
+	if hitForceTextBox ~= nil then
+		hitForceTextBox.value = hitForce .. ""
+	end
 end
 
 function menuCloseActions()
@@ -748,6 +771,7 @@ function menuCloseActions()
 	hardRadiusMax = tonumber(hardRadiusMaxTextBox.value)
 	maxDistance = tonumber(maxDistanceTextBox.value)
 	burstFireMax = tonumber(burstFireMaxTextBox.value)
+	hitForce = tonumber(hitForceTextBox.value)
 end
 
 function isMenuOpen()
