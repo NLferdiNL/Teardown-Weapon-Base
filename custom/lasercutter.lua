@@ -29,8 +29,8 @@ lasercutter = {
 	mediumRadiusMax = 3,
 	hardRadiusMin = 3,
 	hardRadiusMax = 3,
-	sfx = {},
-	sfxLength = {},
+	sfx = { shot_loop = "sfx/lasercutter_shot_loop.ogg", },
+	sfxLength = { shot_start = 0},
 	infinitePenetration = false,
 	particlesEnabled = false,
 }

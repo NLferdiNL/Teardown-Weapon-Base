@@ -158,5 +158,5 @@ function getMaxTextSize(text, fontSize, maxSize, minFontSize)
 			currentSize = UiGetTextSize(text)
 		end
 	UiPop()
-	return fontSize
+	return fontSize, fontSize > minFontSize
 end

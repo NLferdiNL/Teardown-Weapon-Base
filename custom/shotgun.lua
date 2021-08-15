@@ -30,7 +30,7 @@ shotgun = {
 	mediumRadiusMax = 3,
 	hardRadiusMin = 1,
 	hardRadiusMax = 2,
-	sfx = {shot = "sfx/shotgun.ogg", reload = "sfx/shotgun_reload.ogg" },
+	sfx = {shot = "sfx/shotgun_shot.ogg", reload = "sfx/shotgun_reload.ogg" },
 	sfxLength = {},
 	infinitePenetration = false,
 	particlesEnabled = true,

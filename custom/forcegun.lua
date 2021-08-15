@@ -30,8 +30,8 @@ forcegun = {
 	mediumRadiusMax = 0,
 	hardRadiusMin = 0,
 	hardRadiusMax = 0,
-	sfx = {},
-	sfxLength = {},
+	sfx = { shot_loop = "sfx/forcegun_shot_loop.ogg", },
+	sfxLength = { shot_start = 0},
 	infinitePenetration = false,
 	particlesEnabled = false,
 }
