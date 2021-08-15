@@ -145,13 +145,14 @@ function textboxClass_setActiveState(me, newState)
 	end
 end
 
-local function getMaxTextSize(text, fontSize, maxSize)
+function getMaxTextSize(text, fontSize, maxSize, minFontSize)
+	minFontSize = minFontSize or 1
 	UiPush()
 		UiFont("regular.ttf", fontSize)
 		
 		local currentSize = UiGetTextSize(text)
 		
-		while currentSize > maxSize do
+		while currentSize > maxSize and fontSize > minFontSize do
 			fontSize = fontSize - 0.1
 			UiFont("regular.ttf", fontSize)
 			currentSize = UiGetTextSize(text)
