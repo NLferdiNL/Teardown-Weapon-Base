@@ -9,6 +9,8 @@
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
 
+-- TODO: Add custom gun saves
+
 name = "Shotgun"
 additiveReload = true -- TODO: Add option to menu
 additiveReloading = false
