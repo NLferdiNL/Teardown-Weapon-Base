@@ -6,6 +6,7 @@ textboxClass = {
 	
 	default = {
 		name = "TextBox",
+		disabled = false,
 		value = "",
 		width = 100,
 		height = 40,
@@ -39,20 +40,18 @@ UiPush()
 		UiText(labelString)
 	UiPop()
 	
-	if textboxClass_checkMouseInRect(me) and not me.inputActive then
-		UiColor(1,1,0)
-	elseif me.inputActive then
-		UiColor(0,1,0)
-	else
-		UiColor(1,1,1)
+	if not me.disabled then
+		if textboxClass_checkMouseInRect(me) and not me.inputActive then
+			UiColor(1,1,0)
+		elseif me.inputActive then
+			UiColor(0,1,0)
+		else
+			UiColor(1,1,1)
+		end
 	end
 	
 	UiPush()
 		local fontSize = getMaxTextSize(me.value, 26, me.width - 2)
-		
-		if fontSize ~= 26 then
-			DebugWatch("size", fontSize)
-		end
 		
 		UiFont("regular.ttf", fontSize)
 		
@@ -62,8 +61,17 @@ UiPush()
 			tempVal = " "
 		end
 		
+		if me.disabled then
+			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6, 0.25, 0.25, 0.25, 1)
+			UiButtonPressColor(1, 1, 1)
+			UiButtonHoverColor(1, 1, 1)
+			UiButtonPressDist(0)
+		end
+		
 		if UiTextButton(tempVal, me.width, me.height) then
-			me.inputActive = not me.inputActive
+			if not me.disabled then
+				me.inputActive = not me.inputActive
+			end
 		end
 	UiPop()
 UiPop()
@@ -106,7 +114,11 @@ end
 			if not me.numbersOnly then
 				for j = 1, #textboxClass.inputLetters do
 					if InputPressed(textboxClass.inputLetters[j]) then
-						me.value = me.value .. textboxClass.inputLetters[j]
+						local newLetter = textboxClass.inputLetters[j]
+						if InputDown("shift") then
+							newLetter = newLetter:upper()
+						end
+						me.value = me.value .. newLetter
 					end
 				end
 			end
@@ -141,6 +153,16 @@ function textboxClass_setActiveState(me, newState)
 					me.value = me.numberMax .. ""
 				end
 			end
+		end
+	end
+end
+
+function textboxClass_anyInputActive()
+	for i = 1, #textboxClass.textboxes do
+		local textBox = textboxClass.textboxes[i]
+		
+		if textBox.inputActive then
+			return true, i
 		end
 	end
 end

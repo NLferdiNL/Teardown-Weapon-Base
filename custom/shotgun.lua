@@ -1,5 +1,6 @@
 shotgun = {
 	name = "Shotgun",
+	customProfile = false,
 	additiveReload = true,
 	magSize = 7,
 	maxAmmo = 300,

@@ -33,7 +33,9 @@ local rebinding = nil
 local erasingBinds = 0
 
 local menuWidth = 0.6
-local menuHeight = 0.725
+local menuHeight = 0.775
+
+local nameTextBox = nil
 
 local spreadTextBox = nil
 local projectilesTextBox = nil
@@ -70,7 +72,7 @@ function menu_init()
 end
 
 function menu_tick(dt)
-	if InputPressed(binds["Open_Menu"]) and GetString("game.player.tool") == toolName then
+	if InputPressed(binds["Open_Menu"]) and GetString("game.player.tool") == toolName and not textboxClass_anyInputActive() then
 		menuOpened = not menuOpened
 		
 		if not menuOpened then
@@ -135,6 +137,8 @@ function setupTextBoxes()
 	local textBox17, newBox17 = textboxClass_getTextBox(17) -- burstFireMax
 
 	local textBox18, newBox18 = textboxClass_getTextBox(18) -- hitForce
+	
+	local textBox19, newBox19 = textboxClass_getTextBox(19) -- name
 
 	if newBox01 then
 		textBox01.name = "Spread"
@@ -333,6 +337,14 @@ function setupTextBoxes()
 		
 		hitForceTextBox = textBox18
 	end
+	
+	if newBox19 then
+		textBox19.name = "Name"
+		textBox19.value = name
+		textBox19.disabled = not customProfile
+		
+		nameTextBox = textBox19
+	end
 end
 
 function toggleButtons(dt)
@@ -510,11 +522,23 @@ function centralMenu()
 		
 		setupTextBoxes()
 		
-		toggleButtons(dt)
-		
-		leftsideTextInputMenu(dt)
-		middleSideTextInputMenu(dt)
-		rightsideTextInputMenu(dt)
+		UiPush()
+			UiTranslate(0, 50)
+			
+			textboxClass_render(nameTextBox)
+			
+			if nameTextBox.inputActive or nameTextBox.lastInputActive then
+				name = nameTextBox.value
+				
+				EditCustomName(GetCurrentSelectedWeaponIndex(), name)
+			end
+			
+			toggleButtons(dt)
+			
+			leftsideTextInputMenu(dt)
+			middleSideTextInputMenu(dt)
+			rightsideTextInputMenu(dt)
+		UiPop()
 		
 		UiTranslate(0, UiHeight() * menuHeight * 0.9)
 		
@@ -537,9 +561,39 @@ function centralMenu()
 			
 			UiTranslate(0, 50)]]--
 			
-			if UiTextButton("Close" , 400, 40) then
-				menuCloseActions()
-			end
+			UiPush()
+				UiTranslate(-300, 0)
+				if UiTextButton("New Profile" , 200, 40) then
+					CreateNewCustom()
+				end
+				
+				UiTranslate(200, 0)
+				
+				if UiTextButton("Delete Profile" , 200, 40) then
+					if not customProfile then
+						return
+					end
+					
+					local currIndex = GetCurrentSelectedWeaponIndex()
+					
+					selectNewWeapon(1)
+					DeleteCustom(currIndex)
+					
+				end
+				
+				UiTranslate(200, 0)
+				
+				if UiTextButton("Save Profiles" , 200, 40) then
+					saveToolValues()
+					saveCustomProfiles()
+				end
+			
+				UiTranslate(200, 0)
+				
+				if UiTextButton("Close" , 200, 40) then
+					menuCloseActions()
+				end
+			UiPop()
 		UiPop()
 	UiPop()
 end
@@ -583,6 +637,11 @@ function weaponQuickMenu()
 
 			for i = 0, GetListCount() - 1 do
 				local weapon = GetNameByIndex(i + 1)
+				
+				if weapon == nil or weapon == "" then
+					weapon = " "
+				end
+				
 				UiPush()
 					UiTranslate(0, i * 30 + 2 - weaponListScrollPosition)
 					
@@ -678,6 +737,11 @@ function menuOpenActions()
 end
 
 function menuUpdateActions()
+	if nameTextBox ~= nil then
+		nameTextBox.value = name
+		nameTextBox.disabled = not customProfile
+	end
+	
 	if spreadTextBox ~= nil then
 		spreadTextBox.value =  spread .. ""
 	end
@@ -754,6 +818,10 @@ end
 function menuCloseActions()
 	menuOpened = false
 	rebinding = nil
+	saveToolValues()
+end
+	
+function saveToolValues()
 	spread = tonumber(spreadTextBox.value)
 	projectiles = tonumber(projectilesTextBox.value)
 	shotCooldownTime = tonumber(shotCooldownTimeTextBox.value)
@@ -772,6 +840,11 @@ function menuCloseActions()
 	maxDistance = tonumber(maxDistanceTextBox.value)
 	burstFireMax = tonumber(burstFireMaxTextBox.value)
 	hitForce = tonumber(hitForceTextBox.value)
+	
+	if customProfile then
+		name = nameTextBox.value
+		SaveSettingsToProfile(GetCurrentSelectedWeaponIndex())
+	end
 end
 
 function isMenuOpen()

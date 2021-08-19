@@ -1,4 +1,5 @@
 #include "scripts/utils.lua"
+#include "custom/blankProfile.lua"
 #include "custom/shotgun.lua"
 #include "custom/minigun.lua"
 #include "custom/pistol.lua"
@@ -23,9 +24,9 @@ local customList = {
 	holecutter,
 }
 
-local loadedSfx = {}
+local customListDefaultCount = #customList
 
-local listSize = #customList
+local loadedSfx = {}
 
 --local customList_backup = deepcopy(customList)
 
@@ -102,11 +103,40 @@ function setMagCountInSettings(index, newCount)
 end
 
 function GetListCount()
-	return listSize
+	return #customList
 end
 
 function GetList()
 	return customList
+end
+
+function CreateNewCustom()
+	local newProfileObject = deepcopy(blankProfile)
+	
+	customProfiles = customProfiles + 1
+	
+	customList[#customList + 1] = newProfileObject
+end
+
+function EditCustomName(index, name)
+	if not customList[index].customProfile then
+		return
+	end
+	customList[index].name = name
+end
+
+function DeleteCustom(index)
+	if not customList[index].customProfile then
+		return
+	end
+	
+	customProfiles = customProfiles - 1
+	
+	table.remove(customList, index)
+end
+
+function GetCustomListDefaultCount()
+	return customListDefaultCount
 end
 
 function ApplySettingsByIndex(index)
@@ -122,6 +152,7 @@ function ApplySettingsByIndex(index)
 	end
 	
 	name = newSettings.name
+	customProfile = newSettings.customProfile
 	additiveReload = newSettings.additiveReload
 	additiveReloading = false
 	magSize = newSettings.magSize
@@ -162,6 +193,58 @@ function ApplySettingsByIndex(index)
 	sfxLength = newSettings.sfxLength
 	infinitePenetration = newSettings.infinitePenetration
 	particlesEnabled = newSettings.particlesEnabled
+end
+
+function SaveSettingsToProfile(index)
+	local newSettings, newSfx = GetSettingsByIndex(index)
+	
+	if newSettings == nil then
+		return
+	end
+	
+	if not newSettings.customProfile then
+		return
+	end
+	
+	newSettings.name = name
+	--customProfile = newSettings.customProfile
+	newSettings.additiveReload = additiveReload
+	newSettings.additiveReloading = false
+	newSettings.magSize = magSize
+	newSettings.currMag = currMag
+	newSettings.maxAmmo = maxAmmo
+	newSettings.spread = spread
+	newSettings.projectiles = projectiles
+	newSettings.shotCooldownTime = shotCooldownTime
+	newSettings.fullAuto = fullAuto
+	newSettings.warmupTimeMax = warmupTimeMax
+	newSettings.warmupTime = 0
+	newSettings.warmupWindDown = warmupWindDown
+	newSettings.warmupSingleFireShot = false
+	newSettings.burstFireMax = burstFireMax
+	newSettings.burstFire = burstFireMax
+	newSettings.maxReloadTime = maxReloadTime
+	newSettings.minRndSpread = minRndSpread
+	newSettings.maxRndSpread = maxRndSpread
+	newSettings.maxDistance = maxDistance
+	newSettings.hitForce = hitForce
+	newSettings.hitscanBullets = hitscanBullets
+	newSettings.incendiaryBullets = incendiaryBullets
+	newSettings.explosiveBullets = explosiveBullets
+	newSettings.explosiveBulletMinSize = explosiveBulletMinSize
+	newSettings.explosiveBulletMaxSize = explosiveBulletMaxSize
+	newSettings.projectileBulletSpeed = projectileBulletSpeed
+	newSettings.applyForceOnHit = applyForceOnHit
+	newSettings.softRadiusMin = softRadiusMin
+	newSettings.softRadiusMax = softRadiusMax
+	newSettings.mediumRadiusMin = mediumRadiusMin
+	newSettings.mediumRadiusMax = mediumRadiusMax
+	newSettings.hardRadiusMin = hardRadiusMin
+	newSettings.hardRadiusMax = hardRadiusMax
+	--sfx = newSfx
+	--sfxLength = newSettings.sfxLength
+	newSettings.infinitePenetration = infinitePenetration
+	newSettings.particlesEnabled = particlesEnabled
 end
 
 --[[

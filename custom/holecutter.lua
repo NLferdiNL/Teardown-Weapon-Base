@@ -1,5 +1,6 @@
 holecutter = {
 	name = "Hole Cutter",
+	customProfile = false,
 	additiveReload = false,
 	magSize = 100,
 	maxAmmo = 300,

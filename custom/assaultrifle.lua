@@ -1,5 +1,6 @@
 assaultrifle = {
 	name = "Assault Rifle",
+	customProfile = false,
 	additiveReload = false,
 	magSize = 32,
 	maxAmmo = 300,

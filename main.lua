@@ -1,10 +1,10 @@
+#include "customlist.lua"
 #include "datascripts/color4.lua"
 #include "scripts/utils.lua"
 #include "scripts/savedata.lua"
 #include "scripts/ui.lua"
 #include "scripts/menu.lua"
 #include "datascripts/inputList.lua"
-#include "customlist.lua"
 
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
@@ -12,6 +12,7 @@ toolReadableName = "Moddy Weapon"
 -- TODO: Add custom gun saves
 
 name = "Shotgun"
+customProfile = false
 additiveReload = true -- TODO: Add option to menu
 additiveReloading = false
 magSize = 30 -- TODO: Add option to menu
@@ -85,6 +86,7 @@ local bulletProjectileClass = {
 
 local firedProjectiles = {}
 local firedShotLines = {}
+
 local currentSelectedWeapon = 1
 local prevFrameSelectedWeapon = 1
 
@@ -379,6 +381,10 @@ function handleFireTime(dt)
 end
 
 -- Tool Functions
+
+function GetCurrentSelectedWeaponIndex()
+	return currentSelectedWeapon
+end
 
 function weaponTypeSelectionHandler()
 	local movement = 0

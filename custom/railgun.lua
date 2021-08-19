@@ -1,5 +1,6 @@
 railgun = {
 	name = "Railgun",
+	customProfile = false,
 	additiveReload = false,
 	magSize = 1,
 	maxAmmo = 300,
