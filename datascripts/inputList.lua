@@ -1,7 +1,18 @@
-local filteredKeys = { esc = "f", lmb = "f", mmb = "f", rmb = "f", space = "f", any = "f", m = "f" }
+local filteredKeys = { esc = "f", 
+					   lmb = "f", 
+					   mmb = "f", 
+					   rmb = "f", 
+					   space = "f", 
+					   any = "f", 
+					   w = "f",
+					   a = "f",
+					   s = "f",
+					   d = "f",
+					   e = "f",
+					}
 
 function isFilteredKey(key)
-	return filteredKeys[key] ~= nil
+	return filteredKeys[key] ~= nil or tonumber(key) ~= nil
 end
 
 function getKeyPressed()

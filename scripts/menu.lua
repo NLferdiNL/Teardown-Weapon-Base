@@ -16,6 +16,7 @@ binds = {
 local bindBackup = deepcopy(binds)
 
 local bindOrder = {
+	"Open_Menu"
 }
 		
 local bindNames = {
@@ -72,7 +73,7 @@ function menu_init()
 end
 
 function menu_tick(dt)
-	if InputPressed(binds["Open_Menu"]) and GetString("game.player.tool") == toolName and not textboxClass_anyInputActive() then
+	if InputPressed(binds["Open_Menu"]) and GetString("game.player.tool") == toolName and not textboxClass_anyInputActive() and rebinding == nil then
 		menuOpened = not menuOpened
 		
 		if not menuOpened then
@@ -475,28 +476,30 @@ end
 function rightsideTextInputMenu(dt)
 	UiPush()
 		UiTranslate(UiWidth() * (menuWidth / 3.5), 5 * 50)
-		UiPush()
-			UiTranslate(-UiWidth() * (menuWidth / 2), 50)
-			for i = 1, #bindOrder do
-				local id = bindOrder[i]
-				local key = binds[id]
-				drawRebindable(id, key)
-				UiTranslate(0, 50)
-			end
-		UiPop()
-		
-		UiTranslate(0, 50 * (#bindOrder + 1))
 		
 		UiPush()
-			UiTranslate(explosiveBulletMinSizeTextBox.width, 0)
+			UiTranslate(explosiveBulletMinSizeTextBox.width, 50)
 			
 			textboxClass_render(burstFireMaxTextBox)
 			
 			UiTranslate(0, 50)
 			
 			textboxClass_render(hitForceTextBox)
+			
+			UiTranslate(0, 50)
+			
+			UiPush()
+				UiTranslate(-50, 0)
+				for i = 1, #bindOrder do
+					local id = bindOrder[i]
+					local key = binds[id]
+					drawRebindable(id, key)
+					UiTranslate(0, 50)
+				end
+			UiPop()
+			
+			--UiTranslate(0, 50 * (#bindOrder + 1))
 		UiPop()
-		
 	UiPop()
 end
 
@@ -731,12 +734,12 @@ function drawRebindable(id, key)
 	UiPush()
 		UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
 	
-		UiTranslate(UiWidth() * menuWidth / 1.5, 0)
+		--UiTranslate(UiWidth() * menuWidth / 1.5, 0)
 	
 		UiAlign("right middle")
 		UiText(bindNames[id] .. "")
 		
-		UiTranslate(UiWidth() * menuWidth * 0.1, 0)
+		--UiTranslate(UiWidth() * menuWidth * 0.1, 0)
 		
 		UiAlign("left middle")
 		
