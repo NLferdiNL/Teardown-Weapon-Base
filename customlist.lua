@@ -110,8 +110,17 @@ function GetList()
 	return customList
 end
 
-function CreateNewCustom()
-	local newProfileObject = deepcopy(blankProfile)
+function CreateNewCustom(copyIndex)
+	local newProfileObject
+	
+	if copyIndex == nil then
+		newProfileObject = deepcopy(blankProfile)
+	else
+		newProfileObject = deepcopy(customList[copyIndex])
+		
+		newProfileObject.customProfile = true
+		newProfileObject.name = newProfileObject.name .. " Copy"
+	end
 	
 	customProfiles = customProfiles + 1
 	

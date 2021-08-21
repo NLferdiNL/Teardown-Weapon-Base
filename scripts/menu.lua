@@ -562,33 +562,46 @@ function centralMenu()
 			UiTranslate(0, 50)]]--
 			
 			UiPush()
-				UiTranslate(-300, 0)
+				UiTranslate(-420, 0)
 				if UiTextButton("New Profile" , 200, 40) then
 					CreateNewCustom()
+					
+					updateScrollSize()
 				end
 				
-				UiTranslate(200, 0)
+				UiTranslate(210, 0)
 				
-				if UiTextButton("Delete Profile" , 200, 40) then
+				UiPush()
 					if not customProfile then
-						return
+						disableButtonStyle()
 					end
+				
+					if UiTextButton("Delete Profile" , 200, 40) and customProfile then
+						local currIndex = GetCurrentSelectedWeaponIndex()
 					
-					local currIndex = GetCurrentSelectedWeaponIndex()
+						selectNewWeapon(1)
+						DeleteCustom(currIndex)
+						
+						updateScrollSize()
+					end
+				UiPop()
+				
+				UiTranslate(210, 0)
+				
+				if UiTextButton("Copy Profile" , 200, 40) then
+					CreateNewCustom(GetCurrentSelectedWeaponIndex())
 					
-					selectNewWeapon(1)
-					DeleteCustom(currIndex)
-					
+					updateScrollSize()
 				end
 				
-				UiTranslate(200, 0)
+				UiTranslate(210, 0)
 				
 				if UiTextButton("Save Profiles" , 200, 40) then
 					saveToolValues()
 					saveCustomProfiles()
 				end
 			
-				UiTranslate(200, 0)
+				UiTranslate(210, 0)
 				
 				if UiTextButton("Close" , 200, 40) then
 					menuCloseActions()
@@ -676,6 +689,14 @@ function weaponQuickMenu()
 	UiPop()
 end
 
+function disableButtonStyle()
+	UiButtonImageBox("ui/common/box-outline-6.png", 6, 6, 0.25, 0.25, 0.25, 1)
+	UiButtonPressColor(1, 1, 1)
+	UiButtonHoverColor(1, 1, 1)
+	UiButtonPressDist(0)
+		
+end
+
 function menu_draw(dt)
 	if not isMenuOpen() then
 		return
@@ -732,6 +753,10 @@ function drawRebindable(id, key)
 end
 
 function menuOpenActions()
+	updateScrollSize()
+end
+
+function updateScrollSize()
 	listScreenHeight = UiMiddle() - 20
 	listScreenMaxScroll = (GetListCount() * 30 + 2) - listScreenHeight + 15
 end

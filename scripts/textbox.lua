@@ -1,6 +1,6 @@
 textboxClass = {
 	inputNumbers = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."},
-	inputLetters = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"},
+	inputLetters = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "space"},
 	
 	textboxes = { },
 	
@@ -23,6 +23,14 @@ function textboxClass_tick()
 		local textBox = textboxClass.textboxes[i]
 		textboxClass_inputTick(textBox)
 	end
+end
+
+function disableButtonStyle()
+	UiButtonImageBox("ui/common/box-outline-6.png", 6, 6, 0.25, 0.25, 0.25, 1)
+	UiButtonPressColor(1, 1, 1)
+	UiButtonHoverColor(1, 1, 1)
+	UiButtonPressDist(0)
+		
 end
 
 function textboxClass_render(me)
@@ -62,10 +70,7 @@ UiPush()
 		end
 		
 		if me.disabled then
-			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6, 0.25, 0.25, 0.25, 1)
-			UiButtonPressColor(1, 1, 1)
-			UiButtonHoverColor(1, 1, 1)
-			UiButtonPressDist(0)
+			disableButtonStyle()
 		end
 		
 		if UiTextButton(tempVal, me.width, me.height) then
@@ -115,7 +120,10 @@ end
 				for j = 1, #textboxClass.inputLetters do
 					if InputPressed(textboxClass.inputLetters[j]) then
 						local newLetter = textboxClass.inputLetters[j]
-						if InputDown("shift") then
+						
+						if newLetter == "space" then
+							newLetter = " "
+						elseif InputDown("shift") then
 							newLetter = newLetter:upper()
 						end
 						me.value = me.value .. newLetter

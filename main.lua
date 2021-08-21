@@ -185,6 +185,7 @@ function drawAmmoCount()
 	UiPush()
 		UiAlign("center bottom")
 		UiTranslate(UiWidth() * 0.5, UiHeight() * 0.95)
+		UiTranslate(0, 25)
 		UiFont("regular.ttf", 26)
 		UiTextShadow(0, 0, 0, 0.5, 2.0)
 		UiText(getMagCount() .. " / " .. getAmmoCount())
@@ -220,7 +221,12 @@ function drawWeaponSelection()
 		UiTranslate(UiWidth() * 0.5, UiHeight() * (0.93 + yPosAdd))
 		UiFont("regular.ttf", 26)
 		UiTextShadow(0, 0, 0, 0.5, 2.0)
+		
 		UiText("[" .. binds["Prev_Weapon"]:upper() .. "] " .. prevWeaponName .. " | " .. currWeaponName .. " | [" .. binds["Next_Weapon"]:upper() .. "] " .. nextWeaponName)
+		
+		UiTranslate(0, 25)
+		
+		UiText("[" .. binds["Open_Menu"]:upper() .. "] Moddy Menu")
 	UiPop()
 end
 
@@ -653,7 +659,7 @@ function GenerateBulletTrajectory()
 	local gunTransform = GetBodyTransform(gunBody)
 	
 	local gunWidth = 0.5
-	local gunHeight = -0.2
+	local gunHeight = -0.15
 	local gunLength = -1.25
 	
 	local gunFrontPos = TransformToParentPoint(gunTransform, Vec(gunWidth, gunHeight, gunLength))
