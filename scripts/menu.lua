@@ -140,7 +140,7 @@ function setupTextBoxes()
 	local textBox18, newBox18 = textboxClass_getTextBox(18) -- hitForce
 	
 	local textBox19, newBox19 = textboxClass_getTextBox(19) -- name
-
+	
 	if newBox01 then
 		textBox01.name = "Spread"
 		textBox01.value = spread .. ""
@@ -850,6 +850,10 @@ function menuCloseActions()
 end
 	
 function saveToolValues()
+	if spreadTextBox == nil then
+		setupTextBoxes()
+	end
+
 	spread = tonumber(spreadTextBox.value)
 	projectiles = tonumber(projectilesTextBox.value)
 	shotCooldownTime = tonumber(shotCooldownTimeTextBox.value)

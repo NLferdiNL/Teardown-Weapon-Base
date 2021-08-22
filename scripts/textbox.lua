@@ -1,26 +1,24 @@
-textboxClass = {
-	inputNumbers = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."},
-	inputLetters = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "space"},
-	
-	textboxes = { },
-	
-	default = {
-		name = "TextBox",
-		disabled = false,
-		value = "",
-		width = 100,
-		height = 40,
-		limitsActive = false,
-		numberMin = 0,
-		numberMax = 1,
-		inputActive = false,
-		lastInputActive = false,
-	},
+local textboxClass = {
+	name = "TextBox",
+	disabled = false,
+	value = "",
+	width = 100,
+	height = 40,
+	limitsActive = false,
+	numberMin = 0,
+	numberMax = 1,
+	inputActive = false,
+	lastInputActive = false,
 }
 
+local inputNumbers = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."}
+local inputLetters = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "space"}
+
+local textboxes = { }
+
 function textboxClass_tick()
-	for i = 1, #textboxClass.textboxes do
-		local textBox = textboxClass.textboxes[i]
+	for i = 1, #textboxes do
+		local textBox = textboxes[i]
 		textboxClass_inputTick(textBox)
 	end
 end
@@ -34,64 +32,72 @@ function disableButtonStyle()
 end
 
 function textboxClass_render(me)
-UiPush()
-	UiFont("regular.ttf", 26)
-	
-	local labelString = me.name
-	local nameWidth, nameHeight = UiGetTextSize(labelString)
-	
-	UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
-	
-	UiPush()
-		UiAlign("center right")
-		UiTranslate(-nameWidth / 2 - me.width / 2, me.height / 5)
-		UiText(labelString)
-	UiPop()
-	
-	if not me.disabled then
-		if textboxClass_checkMouseInRect(me) and not me.inputActive then
-			UiColor(1,1,0)
-		elseif me.inputActive then
-			UiColor(0,1,0)
-		else
-			UiColor(1,1,1)
-		end
+	if me == nil then
+		return
 	end
-	
+
 	UiPush()
-		local fontSize = getMaxTextSize(me.value, 26, me.width - 2)
+		UiFont("regular.ttf", 26)
 		
-		UiFont("regular.ttf", fontSize)
+		local labelString = me.name
+		local nameWidth, nameHeight = UiGetTextSize(labelString)
 		
-		local tempVal = me.value
+		UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
 		
-		if tempVal == "" then
-			tempVal = " "
-		end
+		UiPush()
+			UiAlign("center right")
+			UiTranslate(-nameWidth / 2 - me.width / 2, me.height / 5)
+			UiText(labelString)
+		UiPop()
 		
-		if me.disabled then
-			disableButtonStyle()
-		end
-		
-		if UiTextButton(tempVal, me.width, me.height) then
-			if not me.disabled then
-				me.inputActive = not me.inputActive
+		if not me.disabled then
+			if textboxClass_checkMouseInRect(me) and not me.inputActive then
+				UiColor(1,1,0)
+			elseif me.inputActive then
+				UiColor(0,1,0)
+			else
+				UiColor(1,1,1)
 			end
 		end
+		
+		UiPush()
+			local fontSize = getMaxTextSize(me.value, 26, me.width - 2)
+			
+			UiFont("regular.ttf", fontSize)
+			
+			local tempVal = me.value
+			
+			if tempVal == "" then
+				tempVal = " "
+			end
+			
+			if me.disabled then
+				disableButtonStyle()
+			end
+			
+			if UiTextButton(tempVal, me.width, me.height) then
+				if not me.disabled then
+					me.inputActive = not me.inputActive
+				end
+			end
+		UiPop()
 	UiPop()
-UiPop()
 end
 
 function textboxClass_getTextBox(id)
+	if id == nil then
+		return 
+	end
+	
 	if id <= -1 then
 		id = #textboxes + 1
 	end
-	local textBox = textboxClass.textboxes[id]
+	local textBox = textboxes[id]
 	local newBox = false
 	
 	if textBox == nil then
-		textboxClass.textboxes[id] = deepcopy(textboxClass.default)
-		textBox = textboxClass.textboxes[id]
+		textboxes[id] = deepcopy(textboxClass)
+		textBox = textboxes[id]
 		newBox = true
 	end
 	
@@ -99,6 +105,11 @@ function textboxClass_getTextBox(id)
 end
 
  function textboxClass_inputTick(me)
+	if me == nil then
+		return
+	end
+
+ 
 	if me.inputActive ~= me.lastInputActive then
 		me.lastInputActive = me.inputActive
 	end
@@ -111,15 +122,15 @@ end
 		elseif InputPressed("backspace") then
 			me.value = me.value:sub(1, #me.value - 1)
 		else
-			for j = 1, #textboxClass.inputNumbers do
-				if InputPressed(textboxClass.inputNumbers[j]) then
-					me.value = me.value .. textboxClass.inputNumbers[j]
+			for j = 1, #inputNumbers do
+				if InputPressed(inputNumbers[j]) then
+					me.value = me.value .. inputNumbers[j]
 				end
 			end
 			if not me.numbersOnly then
-				for j = 1, #textboxClass.inputLetters do
-					if InputPressed(textboxClass.inputLetters[j]) then
-						local newLetter = textboxClass.inputLetters[j]
+				for j = 1, #inputLetters do
+					if InputPressed(inputLetters[j]) then
+						local newLetter = inputLetters[j]
 						
 						if newLetter == "space" then
 							newLetter = " "
@@ -135,14 +146,27 @@ end
 end
 
 function textboxClass_inputFinished(me)
+	if me == nil then
+		return true
+	end
+
 	return not me.inputActive and me.lastInputActive
 end
 
 function textboxClass_checkMouseInRect(me)
+	if me == nil then
+		return false
+	end
+
+
 	return UiIsMouseInRect(me.width, me.height)
 end
 
 function textboxClass_setActiveState(me, newState)
+	if me == nil or newState == nil then
+		return
+	end
+
 	me.inputActive = newState
 	if not me.inputActive then
 		if me.numbersOnly then
@@ -166,8 +190,8 @@ function textboxClass_setActiveState(me, newState)
 end
 
 function textboxClass_anyInputActive()
-	for i = 1, #textboxClass.textboxes do
-		local textBox = textboxClass.textboxes[i]
+	for i = 1, #textboxes do
+		local textBox = textboxes[i]
 		
 		if textBox.inputActive then
 			return true, i
