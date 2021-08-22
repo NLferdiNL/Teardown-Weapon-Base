@@ -9,8 +9,6 @@
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
 
--- TODO: Add custom gun saves
-
 name = "Shotgun"
 customProfile = false
 additiveReload = true -- TODO: Add option to menu
@@ -74,10 +72,10 @@ local firedShotLineClass = {
 local bulletProjectileClass = {
 	lifetime = maxDistance,
 	currentPos = nil,
-	lastPos = nil,
 	velocity = nil,
 	incendiary = false,
 	explosive = false,
+	infinitePenetration = false,
 	explosiveSize = 0.5,
 	softRadius = 0,
 	mediumRadius = 0,
@@ -102,6 +100,10 @@ function init()
 end
 
 function tick(dt)
+	if hasQuickLoaded() then
+		saveFileInit()
+	end
+
 	menu_tick(dt)
 	
 	cooldownLogic(dt)
@@ -164,6 +166,12 @@ function draw(dt)
 	menu_draw(dt)
 
 	drawUI(dt)
+end
+
+function hasQuickLoaded()
+	local result = GetCustomListDefaultCount() + customProfiles ~= GetListCount()
+	
+	return result
 end
 
 -- UI Functions (excludes sound specific functions)
@@ -237,10 +245,10 @@ function createProjectileBullet(startPos, direction)
 	
 	firedProjectile.lifetime = maxDistance
 	firedProjectile.currentPos = startPos
-	firedProjectile.lastPos = startPos
 	firedProjectile.velocity = VecScale(direction, projectileBulletSpeed)
 	firedProjectile.incendiary = incendiaryBullets
 	firedProjectile.explosive = explosiveBullets
+	firedProjectile.infinitePenetration = infinitePenetration
 	firedProjectile.explosiveSize = math.random(explosiveBulletMinSize * 100, explosiveBulletMaxSize * 100) / 100
 	firedProjectile.softRadius = math.random(softRadiusMin, softRadiusMax) / 10
 	firedProjectile.mediumRadius = math.random(mediumRadiusMin, mediumRadiusMax) / 10
@@ -270,8 +278,6 @@ function handleAllProjectiles(dt)
 		
 		local currPos = currShot.currentPos
 		
-		currShot.lastPos = VecCopy(currPos)
-		
 		local nextPos = VecAdd(currPos, VecScale(currShot.velocity, dt * 10))
 		
 		local directionToNextPos = VecNormalize(currShot.velocity)
@@ -280,11 +286,15 @@ function handleAllProjectiles(dt)
 		
 		local holeMade = false
 		
-		if infinitePenetration then
+		if currShot.infinitePenetration then
+			local playerPos = GetPlayerTransform().pos
+			
 			DrawLine(currPos, nextPos)
-			for i = 0, distanceTraveled, infinitePenetrationHitScanDamageStep do
-				local damageStepPos = VecAdd(currPos, VecScale(directionToNextPos, i))
-				doBulletHoleAt(currShot, damageStepPos, VecDir(damageStepPos, GetPlayerTransform().pos), false)
+			if (currShot.explosive and VecDist(currPos, playerPos) > currShot.explosiveSize * 7.5) or not currShot.explosive then
+				for i = 0, distanceTraveled, infinitePenetrationHitScanDamageStep do
+					local damageStepPos = VecAdd(currPos, VecScale(directionToNextPos, i))
+					doBulletHoleAt(currShot, damageStepPos, VecDir(damageStepPos, playerPos), false)
+				end
 			end
 		else
 			local hit, hitPoint, distance, normal, shape = raycast(currPos, directionToNextPos, distanceTraveled)
@@ -308,8 +318,11 @@ function handleAllProjectiles(dt)
 		
 		currShot.lifetime = currShot.lifetime - distanceTraveled
 
-		if currShot.lifetime <= 0 or (holeMade and not infinitePenetration) then
-			doBulletHoleAt(currShot, currPos, VecDir(currPos, GetPlayerTransform().pos), false)
+		if currShot.lifetime <= 0 then
+			if not holeMade and not currShot.infinitePenetration then
+				doBulletHoleAt(currShot, currPos, VecDir(currPos, GetPlayerTransform().pos), false)
+			end
+			
 			table.remove(firedProjectiles, i, 1)
 		end
 	end
