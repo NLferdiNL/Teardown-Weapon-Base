@@ -1,4 +1,4 @@
 name = Moddy Weapon
 author = NLferdiNL
-description = Multi-purpose weapon base
+description = All-in-one gun
 tags = Tool

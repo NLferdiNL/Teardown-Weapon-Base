@@ -55,13 +55,15 @@ particlesEnabled = true
 
 -- MISC/UNSORTED:
 infinitePenetrationHitScanStart = 5
+minExplosiveDistanceMultiplier = 7.5
 infinitePenetrationHitScanDamageStep = 0.2
 
 -- CHEATS:
 
-infiniteAmmo = false
-infiniteMag = false
-soundEnabled = true
+-- Handled in savedata.lua now
+--infiniteAmmo = false
+--infiniteMag = false
+--soundEnabled = true
 
 local firedShotLineClass = {
 	lifetime = 0.4,
@@ -290,7 +292,7 @@ function handleAllProjectiles(dt)
 			local playerPos = GetPlayerTransform().pos
 			
 			DrawLine(currPos, nextPos)
-			if (currShot.explosive and VecDist(currPos, playerPos) > currShot.explosiveSize * 7.5) or not currShot.explosive then
+			if (currShot.explosive and VecDist(currPos, playerPos) > currShot.explosiveSize * minExplosiveDistanceMultiplier) or not currShot.explosive then
 				for i = 0, distanceTraveled, infinitePenetrationHitScanDamageStep do
 					local damageStepPos = VecAdd(currPos, VecScale(directionToNextPos, i))
 					doBulletHoleAt(currShot, damageStepPos, VecDir(damageStepPos, playerPos), false)
@@ -736,9 +738,14 @@ function doHitScanShot(shotStartPos, shotDirection)
 	
 	if infinitePenetration then
 		local fakeBullet = fakeHitScanBullet()
-		local startIndex = infinitePenetrationHitScanStart and explosiveBullets or 0
 		
-		for i = infinitePenetrationHitScanStart, maxDistance, infinitePenetrationHitScanDamageStep do
+		local startIndex = 0
+		
+		if explosiveBullets then
+			startIndex = infinitePenetrationHitScanStart + fakeBullet.explosiveSize * minExplosiveDistanceMultiplier
+		end
+		
+		for i = startIndex, maxDistance, infinitePenetrationHitScanDamageStep do
 			local currPos = VecAdd(shotStartPos, VecScale(shotDirection, i))
 			
 			doBulletHoleAt(fakeBullet, currPos, normal, i >= maxDistance)

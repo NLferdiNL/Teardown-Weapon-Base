@@ -10,7 +10,7 @@ binds = {
 	Prev_Weapon = "z",
 	Next_Weapon = "x",
 	Reload = "r",
-	Open_Menu = "m", -- Only one that can't be changed!
+	Open_Menu = "m",
 }
 
 local bindBackup = deepcopy(binds)
@@ -69,7 +69,7 @@ local listScreenHeight = 0
 local listScreenMaxScroll = 0
 
 function menu_init()
-	
+	binds["Open_Menu"] = menuOpenKey
 end
 
 function menu_tick(dt)
@@ -343,6 +343,7 @@ function setupTextBoxes()
 		textBox19.name = "Name"
 		textBox19.value = name
 		textBox19.disabled = not customProfile
+		textBox19.width = 300
 		
 		nameTextBox = textBox19
 	end
@@ -847,6 +848,14 @@ function menuCloseActions()
 	menuOpened = false
 	rebinding = nil
 	saveToolValues()
+	
+	updateSavedBinds()
+
+	saveSettings()
+end
+
+function updateSavedBinds()
+	menuOpenKey = binds["Open_Menu"]
 end
 	
 function saveToolValues()
