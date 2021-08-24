@@ -220,7 +220,6 @@ function SaveSettingsToProfile(index)
 	newSettings.additiveReload = additiveReload
 	newSettings.additiveReloading = false
 	newSettings.magSize = magSize
-	newSettings.currMag = currMag
 	newSettings.maxAmmo = maxAmmo
 	newSettings.spread = spread
 	newSettings.projectiles = projectiles

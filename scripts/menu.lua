@@ -63,6 +63,9 @@ local burstFireMaxTextBox = nil
 
 local hitForceTextBox = nil
 
+local magSizeTextBox = nil
+local maxAmmoTextBox = nil
+
 local weaponListScrollPosition = 0
 local isMouseInWeaponList = false
 local listScreenHeight = 0
@@ -140,6 +143,9 @@ function setupTextBoxes()
 	local textBox18, newBox18 = textboxClass_getTextBox(18) -- hitForce
 	
 	local textBox19, newBox19 = textboxClass_getTextBox(19) -- name
+	
+	local textBox20, newBox20 = textboxClass_getTextBox(20) -- magSize
+	local textBox21, newBox21 = textboxClass_getTextBox(21) -- maxAmmo
 	
 	if newBox01 then
 		textBox01.name = "Spread"
@@ -347,6 +353,30 @@ function setupTextBoxes()
 		
 		nameTextBox = textBox19
 	end
+	
+	if newBox20 then
+		textBox20.name = "Mag Size"
+		textBox20.value = magSize .. ""
+		textBox20.disabled = not customProfile
+		textBox20.numbersOnly = true
+		textBox20.limitsActive = true
+		textBox20.numberMin = 1
+		textBox20.numberMax = 100000
+		
+		magSizeTextBox = textBox20
+	end
+	
+	if newBox21 then
+		textBox21.name = "Max Ammo"
+		textBox21.value = maxAmmo .. ""
+		textBox21.disabled = not customProfile
+		textBox21.numbersOnly = true
+		textBox21.limitsActive = true
+		textBox21.numberMin = 1
+		textBox21.numberMax = 100000
+		
+		maxAmmoTextBox = textBox21
+	end
 end
 
 function toggleButtons(dt)
@@ -486,6 +516,14 @@ function rightsideTextInputMenu(dt)
 			UiTranslate(0, 50)
 			
 			textboxClass_render(hitForceTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(magSizeTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(maxAmmoTextBox)
 			
 			UiTranslate(0, 50)
 			
@@ -763,6 +801,8 @@ end
 function updateScrollSize()
 	listScreenHeight = UiMiddle() - 20
 	listScreenMaxScroll = (GetListCount() * 30 + 2) - listScreenHeight + 15
+	
+	weaponListScrollPosition = 0
 end
 
 function menuUpdateActions()
@@ -842,6 +882,16 @@ function menuUpdateActions()
 	if hitForceTextBox ~= nil then
 		hitForceTextBox.value = hitForce .. ""
 	end
+	
+	if magSizeTextBox ~= nil then
+		magSizeTextBox.value = magSize .. ""
+		magSizeTextBox.disabled = not customProfile
+	end
+	
+	if maxAmmoTextBox ~= nil then
+		maxAmmoTextBox.value = maxAmmo .. ""
+		maxAmmoTextBox.disabled = not customProfile
+	end
 end
 
 function menuCloseActions()
@@ -884,6 +934,8 @@ function saveToolValues()
 	
 	if customProfile then
 		name = nameTextBox.value
+		magSize = tonumber(magSizeTextBox.value)
+		maxAmmo = tonumber(maxAmmoTextBox.value)
 		SaveSettingsToProfile(GetCurrentSelectedWeaponIndex())
 	end
 end

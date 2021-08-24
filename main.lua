@@ -13,7 +13,7 @@ name = "Shotgun"
 customProfile = false
 additiveReload = true -- TODO: Add option to menu
 additiveReloading = false
-magSize = 30 -- TODO: Add option to menu
+magSize = 30
 currMag = 0
 maxAmmo = 300
 currAmmo = maxAmmo
@@ -33,7 +33,7 @@ reloadTime = 0
 minRndSpread = 1
 maxRndSpread = 10
 maxDistance = 100
-hitForce = 4000 -- TODO: Add option to menu
+hitForce = 4000
 hitscanBullets = true
 incendiaryBullets = false
 explosiveBullets = false
@@ -48,14 +48,15 @@ mediumRadiusMax = 15
 hardRadiusMin = 10
 hardRadiusMax = 15
 infinitePenetration = false
-sfx = {}
+sfx = {} -- TODO: Add option to menu
 sfxLength = {}
 fireTime = 0
 particlesEnabled = true
 
 -- MISC/UNSORTED:
 infinitePenetrationHitScanStart = 5
-minExplosiveDistanceMultiplier = 7.5
+minExplosiveDistanceMultiplier = 6
+minExplosiveDistanceHitscanMultiplier = 7.5
 infinitePenetrationHitScanDamageStep = 0.2
 
 -- CHEATS:
@@ -64,6 +65,7 @@ infinitePenetrationHitScanDamageStep = 0.2
 --infiniteAmmo = false
 --infiniteMag = false
 --soundEnabled = true
+smartExplosiveBullets = true
 
 local firedShotLineClass = {
 	lifetime = 0.4,
@@ -291,8 +293,14 @@ function handleAllProjectiles(dt)
 		if currShot.infinitePenetration then
 			local playerPos = GetPlayerTransform().pos
 			
+			--[[DebugWatch("currPos", currPos)
+			DebugWatch("playerPos", playerPos)
+			DebugWatch("dist", VecDist(currPos, playerPos))
+			DebugWatch("minDist", currShot.explosiveSize * minExplosiveDistanceMultiplier)
+			DebugWatch("velocity", math.abs(10 - distanceTraveled))--]]--
+			
 			DrawLine(currPos, nextPos)
-			if (currShot.explosive and VecDist(currPos, playerPos) > currShot.explosiveSize * minExplosiveDistanceMultiplier) or not currShot.explosive then
+			if (currShot.explosive and (VecDist(currPos, playerPos) > currShot.explosiveSize * minExplosiveDistanceMultiplier + math.abs(10 - distanceTraveled) or not smartExplosiveBullets)) or not currShot.explosive then
 				for i = 0, distanceTraveled, infinitePenetrationHitScanDamageStep do
 					local damageStepPos = VecAdd(currPos, VecScale(directionToNextPos, i))
 					doBulletHoleAt(currShot, damageStepPos, VecDir(damageStepPos, playerPos), false)
@@ -320,7 +328,7 @@ function handleAllProjectiles(dt)
 		
 		currShot.lifetime = currShot.lifetime - distanceTraveled
 
-		if currShot.lifetime <= 0 then
+		if currShot.lifetime <= 0 or holeMade then
 			if not holeMade and not currShot.infinitePenetration then
 				doBulletHoleAt(currShot, currPos, VecDir(currPos, GetPlayerTransform().pos), false)
 			end
@@ -742,7 +750,7 @@ function doHitScanShot(shotStartPos, shotDirection)
 		local startIndex = 0
 		
 		if explosiveBullets then
-			startIndex = infinitePenetrationHitScanStart + fakeBullet.explosiveSize * minExplosiveDistanceMultiplier
+			startIndex = infinitePenetrationHitScanStart + fakeBullet.explosiveSize * minExplosiveDistanceHitscanMultiplier
 		end
 		
 		for i = startIndex, maxDistance, infinitePenetrationHitScanDamageStep do
