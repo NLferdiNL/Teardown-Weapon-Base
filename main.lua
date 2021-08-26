@@ -13,6 +13,7 @@ toolReadableName = "Moddy Weapon"
 -- TODO: Change particle effects back to normal.
 -- TODO: Write profile update routine, using profileSaveVersion to make changes. (And if its not found, it a very old profile)
 --       Empty functions for code updating is in place, just needs to be written.
+-- TODO: Bullet health, if hits something, stop at hitpoint. Take damage based on material and if health below 0 end projectile.
 
 name = "Shotgun"
 customProfile = false
@@ -62,81 +63,87 @@ hitParticleSettings = {
 	enabled = true,
 	ParticleType = "smoke",
 	ParticleTile = 0,
+	lifetime = 5,
 	ParticleColor = {1, 1, 1, 1, 1, 1},
-	ParticleRadius = {true, 0.5, 1, "linear", 0, 1},
-	ParticleAlpha = {false, 1, 1, "linear", 0, 1},
-	ParticleGravity = {false, 0, 0, "linear", 0, 1},
-	ParticleDrag = {false, 0, 0, "linear", 0, 1},
-	ParticleEmissive = {false, 0, 0, "linear", 0, 1},
-	ParticleRotation = {false, 0, 0, "linear", 0, 1},
-	ParticleStretch = {false, 0, 0, "linear", 0, 1},
-	ParticleSticky = {false, 0, 0, "linear", 0, 1},
-	ParticleCollide = {true, 1, 1, "linear", 0, 1},
+	ParticleRadius = 	{ true, 0.5, 1, "linear", 0, 1},
+	ParticleAlpha = 	{ false, 1, 1, "linear", 0, 1},
+	ParticleGravity = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleDrag = 		{ false, 0, 0, "linear", 0, 1},
+	ParticleEmissive = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleRotation = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleStretch = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleSticky = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleCollide = 	{ true, 1, 1, "linear", 0, 1},
 }
 
 shotSmokeParticleSettings = {
 	enabled = true,
 	ParticleType = "smoke",
 	ParticleTile = 0,
+	lifetime = 3,
 	ParticleColor = {1, 1, 1, 0, 0, 0},
-	ParticleRadius = {true, 0.1, 0.3, "linear", 0, 1},
-	ParticleAlpha = {false, 1, 1, "linear", 0, 1},
-	ParticleGravity = {true, 0.4, 0.4, "linear", 0, 1},
-	ParticleDrag = {false, 0, 0, "linear", 0, 1},
-	ParticleEmissive = {false, 0, 0, "linear", 0, 1},
-	ParticleRotation = {false, 0, 0, "linear", 0, 1},
-	ParticleStretch = {false, 0, 0, "linear", 0, 1},
-	ParticleSticky = {false, 0, 0, "linear", 0, 1},
-	ParticleCollide = {true, 1, 1, "linear", 0, 1},
-}
-
-projectileParticleSettings = {
-	enabled = true,
-	ParticleType = "smoke",
-	ParticleTile = 0,
-	ParticleColor = {0.25, 0.25, 0.25, 1, 1, 1},
-	ParticleRadius = {true, 0.5, 1, "linear", 0, 1},
-	ParticleAlpha = { alse, 1, 1, "linear", 0, 1},
-	ParticleGravity = {true, 1, 1, "linear", 0, 1},
-	ParticleDrag = {false, 0, 0, "linear", 0, 1},
-	ParticleEmissive = {false, 0, 0, "linear", 0, 1},
-	ParticleRotation = {false, 0, 0, "linear", 0, 1},
-	ParticleStretch = {false, 0, 0, "linear", 0, 1},
-	ParticleSticky = {false, 0, 0, "linear", 0, 1},
-	ParticleCollide = {true, 1, 1, "linear", 0, 1},
+	ParticleRadius = 	{ true, 0.1, 0.3, "linear", 0, 1},
+	ParticleAlpha = 	{ false, 1, 1, "linear", 0, 1},
+	ParticleGravity = 	{ true, 0.4, 0.4, "linear", 0, 1},
+	ParticleDrag = 		{ false, 0, 0, "linear", 0, 1},
+	ParticleEmissive = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleRotation = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleStretch = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleSticky = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleCollide = 	{ true, 1, 1, "linear", 0, 1},
 }
 
 shotFireParticleSettings = {
 	enabled = true,
 	ParticleType = "plain",
 	ParticleTile = 3,
+	lifetime = 0.3,
 	ParticleColor = {1, 0.75, 0.4, 0, 0, 0},
-	ParticleRadius = {true, 0.4, 0.2, "smooth", 0, 1},
-	ParticleAlpha = {false, 1, 1, "linear", 0, 1},
-	ParticleGravity = {false, 0, 0, "linear", 0, 1},
-	ParticleDrag = {false, 0, 0, "linear", 0, 1},
-	ParticleEmissive = {true, 1, 0, "smooth", 0, 1},
-	ParticleRotation = {false, 0, 0, "linear", 0, 1},
-	ParticleStretch = {true, 1, 0.3, "linear", 0, 1},
-	ParticleSticky = {false, 0, 0, "linear", 0, 1},
-	ParticleCollide = {true, 1, 1, "linear", 0, 1},
+	ParticleRadius = 	{ true, 0.4, 0.2, "smooth", 0, 1},
+	ParticleAlpha = 	{ false, 1, 1, "linear", 0, 1},
+	ParticleGravity = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleDrag = 		{ false, 0, 0, "linear", 0, 1},
+	ParticleEmissive = 	{ true, 1, 0, "smooth", 0, 1},
+	ParticleRotation = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleStretch = 	{ true, 1, 0.3, "linear", 0, 1},
+	ParticleSticky = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleCollide = 	{ true, 1, 1, "linear", 0, 1},
 }
 
---[[exampleParticle = {
+projectileParticleSettings = {
 	enabled = true,
 	ParticleType = "smoke",
 	ParticleTile = 0,
-	ParticleColor = {1, 1, 1, 1, 1, 1},
-	ParticleRadius = {true, 0.5, 1, "linear", 0, 1},
-	ParticleAlpha = {false, 1, 1, "linear", 0, 1},
-	ParticleGravity = {false, 0, 0, "linear", 0, 1},
-	ParticleDrag = {false, 0, 0, "linear", 0, 1},
-	ParticleEmissive = {false, 0, 0, "linear", 0, 1},
-	ParticleRotation = {false, 0, 0, "linear", 0, 1},
-	ParticleStretch = {false, 0, 0, "linear", 0, 1},
-	ParticleSticky = {false, 0, 0, "linear", 0, 1},
-	ParticleCollide = {true, 1, 1, "linear", 0, 1},
-}]]--
+	lifetime = 3,
+	ParticleColor = {0.25, 0.25, 0.25, 1, 1, 1},
+	ParticleRadius = 	{ true, 0.5, 1, "linear", 0, 1},
+	ParticleAlpha = 	{ false, 1, 1, "linear", 0, 1},
+	ParticleGravity = 	{ true, 1, 1, "linear", 0, 1},
+	ParticleDrag = 		{ false, 0, 0, "linear", 0, 1},
+	ParticleEmissive = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleRotation = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleStretch = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleSticky = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleCollide = 	{ true, 1, 1, "linear", 0, 1},
+}
+
+--[[
+exampleParticle = {
+	enabled = true,
+	ParticleType = "smoke",
+	ParticleTile = 0,
+	lifetime = 3,
+	ParticleColor = {0.25, 0.25, 0.25, 1, 1, 1},
+	ParticleRadius = 	{ true, 0.5, 1, "linear", 0, 1},
+	ParticleAlpha = 	{ false, 1, 1, "linear", 0, 1},
+	ParticleGravity = 	{ true, 1, 1, "linear", 0, 1},
+	ParticleDrag = 		{ false, 0, 0, "linear", 0, 1},
+	ParticleEmissive = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleRotation = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleStretch = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleSticky = 	{ false, 0, 0, "linear", 0, 1},
+	ParticleCollide = 	{ true, 1, 1, "linear", 0, 1},
+}}]]--
 
 -- MISC/UNSORTED:
 infinitePenetrationHitScanStart = 5
@@ -720,11 +727,17 @@ end
 -- Particle Functions
 
 function setupParticleLerpSetting(settings, callback)
-	if settings[1] == settings[2] then
-		callback(settings[1])
-	else
-		callback(settings[1], settings[2], settings[3], settings[4], settings[5])
+	if not settings[1] then
+		return false
 	end
+	
+	if settings[2] == settings[3] then
+		callback(settings[2])
+	else
+		callback(settings[3], settings[4], settings[5], settings[6], settings[7])
+	end
+	
+	return true
 end
 
 function setupParticleFromSettings(settings)
@@ -744,27 +757,33 @@ function setupParticleFromSettings(settings)
 					  particleColorSettings[4], particleColorSettings[5], particleColorSettings[6])
 	end
 	
-	setupParticleLerpSetting(settings["ParticleRadius"], ParticleRadius)
-	setupParticleLerpSetting(settings["ParticleAlpha"], ParticleAlpha)
-	setupParticleLerpSetting(settings["ParticleGravity"], ParticleGravity)
-	setupParticleLerpSetting(settings["ParticleDrag"], ParticleDrag)
-	setupParticleLerpSetting(settings["ParticleEmissive"], ParticleEmissive)
-	setupParticleLerpSetting(settings["ParticleRotation"], ParticleRotation)
-	setupParticleLerpSetting(settings["ParticleStretch"], ParticleStretch)
-	setupParticleLerpSetting(settings["ParticleSticky"], ParticleSticky)
-	setupParticleLerpSetting(settings["ParticleCollide"], ParticleCollide)
+	if setupParticleLerpSetting(settings["ParticleRadius"], ParticleRadius) then DebugPrint("ParticleRadius") end
+	if setupParticleLerpSetting(settings["ParticleAlpha"], ParticleAlpha) then DebugPrint("ParticleAlpha") end
+	if setupParticleLerpSetting(settings["ParticleGravity"], ParticleGravity) then DebugPrint("ParticleGravity") end
+	if setupParticleLerpSetting(settings["ParticleDrag"], ParticleDrag) then DebugPrint("ParticleDrag") end
+	if setupParticleLerpSetting(settings["ParticleEmissive"], ParticleEmissive) then DebugPrint("ParticleEmissive") end
+	if setupParticleLerpSetting(settings["ParticleRotation"], ParticleRotation) then DebugPrint("ParticleRotation") end
+	if setupParticleLerpSetting(settings["ParticleStretch"], ParticleStretch) then DebugPrint("ParticleStretch") end
+	if setupParticleLerpSetting(settings["ParticleSticky"], ParticleSticky) then DebugPrint("ParticleSticky") end
+	if setupParticleLerpSetting(settings["ParticleCollide"], ParticleCollide) then DebugPrint("ParticleCollide") end
 end
 
 function setupHitParticle()
+	DebugPrint("setupHitParticle")
 	setupParticleFromSettings(hitParticleSettings)
+	DebugPrint("--")
 end
 
 function setupShotSmokeParticle()	
+	DebugPrint("setupShotSmokeParticle")
 	setupParticleFromSettings(shotSmokeParticleSettings)
+	DebugPrint("--")
 end
 
 function setupShotFireParticle()	
+	DebugPrint("setupShotFireParticle")
 	setupParticleFromSettings(shotFireParticleSettings)
+	DebugPrint("--")
 end
 
 -- Action functions
@@ -822,7 +841,7 @@ end
 function doBulletHoleAt(bullet, hitPoint, normal, hitParticles)
 	if hitParticleSettings["enabled"] and hitParticles then
 		setupHitParticle()
-		SpawnParticle(hitPoint, normal, 5)
+		SpawnParticle(hitPoint, normal, hitParticleSettings["lifetime"])
 	end
 	
 	if bullet.incendiary then
@@ -900,12 +919,12 @@ function shootLogic()
 		if i == 1 then
 			if shotSmokeParticleSettings["enabled"]  then
 				setupShotSmokeParticle()
-				SpawnParticle(gunFrontPos, gunFrontDir, 3)
+				SpawnParticle(gunFrontPos, gunFrontDir, shotSmokeParticleSettings["lifetime"])
 			end
 			
 			if shotFireParticleSettings["enabled"] then
 				setupShotFireParticle()
-				SpawnParticle(gunFrontPos, gunFrontDir, 0.3)
+				SpawnParticle(gunFrontPos, gunFrontDir, shotFireParticleSettings["lifetime"])
 			end
 		end
 		
