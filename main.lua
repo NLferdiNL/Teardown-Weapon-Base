@@ -52,6 +52,85 @@ sfx = {} -- TODO: Add option to menu
 sfxLength = {}
 fireTime = 0
 particlesEnabled = true
+hitParticleSettings = {
+	enabled = true,
+	ParticleType = "smoke",
+	ParticleTile = 0,
+	ParticleColor = {0.25, 0.25, 0.25, 1, 1, 1},
+	ParticleRadius = {0.5, 1, "linear", 0, 1},
+	ParticleAlpha = {1, 1, "linear", 0, 1},
+	ParticleGravity = {1, 1, "linear", 0, 1},
+	ParticleDrag = {0, 0, "linear", 0, 1},
+	ParticleEmissive = {0, 0, "linear", 0, 1},
+	ParticleRotation = {0, 0, "linear", 0, 1},
+	ParticleStretch = {0, 0, "linear", 0, 1},
+	ParticleSticky = {0, 0, "linear", 0, 1},
+	ParticleCollide = {1, 1, "linear", 0, 1},
+}
+
+shotSmokeParticleSettings = {
+	enabled = true,
+	ParticleType = "smoke",
+	ParticleTile = 0,
+	ParticleColor = {1, 1, 1, 0, 0, 0},
+	ParticleRadius = {0.1, 0.3, "linear", 0, 1},
+	ParticleAlpha = {1, 1, "linear", 0, 1},
+	ParticleGravity = {0.4, 0.4, "linear", 0, 1},
+	ParticleDrag = {0, 0, "linear", 0, 1},
+	ParticleEmissive = {0, 0, "linear", 0, 1},
+	ParticleRotation = {0, 0, "linear", 0, 1},
+	ParticleStretch = {0, 0, "linear", 0, 1},
+	ParticleSticky = {0, 0, "linear", 0, 1},
+	ParticleCollide = {1, 1, "linear", 0, 1},
+}
+
+projectileParticleSettings = {
+	enabled = false,
+	ParticleType = "smoke",
+	ParticleTile = 0,
+	ParticleColor = {0.25, 0.25, 0.25, 1, 1, 1},
+	ParticleRadius = {0.5, 1, "linear", 0, 1},
+	ParticleAlpha = { 1, 1, "linear", 0, 1},
+	ParticleGravity = {1, 1, "linear", 0, 1},
+	ParticleDrag = {0, 0, "linear", 0, 1},
+	ParticleEmissive = {0, 0, "linear", 0, 1},
+	ParticleRotation = {0, 0, "linear", 0, 1},
+	ParticleStretch = {0, 0, "linear", 0, 1},
+	ParticleSticky = {0, 0, "linear", 0, 1},
+	ParticleCollide = {1, 1, "linear", 0, 1},
+}
+
+shotFireParticleSettings = {
+	enabled = false,
+	ParticleType = "plain",
+	ParticleTile = 3,
+	ParticleColor = {1, 0.75, 0.4, 0, 0, 0},
+	ParticleRadius = {0.4, 0.2, "smooth", 0, 1},
+	ParticleAlpha = { 1, 1, "linear", 0, 1},
+	ParticleGravity = {0, 0, "linear", 0, 1},
+	ParticleDrag = {0, 0, "linear", 0, 1},
+	ParticleEmissive = {1, 0, "smooth", 0, 1},
+	ParticleRotation = {0, 0, "linear", 0, 1},
+	ParticleStretch = {1, 0.3, "linear", 0, 1},
+	ParticleSticky = {0, 0, "linear", 0, 1},
+	ParticleCollide = {1, 1, "linear", 0, 1},
+}
+
+--[[exampleParticle = {
+	enabled = false,
+	ParticleType = "smoke",
+	ParticleTile = 0,
+	ParticleColor = {0.25, 0.25, 0.25, 1, 1, 1},
+	ParticleRadius = {0.5, 1, "linear", 0, 1},
+	ParticleAlpha = { 1, 1, "linear", 0, 1},
+	ParticleGravity = {1, 1, "linear", 0, 1},
+	ParticleDrag = {0, 0, "linear", 0, 1},
+	ParticleEmissive = {0, 0, "linear", 0, 1},
+	ParticleRotation = {0, 0, "linear", 0, 1},
+	ParticleStretch = {0, 0, "linear", 0, 1},
+	ParticleSticky = {0, 0, "linear", 0, 1},
+	ParticleCollide = {1, 1, "linear", 0, 1},
+}]]--
 
 -- MISC/UNSORTED:
 infinitePenetrationHitScanStart = 5
@@ -634,32 +713,52 @@ end
 
 -- Particle Functions
 
-function setupHitParticle()
+function setupParticleLerpSetting(settings, callback)
+	if settings[1] == settings[2] then
+		callback(settings[1])
+	else
+		callback(settings[1], settings[2], settings[3], settings[4], settings[5])
+	end
+end
+
+function setupParticleFromSettings(settings)
 	ParticleReset()
-	ParticleType("smoke")
-	ParticleRadius(0.5, 1)
-	ParticleCollide(1)
+	
+	ParticleType(settings["ParticleType"])
+	ParticleTile(settings["ParticleTile"])
+	
+	local particleColorSettings = settings["ParticleColor"]
+	
+	if particleColorSettings[1] == particleColorSettings[4] and 
+	   particleColorSettings[2] == particleColorSettings[5] and 
+	   particleColorSettings[3] == particleColorSettings[6] then
+		ParticleColor(particleColorSettings[1], particleColorSettings[2], particleColorSettings[3])
+	else
+		ParticleColor(particleColorSettings[1], particleColorSettings[2], particleColorSettings[3], 
+					  particleColorSettings[4], particleColorSettings[5], particleColorSettings[6])
+	end
+	
+	setupParticleLerpSetting(settings["ParticleRadius"], ParticleRadius)
+	setupParticleLerpSetting(settings["ParticleAlpha"], ParticleAlpha)
+	setupParticleLerpSetting(settings["ParticleGravity"], ParticleGravity)
+	setupParticleLerpSetting(settings["ParticleDrag"], ParticleDrag)
+	setupParticleLerpSetting(settings["ParticleEmissive"], ParticleEmissive)
+	setupParticleLerpSetting(settings["ParticleRotation"], ParticleRotation)
+	setupParticleLerpSetting(settings["ParticleStretch"], ParticleStretch)
+	setupParticleLerpSetting(settings["ParticleSticky"], ParticleSticky)
+	setupParticleLerpSetting(settings["ParticleCollide"], ParticleCollide)
+end
+
+function setupHitParticle()
+	setupParticleFromSettings(hitParticleSettings)
 end
 
 function setupShotSmokeParticle()	
-	ParticleReset()
-	ParticleType("smoke")
-	ParticleRadius(0.1, 0.3)
-	ParticleGravity(0.4)
-	ParticleColor(1, 1, 1, 0, 0, 0)
-	ParticleCollide(1)
+	setupParticleFromSettings(shotSmokeParticleSettings)
 end
 
 function setupShotFireParticle()	
-	ParticleReset()
-	ParticleType("plain")
-	ParticleTile(3)
-	ParticleStretch(1, 0.3)
-	ParticleColor(1, 0.75, 0.4, 0, 0, 0)
-	ParticleRadius(0.4, 0.2, "smooth")
-	ParticleEmissive(1, 0, "smooth")
-	ParticleGravity(0)
-	ParticleCollide(1)
+	setupParticleFromSettings(shotFireParticleSettings)
 end
 
 -- Action functions

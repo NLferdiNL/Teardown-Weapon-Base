@@ -71,6 +71,12 @@ local isMouseInWeaponList = false
 local listScreenHeight = 0
 local listScreenMaxScroll = 0
 
+local mainTabTitles = { "Main Options", "Particle Settings", "Sound Settings", "Mod Options" }
+local currentMainTab = 1
+
+local particleTabTitles = {"Hit Particles", "Shot Particles", "Projectile Particle"}
+local currentParticleTab = 1
+
 function menu_init()
 	binds["Open_Menu"] = menuOpenKey
 end
@@ -542,31 +548,11 @@ function rightsideTextInputMenu(dt)
 	UiPop()
 end
 
-function centralMenu()
+function mainSettings()
 	UiPush()
-		UiBlur(0.75)
-		
-		UiAlign("center middle")
-		UiTranslate(UiWidth() * 0.5, UiHeight() * 0.5)
-		UiImageBox("ui/hud/infobox.png", UiWidth() * menuWidth, UiHeight() * menuHeight, 10, 10)
-		
-		UiWordWrap(UiWidth() * menuWidth)
-		
-		UiTranslate(0, -UiHeight() * (menuHeight / 2))
-		
-		UiFont("bold.ttf", 45)
-		
-		UiTranslate(0, 40)
-		
-		UiText(toolReadableName .. " Settings")
-		
-		UiFont("regular.ttf", 26)
-		
-		setupTextBoxes()
+		UiTranslate(0, 50)
 		
 		UiPush()
-			UiTranslate(0, 50)
-			
 			textboxClass_render(nameTextBox)
 			
 			if nameTextBox.inputActive or nameTextBox.lastInputActive then
@@ -581,74 +567,132 @@ function centralMenu()
 			middleSideTextInputMenu(dt)
 			rightsideTextInputMenu(dt)
 		UiPop()
+	UiPop()
+end
+
+function drawTitle()
+	UiPush()
+		UiTranslate(0, -40)
+		UiFont("bold.ttf", 45)
 		
-		UiTranslate(0, UiHeight() * menuHeight * 0.9)
+		local titleText = toolReadableName .. " Settings"
 		
-		UiPush()
-			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
-			
-			--[[if erasingBinds > 0 then
-				UiPush()
-				c_UiColor(Color4.Red)
-				if UiTextButton("Are you sure?" , 400, 40) then
-					binds = deepcopy(bindBackup)
-					erasingBinds = 0
-				end
-				UiPop()
-			else
-				if UiTextButton("Reset binds to defaults" , 400, 40) then
-					erasingBinds = 5
-				end
-			end
-			
-			UiTranslate(0, 50)]]--
-			
+		local titleBoxWidth, titleBoxHeight = UiGetTextSize(titleText)
+		
+		UiImageBox("ui/hud/infobox.png", titleBoxWidth + 20, titleBoxHeight + 20, 10, 10)
+		
+		UiText(titleText)
+	UiPop()
+end
+
+function drawTabs(tabSpace, tabTitles, currentTab, callback)
+	UiPush()
+		UiFont("regular.ttf", 26)
+		UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
+		
+		local buttonWidth = UiWidth() * tabSpace / #tabTitles
+	
+		UiTranslate(-UiWidth() * tabSpace / 2 + buttonWidth / 2, 0)
+		
+		for i = 1, #tabTitles do
 			UiPush()
-				UiTranslate(-420, 0)
-				if UiTextButton("New Profile" , 200, 40) then
-					CreateNewCustom()
-					
-					updateScrollSize()
+				UiTranslate((i - 1) * buttonWidth, 0)
+				
+				if UiTextButton(tabTitles[i], buttonWidth, 60) then
+					callback(i)
 				end
 				
-				UiTranslate(210, 0)
-				
-				UiPush()
-					if not customProfile then
-						disableButtonStyle()
-					end
-				
-					if UiTextButton("Delete Profile" , 200, 40) and customProfile then
-						local currIndex = GetCurrentSelectedWeaponIndex()
+				if currentTab == i then
+					UiTranslate(0, 30 - 5)
 					
-						selectNewWeapon(1)
-						DeleteCustom(currIndex)
-						
-						updateScrollSize()
-					end
-				UiPop()
-				
-				UiTranslate(210, 0)
-				
-				if UiTextButton("Copy Profile" , 200, 40) then
-					CreateNewCustom(GetCurrentSelectedWeaponIndex())
+					c_UiColor(Color4.Black)
 					
-					updateScrollSize()
-				end
-				
-				UiTranslate(210, 0)
-				
-				if UiTextButton("Save Profiles" , 200, 40) then
-					saveToolValues()
-					saveCustomProfiles()
-				end
-			
-				UiTranslate(210, 0)
-				
-				if UiTextButton("Close" , 200, 40) then
-					menuCloseActions()
+					UiRect(buttonWidth - 2, 10)
 				end
 			UiPop()
+		end
+	UiPop()
+end
+
+function bottomMenuButtons()
+	UiPush()
+		UiTranslate(0, UiHeight() * menuHeight * 0.9)
+	
+		UiFont("regular.ttf", 26)
+	
+		UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
+		
+		--[[if erasingBinds > 0 then
+			UiPush()
+			c_UiColor(Color4.Red)
+			if UiTextButton("Are you sure?" , 400, 40) then
+				binds = deepcopy(bindBackup)
+				erasingBinds = 0
+			end
+			UiPop()
+		else
+			if UiTextButton("Reset binds to defaults" , 400, 40) then
+				erasingBinds = 5
+			end
+		end
+		
+		UiTranslate(0, 50)]]--
+		
+		UiPush()
+			UiTranslate(-420, 0)
+			if UiTextButton("New Profile" , 200, 40) then
+				CreateNewCustom()
+				
+				updateScrollSize()
+			end
+			
+			UiTranslate(210, 0)
+			
+			UiPush()
+				if not customProfile then
+					disableButtonStyle()
+				end
+			
+				if UiTextButton("Delete Profile" , 200, 40) and customProfile then
+					local currIndex = GetCurrentSelectedWeaponIndex()
+				
+					selectNewWeapon(1)
+					DeleteCustom(currIndex)
+					
+					updateScrollSize()
+				end
+			UiPop()
+			
+			UiTranslate(210, 0)
+			
+			if UiTextButton("Copy Profile" , 200, 40) then
+				CreateNewCustom(GetCurrentSelectedWeaponIndex())
+				
+				updateScrollSize()
+			end
+			
+			UiTranslate(210, 0)
+			
+			if UiTextButton("Save Profiles" , 200, 40) then
+				saveToolValues()
+				saveCustomProfiles()
+			end
+		
+			UiTranslate(210, 0)
+			
+			if UiTextButton("Close" , 200, 40) then
+				menuCloseActions()
+			end
+		UiPop()
+	UiPop()
+end
+
+function particleSettings()
+	UiPush()
+		UiTranslate(0, 60)
+		
+		UiPush()
+			drawTabs(menuWidth, particleTabTitles, currentParticleTab, function(i) currentParticleTab = i end)
 		UiPop()
 	UiPop()
 end
@@ -746,7 +790,43 @@ function menu_draw(dt)
 	
 	UiMakeInteractive()
 	
-	centralMenu()
+	UiPush()
+		UiBlur(0.75)
+		
+		UiAlign("center middle")
+		UiTranslate(UiWidth() * 0.5, UiHeight() * 0.5)
+		UiImageBox("ui/hud/infobox.png", UiWidth() * menuWidth, UiHeight() * menuHeight, 10, 10)
+		
+		UiWordWrap(UiWidth() * menuWidth)
+		
+		UiTranslate(0, -UiHeight() * (menuHeight / 2))
+		
+		UiPush()
+			UiTranslate(0, 40)
+			
+			bottomMenuButtons()
+		UiPop()
+		
+		drawTitle()
+		
+		UiTranslate(0, 30)
+		
+		drawTabs(menuWidth, mainTabTitles, currentMainTab, function(i) currentMainTab = i end)
+		
+		setupTextBoxes()
+		
+		UiFont("regular.ttf", 26)
+		
+		if currentMainTab == 1 then
+			mainSettings()
+		elseif currentMainTab == 2 then
+			particleSettings()
+		elseif currentMainTab == 3 then
+		
+		elseif currentMainTab == 4 then
+		
+		end
+	UiPop()
 	
 	weaponQuickMenu()
 end
