@@ -255,6 +255,14 @@ function SaveSettingsToProfile(index)
 	newSettings.particlesEnabled = particlesEnabled
 end
 
+function checkSettingsUpToDate(settings)
+	return false
+end
+
+function updateSettings(settings)
+	return false
+end
+
 --[[
 magSize = 30
 currMag = magSize

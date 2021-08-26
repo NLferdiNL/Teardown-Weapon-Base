@@ -1,6 +1,8 @@
 local textboxClass = {
 	name = "TextBox",
 	disabled = false,
+	description = "",
+	mouseOver = false,
 	value = "",
 	width = 100,
 	height = 40,
@@ -14,7 +16,7 @@ local textboxClass = {
 local inputNumbers = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."}
 local inputLetters = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "space"}
 
-local textboxes = { }
+local textboxes = {}
 
 function textboxClass_tick()
 	for i = 1, #textboxes do
@@ -81,6 +83,45 @@ function textboxClass_render(me)
 				end
 			end
 		UiPop()
+		
+		UiPush()
+		if textboxClass_checkMouseInRect(me) and (me.description ~= nil and me.description ~= "") and not me.inputActive then
+			me.mouseOver = true
+		else
+			me.mouseOver = false
+		end
+		UiPop()
+	UiPop()
+end
+
+function textboxClass_drawDescriptions()
+	UiPush()
+		UiFont("regular.ttf", 26)
+	
+		for i = 1, #textboxes do
+			local currentTextbox = textboxes[i]
+			
+			if currentTextbox.mouseOver then
+				currentTextbox.mouseOver = false
+				
+				local mX, mY = UiGetMousePos()
+				UiAlign("top left")
+				UiTranslate(mX, mY)
+				
+				local textWidth, textHeight = UiGetTextSize(currentTextbox.description)
+				
+				DebugWatch("w", textWidth)
+				DebugWatch("h", textHeight)
+				
+				UiColor(1, 1, 1, 0.75)
+				UiImageBox("ui/hud/infobox.png", textWidth + 20, textHeight + 20, 10, 10)
+				
+				UiTranslate(10, 10)
+				
+				UiColor(1, 1, 1, 1)
+				UiText(currentTextbox.description)
+			end
+		end
 	UiPop()
 end
 
@@ -197,6 +238,10 @@ function textboxClass_anyInputActive()
 			return true, i
 		end
 	end
+end
+
+function textboxClass_getTextBoxCount()
+	return #textboxes
 end
 
 function getMaxTextSize(text, fontSize, maxSize, minFontSize)

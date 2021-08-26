@@ -57,6 +57,10 @@ function loadCustomProfiles()
 		
 		local currentProfileObject = json_decode(currentProfileJSON)
 		
+		if not checkSettingsUpToDate(currentProfileObject) then
+			updateSettings(currentProfileObject)
+		end
+		
 		customList[#customList + 1] = currentProfileObject
 	end
 end

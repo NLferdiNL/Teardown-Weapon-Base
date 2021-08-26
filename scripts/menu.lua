@@ -159,7 +159,8 @@ function setupTextBoxes()
 		textBox01.numbersOnly = true
 		textBox01.limitsActive = true
 		textBox01.numberMin = 0
-		textBox01.numberMax = 5
+		textBox01.numberMax = 100
+		textBox01.description = "Determines how big the spread circle will be.\nValues between 0 and 0.1 work the most realistic."
 		
 		spreadTextBox = textBox01
 	end
@@ -171,6 +172,7 @@ function setupTextBoxes()
 		textBox02.limitsActive = true
 		textBox02.numberMin = 1
 		textBox02.numberMax = 100
+		textBox02.description = ""
 		
 		projectilesTextBox = textBox02
 	end
@@ -827,6 +829,8 @@ function menu_draw(dt)
 		
 		end
 	UiPop()
+	
+	textboxClass_drawDescriptions()
 	
 	weaponQuickMenu()
 end
