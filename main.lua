@@ -9,11 +9,7 @@
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
 
--- TODO: Add descriptions to all textboxes.
--- TODO: Change particle effects back to normal.
--- TODO: Write profile update routine, using profileSaveVersion to make changes. (And if its not found, it a very old profile)
---       Empty functions for code updating is in place, just needs to be written.
--- TODO: Bullet health, if hits something, stop at hitpoint. Take damage based on material and if health below 0 end projectile.
+-- TODO: Add descriptions to all textboxes. (and update soft radius to explain what soft means in materials)
 
 name = "Shotgun"
 customProfile = false
@@ -53,11 +49,11 @@ mediumRadiusMin = 10
 mediumRadiusMax = 15
 hardRadiusMin = 10
 hardRadiusMax = 15
+bulletHealth = 5
 infinitePenetration = false
 sfx = {} -- TODO: Add option to menu
 sfxLength = {}
 fireTime = 0
-particlesEnabled = true -- DEPRECATED, TODO: Remove and update particles enabled on profiles.
 
 hitParticleSettings = {
 	enabled = true,
@@ -111,7 +107,7 @@ shotFireParticleSettings = {
 }
 
 projectileParticleSettings = {
-	enabled = true,
+	enabled = false,
 	ParticleType = "smoke",
 	ParticleTile = 0,
 	lifetime = 3,
@@ -167,6 +163,7 @@ local firedShotLineClass = {
 
 local bulletProjectileClass = {
 	lifetime = maxDistance,
+	bulletHealth = 0,
 	currentPos = nil,
 	velocity = nil,
 	incendiary = false,
@@ -340,6 +337,7 @@ function createProjectileBullet(startPos, direction)
 	local firedProjectile = deepcopy(bulletProjectileClass)
 	
 	firedProjectile.lifetime = maxDistance
+	firedProjectile.bulletHealth = bulletHealth
 	firedProjectile.currentPos = startPos
 	firedProjectile.velocity = VecScale(direction, projectileBulletSpeed)
 	firedProjectile.incendiary = incendiaryBullets
@@ -381,7 +379,6 @@ function handleAllProjectiles(dt)
 		local distanceTraveled = VecDist(currPos, nextPos)
 		
 		local holeMade = false
-		
 		if currShot.infinitePenetration then
 			local playerPos = GetPlayerTransform().pos
 			
@@ -410,7 +407,14 @@ function handleAllProjectiles(dt)
 				
 				DrawLine(currPos, hitPoint)
 				
-				holeMade = true
+				currShot.bulletHealth = currShot.bulletHealth - 1
+				
+				if currShot.bulletHealth <= 0 then
+					holeMade = true
+				else
+					nextPos = hitPoint
+					distanceTraveled = VecDist(currPos, nextPos)
+				end
 			else
 				DrawLine(currPos, nextPos)
 			end
@@ -728,16 +732,14 @@ end
 
 function setupParticleLerpSetting(settings, callback)
 	if not settings[1] then
-		return false
+		return
 	end
 	
 	if settings[2] == settings[3] then
 		callback(settings[2])
 	else
-		callback(settings[3], settings[4], settings[5], settings[6], settings[7])
+		callback(settings[2], settings[3], settings[4], settings[5], settings[6])
 	end
-	
-	return true
 end
 
 function setupParticleFromSettings(settings)
@@ -757,33 +759,27 @@ function setupParticleFromSettings(settings)
 					  particleColorSettings[4], particleColorSettings[5], particleColorSettings[6])
 	end
 	
-	if setupParticleLerpSetting(settings["ParticleRadius"], ParticleRadius) then DebugPrint("ParticleRadius") end
-	if setupParticleLerpSetting(settings["ParticleAlpha"], ParticleAlpha) then DebugPrint("ParticleAlpha") end
-	if setupParticleLerpSetting(settings["ParticleGravity"], ParticleGravity) then DebugPrint("ParticleGravity") end
-	if setupParticleLerpSetting(settings["ParticleDrag"], ParticleDrag) then DebugPrint("ParticleDrag") end
-	if setupParticleLerpSetting(settings["ParticleEmissive"], ParticleEmissive) then DebugPrint("ParticleEmissive") end
-	if setupParticleLerpSetting(settings["ParticleRotation"], ParticleRotation) then DebugPrint("ParticleRotation") end
-	if setupParticleLerpSetting(settings["ParticleStretch"], ParticleStretch) then DebugPrint("ParticleStretch") end
-	if setupParticleLerpSetting(settings["ParticleSticky"], ParticleSticky) then DebugPrint("ParticleSticky") end
-	if setupParticleLerpSetting(settings["ParticleCollide"], ParticleCollide) then DebugPrint("ParticleCollide") end
+	setupParticleLerpSetting(settings["ParticleRadius"], ParticleRadius)
+	setupParticleLerpSetting(settings["ParticleAlpha"], ParticleAlpha)
+	setupParticleLerpSetting(settings["ParticleGravity"], ParticleGravity)
+	setupParticleLerpSetting(settings["ParticleDrag"], ParticleDrag)
+	setupParticleLerpSetting(settings["ParticleEmissive"], ParticleEmissive)
+	setupParticleLerpSetting(settings["ParticleRotation"], ParticleRotation)
+	setupParticleLerpSetting(settings["ParticleStretch"], ParticleStretch)
+	setupParticleLerpSetting(settings["ParticleSticky"], ParticleSticky)
+	setupParticleLerpSetting(settings["ParticleCollide"], ParticleCollide)
 end
 
 function setupHitParticle()
-	DebugPrint("setupHitParticle")
 	setupParticleFromSettings(hitParticleSettings)
-	DebugPrint("--")
 end
 
-function setupShotSmokeParticle()	
-	DebugPrint("setupShotSmokeParticle")
+function setupShotSmokeParticle()
 	setupParticleFromSettings(shotSmokeParticleSettings)
-	DebugPrint("--")
 end
 
-function setupShotFireParticle()	
-	DebugPrint("setupShotFireParticle")
+function setupShotFireParticle()
 	setupParticleFromSettings(shotFireParticleSettings)
-	DebugPrint("--")
 end
 
 -- Action functions

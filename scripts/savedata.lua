@@ -52,16 +52,23 @@ function saveSettings()
 end
 
 function loadCustomProfiles()
+	local profilesUpdated = false
+	
 	for i = 1, customProfiles do
 		local currentProfileJSON = GetString(moddataPrefix .. "CustomProfile_" .. i)
 		
 		local currentProfileObject = json_decode(currentProfileJSON)
 		
 		if not checkSettingsUpToDate(currentProfileObject) then
-			updateSettings(currentProfileObject)
+			currentProfileObject = updateSettings(currentProfileObject)
+			profilesUpdated = true
 		end
 		
 		customList[#customList + 1] = currentProfileObject
+	end
+	
+	if profilesUpdated then
+		saveCustomProfiles()
 	end
 end
 

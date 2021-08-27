@@ -201,7 +201,12 @@ function ApplySettingsByIndex(index)
 	sfx = newSfx
 	sfxLength = newSettings.sfxLength
 	infinitePenetration = newSettings.infinitePenetration
-	particlesEnabled = newSettings.particlesEnabled
+	--particlesEnabled = newSettings.particlesEnabled
+	hitParticleSettings = newSettings.hitParticleSettings
+	shotSmokeParticleSettings = newSettings.shotSmokeParticleSettings
+	shotFireParticleSettings = newSettings.shotFireParticleSettings
+	projectileParticleSettings = newSettings.projectileParticleSettings
+	bulletHealth = newSettings.bulletHealth
 end
 
 function SaveSettingsToProfile(index)
@@ -251,16 +256,45 @@ function SaveSettingsToProfile(index)
 	newSettings.hardRadiusMax = hardRadiusMax
 	--sfx = newSfx
 	--sfxLength = newSettings.sfxLength
+	--newSettings.particlesEnabled = particlesEnabled
 	newSettings.infinitePenetration = infinitePenetration
-	newSettings.particlesEnabled = particlesEnabled
+	newSettings.hitParticleSettings = hitParticleSettings
+	newSettings.shotSmokeParticleSettings = shotSmokeParticleSettings
+	newSettings.shotFireParticleSettings = shotFireParticleSettings
+	newSettings.projectileParticleSettings = projectileParticleSettings
+	newSettings.bulletHealth = bulletHealth
 end
 
 function checkSettingsUpToDate(settings)
-	return false
+	if settings["profileVersion"] == nil then
+		return false
+	end
+	
+	return true
 end
 
 function updateSettings(settings)
-	return false
+	if settings["profileVersion"] == nil then -- Version 0
+		settings["profileVersion"] = 1
+		
+		settings["hitParticleSettings"] = hitParticleSettings
+		settings["shotSmokeParticleSettings"] = shotSmokeParticleSettings
+		settings["shotFireParticleSettings"] = shotFireParticleSettings
+		settings["projectileParticleSettings"] = projectileParticleSettings
+		
+		if not settings["particlesEnabled"] then
+			settings["hitParticleSettings"]["enabled"] = false
+			settings["shotSmokeParticleSettings"]["enabled"] = false
+			settings["shotFireParticleSettings"]["enabled"] = false
+			settings["projectileParticleSettings"]["enabled"] = false
+		end
+		
+		settings["particlesEnabled"] = nil
+		
+		settings["bulletHealth"] = 0
+	end
+	
+	return settings
 end
 
 --[[

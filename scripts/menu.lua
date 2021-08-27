@@ -66,6 +66,8 @@ local hitForceTextBox = nil
 local magSizeTextBox = nil
 local maxAmmoTextBox = nil
 
+local bulletHealthBox = nil
+
 local weaponListScrollPosition = 0
 local isMouseInWeaponList = false
 local listScreenHeight = 0
@@ -153,6 +155,8 @@ function setupTextBoxes()
 	local textBox20, newBox20 = textboxClass_getTextBox(20) -- magSize
 	local textBox21, newBox21 = textboxClass_getTextBox(21) -- maxAmmo
 	
+	local textBox22, newBox22 = textboxClass_getTextBox(22) -- bulletHealth
+	
 	if newBox01 then
 		textBox01.name = "Spread"
 		textBox01.value = spread .. ""
@@ -172,7 +176,7 @@ function setupTextBoxes()
 		textBox02.limitsActive = true
 		textBox02.numberMin = 1
 		textBox02.numberMax = 100
-		textBox02.description = ""
+		textBox02.description = "The amount of projectiles fired. For example useful for shotguns."
 		
 		projectilesTextBox = textBox02
 	end
@@ -184,6 +188,7 @@ function setupTextBoxes()
 		textBox03.limitsActive = true
 		textBox03.numberMin = 0
 		textBox03.numberMax = 100
+		textBox03.description = "The amount of time before you can shoot again after shooting."
 		
 		shotCooldownTimeTextBox = textBox03
 	end
@@ -195,6 +200,7 @@ function setupTextBoxes()
 		textBox04.limitsActive = true
 		textBox04.numberMin = 0
 		textBox04.numberMax = 100
+		textBox04.description = "The time it takes to reload your gun."
 		
 		maxReloadTimeTextBox = textBox04
 	end
@@ -206,6 +212,7 @@ function setupTextBoxes()
 		textBox05.limitsActive = true
 		textBox05.numberMin = 0
 		textBox05.numberMax = 100
+		textBox05.description = "This indicates how close it has to be to the spread circle minimumly."
 		
 		minRndSpreadTextBox = textBox05
 	end
@@ -217,6 +224,7 @@ function setupTextBoxes()
 		textBox06.limitsActive = true
 		textBox06.numberMin = 0
 		textBox06.numberMax = 100
+		textBox06.description = "This indicates how close it has to be to the spread circle maximumly."
 		
 		maxRndSpreadTextBox = textBox06
 	end
@@ -228,6 +236,7 @@ function setupTextBoxes()
 		textBox07.limitsActive = true
 		textBox07.numberMin = 1
 		textBox07.numberMax = 10000
+		textBox07.description = "How fast the bullet will travel, in meters."
 		
 		projectileBulletSpeedTextBox = textBox07
 	end
@@ -239,6 +248,7 @@ function setupTextBoxes()
 		textBox08.limitsActive = true
 		textBox08.numberMin = 0
 		textBox08.numberMax = 4
+		textBox08.description = "Minimum explosive size. Picks a value between this and the maximum below. Values between 0.1 and 0.5 will all go to 0.5 due to engine limits."
 		
 		explosiveBulletMinSizeTextBox = textBox08
 	end
@@ -250,6 +260,7 @@ function setupTextBoxes()
 		textBox09.limitsActive = true
 		textBox09.numberMin = 0
 		textBox09.numberMax = 4
+		textBox09.description = "Maxmimum explosive size. Picks a value between this and the minimum above. Limited to 4 due to engine limits."
 		
 		explosiveBulletMaxSizeTextBox = textBox09
 	end
@@ -261,6 +272,7 @@ function setupTextBoxes()
 		textBox10.limitsActive = true
 		textBox10.numberMin = 0
 		textBox10.numberMax = 1000
+		textBox10.description = "Minimum soft radius damage. Picks a value between this and the maximum below."
 		
 		softRadiusMinTextBox = textBox10
 	end
@@ -272,6 +284,7 @@ function setupTextBoxes()
 		textBox11.limitsActive = true
 		textBox11.numberMin = 0
 		textBox11.numberMax = 1000
+		textBox11.description = "Maximum soft radius damage. Picks a value between this and the minimum above."
 		
 		softRadiusMaxTextBox = textBox11
 	end
@@ -283,6 +296,7 @@ function setupTextBoxes()
 		textBox12.limitsActive = true
 		textBox12.numberMin = 0
 		textBox12.numberMax = 1000
+		textBox12.description = ""
 		
 		mediumRadiusMinTextBox = textBox12
 	end
@@ -294,6 +308,7 @@ function setupTextBoxes()
 		textBox13.limitsActive = true
 		textBox13.numberMin = 0
 		textBox13.numberMax = 1000
+		textBox13.description = ""
 		
 		mediumRadiusMaxTextBox = textBox13
 	end
@@ -305,6 +320,7 @@ function setupTextBoxes()
 		textBox14.limitsActive = true
 		textBox14.numberMin = 0
 		textBox14.numberMax = 1000
+		textBox14.description = ""
 		
 		hardRadiusMinTextBox = textBox14
 	end
@@ -316,6 +332,7 @@ function setupTextBoxes()
 		textBox15.limitsActive = true
 		textBox15.numberMin = 0
 		textBox15.numberMax = 1000
+		textBox15.description = ""
 		
 		hardRadiusMaxTextBox = textBox15
 	end
@@ -327,6 +344,7 @@ function setupTextBoxes()
 		textBox16.limitsActive = true
 		textBox16.numberMin = 1
 		textBox16.numberMax = 1000
+		textBox16.description = ""
 		
 		maxDistanceTextBox = textBox16
 	end
@@ -338,6 +356,7 @@ function setupTextBoxes()
 		textBox17.limitsActive = true
 		textBox17.numberMin = 0
 		textBox17.numberMax = 1000
+		textBox17.description = ""
 		
 		burstFireMaxTextBox = textBox17
 	end
@@ -349,6 +368,7 @@ function setupTextBoxes()
 		textBox18.limitsActive = true
 		textBox18.numberMin = 0
 		textBox18.numberMax = 100000
+		textBox18.description = ""
 		
 		hitForceTextBox = textBox18
 	end
@@ -358,6 +378,7 @@ function setupTextBoxes()
 		textBox19.value = name
 		textBox19.disabled = not customProfile
 		textBox19.width = 300
+		textBox19.description = ""
 		
 		nameTextBox = textBox19
 	end
@@ -370,6 +391,7 @@ function setupTextBoxes()
 		textBox20.limitsActive = true
 		textBox20.numberMin = 1
 		textBox20.numberMax = 100000
+		textBox20.description = ""
 		
 		magSizeTextBox = textBox20
 	end
@@ -382,8 +404,21 @@ function setupTextBoxes()
 		textBox21.limitsActive = true
 		textBox21.numberMin = 1
 		textBox21.numberMax = 100000
+		textBox21.description = ""
 		
 		maxAmmoTextBox = textBox21
+	end
+	
+	if newBox22 then
+		textBox22.name = "Bullet Health"
+		textBox22.value = bulletHealth .. ""
+		textBox22.numbersOnly = true
+		textBox22.limitsActive = true
+		textBox22.numberMin = 0
+		textBox22.numberMax = 100000
+		textBox22.description = ""
+		
+		bulletHealthBox = textBox22
 	end
 end
 
@@ -402,7 +437,7 @@ function toggleButtons(dt)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Particles: ", particlesEnabled, function (i) particlesEnabled = i end)
+			drawToggle("Sound: ", soundEnabled, function (i) soundEnabled = i end)
 			
 			UiTranslate(0, 50)
 			
@@ -415,10 +450,6 @@ function toggleButtons(dt)
 		
 		UiPush()
 			UiTranslate(UiWidth() * (menuWidth / 4.5), 0)
-			
-			drawToggle("Sound: ", soundEnabled, function (i) soundEnabled = i end)
-			
-			UiTranslate(0, 50)
 			
 			drawToggle("Full Auto: ", fullAuto, function (i) fullAuto = i end)
 			
@@ -524,6 +555,10 @@ function rightsideTextInputMenu(dt)
 			UiTranslate(0, 50)
 			
 			textboxClass_render(hitForceTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(bulletHealthBox)
 			
 			UiTranslate(0, 50)
 			
@@ -976,6 +1011,10 @@ function menuUpdateActions()
 		maxAmmoTextBox.value = maxAmmo .. ""
 		maxAmmoTextBox.disabled = not customProfile
 	end
+	
+	if bulletHealthBox ~= nil then
+		bulletHealthBox.value = bulletHealth .. ""
+	end
 end
 
 function menuCloseActions()
@@ -1015,6 +1054,7 @@ function saveToolValues()
 	maxDistance = tonumber(maxDistanceTextBox.value)
 	burstFireMax = tonumber(burstFireMaxTextBox.value)
 	hitForce = tonumber(hitForceTextBox.value)
+	bulletHealth = tonumber(bulletHealthBox.value)
 	
 	if customProfile then
 		name = nameTextBox.value
