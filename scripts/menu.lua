@@ -4,8 +4,6 @@
 #include "scripts/textbox.lua"
 #include "scripts/utils.lua"
 
--- TODO: Add new settings to menu open actions
-
 binds = {
 	Prev_Weapon = "z",
 	Next_Weapon = "x",
@@ -645,11 +643,11 @@ function drawTabs(tabSpace, tabTitles, currentTab, callback)
 				end
 				
 				if currentTab == i then
-					UiTranslate(0, 30 - 5)
+					UiTranslate(0, 30)
 					
 					c_UiColor(Color4.Black)
 					
-					UiRect(buttonWidth - 2, 10)
+					UiRect(buttonWidth - 2, 15)
 				end
 			UiPop()
 		end
@@ -724,10 +722,16 @@ function bottomMenuButtons()
 			
 			UiTranslate(210, 0)
 			
+			UiPush()
+			if savedCustomProfiles ~= customProfiles then
+				greenAttentionButtonStyle()
+			end
+			
 			if UiTextButton("Save Profiles" , 200, 40) then
 				saveToolValues()
 				saveCustomProfiles()
 			end
+			UiPop()
 		
 			UiTranslate(210, 0)
 			
@@ -831,7 +835,17 @@ function disableButtonStyle()
 	UiButtonPressColor(1, 1, 1)
 	UiButtonHoverColor(1, 1, 1)
 	UiButtonPressDist(0)
-		
+end
+
+function greenAttentionButtonStyle()
+	local greenStrength = math.sin(GetTime() * 5)
+	local otherStrength = 1 - greenStrength
+	
+	if greenStrength < otherStrength then
+		greenStrength = otherStrength
+	end
+	
+	UiButtonImageBox("ui/common/box-outline-6.png", 6, 6, otherStrength, greenStrength, otherStrength, 1)
 end
 
 function menu_draw(dt)

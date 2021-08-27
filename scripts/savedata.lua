@@ -41,6 +41,7 @@ function saveFileInit()
 	
 	if customList ~= nil and customProfiles > 0 then
 		loadCustomProfiles()
+		savedCustomProfiles = customProfiles
 	end
 end
 
@@ -93,4 +94,6 @@ function saveCustomProfiles()
 	end
 	
 	SetInt(moddataPrefix .. "CustomProfiles", customProfiles)
+	
+	savedCustomProfiles = customProfiles
 end

@@ -401,19 +401,7 @@ function handleAllProjectiles(dt)
 			local hit, hitPoint, distance, normal, shape = raycast(currPos, directionToNextPos, distanceTraveled)
 			
 			if hit then
-				local mat = GetShapeMaterialAtPosition(shape, hitPoint)
-				local bulletDamage = 1
-				
-				DebugPrint(mat)
-				
-				if mat == "concrete" or mat == "brick" or mat == "weakmetal" then
-					bulletDamage = 2
-				end
-				
-				if mat == "hardmetal" or mat == "hardmasonry" then
-					bulletDamage = 3
-				end
-				
+				local bulletDamage = getBulletDamage(shape, hitPoint)
 				doBulletHoleAt(currShot, hitPoint, normal, true)
 				
 				if applyForceOnHit then
@@ -849,6 +837,21 @@ function applyForceToHitObject(shape, hitPoint, shotDirection)
 	ApplyBodyImpulse(shapeBody, hitPoint, VecScale(shotDirection, hitForce))
 end
 
+function getBulletDamage(shape, hitPoint)
+	local mat = GetShapeMaterialAtPosition(shape, hitPoint)
+	local bulletDamage = 1
+	
+	if mat == "concrete" or mat == "brick" or mat == "weakmetal" then
+		bulletDamage = 2
+	end
+	
+	if mat == "hardmetal" or mat == "hardmasonry" then
+		bulletDamage = 3
+	end
+	
+	return bulletDamage
+end
+
 function doBulletHoleAt(bullet, hitPoint, normal, hitParticles)
 	if hitParticleSettings["enabled"] and hitParticles then
 		setupHitParticle()
@@ -893,7 +896,32 @@ function doHitScanShot(shotStartPos, shotDirection)
 			doBulletHoleAt(fakeBullet, currPos, normal, i >= maxDistance)
 		end
 	else
-		doBulletHoleAt(fakeHitScanBullet(), hitPoint, normal, hit)
+		if hit and bulletHealth > 0 then
+			local bulletDamage = getBulletDamage(shape, hitPoint)
+			
+			local fakeBullet = fakeHitScanBullet()
+			
+			local currBulletHealth = bulletHealth - bulletDamage
+			
+			doBulletHoleAt(fakeBullet, hitPoint, normal, hit)
+			
+			while currBulletHealth > 0 do
+				local hit, hitPoint, distance, normal, shape = raycast(shotStartPos, shotDirection, maxDistance)
+				
+				if not hit then
+					currBulletHealth = 0
+					break
+				end
+				
+				doBulletHoleAt(fakeBullet, hitPoint, normal, hit)
+				
+				local bulletDamage = getBulletDamage(shape, hitPoint)
+				
+				currBulletHealth = currBulletHealth - bulletDamage
+			end
+		else
+			doBulletHoleAt(fakeHitScanBullet(), hitPoint, normal, hit)
+		end
 	end
 	
 	if applyForceOnHit and hit then
