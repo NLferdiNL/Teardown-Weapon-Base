@@ -13,6 +13,7 @@ toolReadableName = "Moddy Weapon"
 -- TODO: Add particle editor
 -- TODO: Add attention trigger to save profile on profile changes.
 -- TODO: Implement projectile particles.
+-- TODO: Add bullet gravity
 
 name = "Shotgun"
 customProfile = false
