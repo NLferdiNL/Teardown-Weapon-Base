@@ -30,6 +30,7 @@ local menuOpened = false
 local menuOpenLastFrame = false
 
 local rebinding = nil
+local deletingProfile = 0
 
 local erasingBinds = 0
 
@@ -110,6 +111,10 @@ function menu_tick(dt)
 			binds[rebinding] = lastKeyPressed
 			rebinding = nil
 		end
+	end
+	
+	if deletingProfile > 0 then
+		deletingProfile = deletingProfile - dt
 	end
 	
 	textboxClass_tick()
@@ -689,14 +694,23 @@ function bottomMenuButtons()
 				if not customProfile then
 					disableButtonStyle()
 				end
-			
-				if UiTextButton("Delete Profile" , 200, 40) and customProfile then
-					local currIndex = GetCurrentSelectedWeaponIndex()
 				
-					selectNewWeapon(1)
-					DeleteCustom(currIndex)
-					
-					updateScrollSize()
+				if deletingProfile > 0 then
+					UiPush()
+						c_UiColor(Color4.Red)
+						if UiTextButton("Are you sure?" , 200, 40) and customProfile then
+							local currIndex = GetCurrentSelectedWeaponIndex()
+						
+							selectNewWeapon(1)
+							DeleteCustom(currIndex)
+							
+							updateScrollSize()
+						end
+					UiPop()
+				else
+					if UiTextButton("Delete Profile" , 200, 40) and customProfile then
+						deletingProfile = 5
+					end
 				end
 			UiPop()
 			
@@ -925,6 +939,8 @@ function updateScrollSize()
 end
 
 function menuUpdateActions()
+	deletingProfile = 0
+	
 	if nameTextBox ~= nil then
 		nameTextBox.value = name
 		nameTextBox.disabled = not customProfile
@@ -1020,6 +1036,7 @@ end
 function menuCloseActions()
 	menuOpened = false
 	rebinding = nil
+	deletingProfile = 0
 	saveToolValues()
 	
 	updateSavedBinds()
