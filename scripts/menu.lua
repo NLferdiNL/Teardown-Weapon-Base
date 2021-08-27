@@ -248,7 +248,7 @@ function setupTextBoxes()
 		textBox08.limitsActive = true
 		textBox08.numberMin = 0
 		textBox08.numberMax = 4
-		textBox08.description = "Minimum explosive size. Picks a value between this and the maximum below. Values between 0.1 and 0.5 will all go to 0.5 due to engine limits."
+		textBox08.description = "Minimum explosive size. Picks a value between this and the maximum below.\nValues between 0.1 and 0.5 will all go to 0.5 due to engine limits."
 		
 		explosiveBulletMinSizeTextBox = textBox08
 	end
@@ -260,7 +260,7 @@ function setupTextBoxes()
 		textBox09.limitsActive = true
 		textBox09.numberMin = 0
 		textBox09.numberMax = 4
-		textBox09.description = "Maxmimum explosive size. Picks a value between this and the minimum above. Limited to 4 due to engine limits."
+		textBox09.description = "Maxmimum explosive size. Picks a value between this and the minimum above.\nLimited to 4 due to engine limits."
 		
 		explosiveBulletMaxSizeTextBox = textBox09
 	end
@@ -272,7 +272,7 @@ function setupTextBoxes()
 		textBox10.limitsActive = true
 		textBox10.numberMin = 0
 		textBox10.numberMax = 1000
-		textBox10.description = "Minimum soft radius damage. Picks a value between this and the maximum below."
+		textBox10.description = "Minimum soft radius damage. Picks a value between this and the maximum below.\nSoft materials are glass, foliage, dirt, wood, plaster and plastic.\nValue is used in meters."
 		
 		softRadiusMinTextBox = textBox10
 	end
@@ -284,7 +284,7 @@ function setupTextBoxes()
 		textBox11.limitsActive = true
 		textBox11.numberMin = 0
 		textBox11.numberMax = 1000
-		textBox11.description = "Maximum soft radius damage. Picks a value between this and the minimum above."
+		textBox11.description = "Maximum soft radius damage. Picks a value between this and the minimum above.\nSoft materials are glass, foliage, dirt, wood, plaster and plastic.\nValue is used in meters."
 		
 		softRadiusMaxTextBox = textBox11
 	end
@@ -296,7 +296,7 @@ function setupTextBoxes()
 		textBox12.limitsActive = true
 		textBox12.numberMin = 0
 		textBox12.numberMax = 1000
-		textBox12.description = ""
+		textBox12.description = "Minimum medium radius damage. Picks a value between this and the maximum below.\nMedium materials are concrete, brick and weak metal.\nValue is used in meters."
 		
 		mediumRadiusMinTextBox = textBox12
 	end
@@ -308,7 +308,7 @@ function setupTextBoxes()
 		textBox13.limitsActive = true
 		textBox13.numberMin = 0
 		textBox13.numberMax = 1000
-		textBox13.description = ""
+		textBox13.description = "Maximum medium radius damage. Picks a value between this and the minimum above.\nMedium materials are concrete, brick and weak metal.\nValue is used in meters."
 		
 		mediumRadiusMaxTextBox = textBox13
 	end
@@ -320,7 +320,7 @@ function setupTextBoxes()
 		textBox14.limitsActive = true
 		textBox14.numberMin = 0
 		textBox14.numberMax = 1000
-		textBox14.description = ""
+		textBox14.description = "Minimum hard radius damage. Picks a value between this and the maximum below.\nHard materials are hard metal and hard masonry.\nValue is used in meters."
 		
 		hardRadiusMinTextBox = textBox14
 	end
@@ -332,7 +332,7 @@ function setupTextBoxes()
 		textBox15.limitsActive = true
 		textBox15.numberMin = 0
 		textBox15.numberMax = 1000
-		textBox15.description = ""
+		textBox15.description = "Maximum hard radius damage. Picks a value between this and the minimum above.\nHard materials are hard metal and hard masonry.\nValue is used in meters."
 		
 		hardRadiusMaxTextBox = textBox15
 	end
@@ -344,7 +344,7 @@ function setupTextBoxes()
 		textBox16.limitsActive = true
 		textBox16.numberMin = 1
 		textBox16.numberMax = 1000
-		textBox16.description = ""
+		textBox16.description = "Maximum amount of distance the projectile(s) will travel, in meters."
 		
 		maxDistanceTextBox = textBox16
 	end
@@ -356,7 +356,7 @@ function setupTextBoxes()
 		textBox17.limitsActive = true
 		textBox17.numberMin = 0
 		textBox17.numberMax = 1000
-		textBox17.description = ""
+		textBox17.description = "The max amount of sequential bullets that will fire when the trigger is held."
 		
 		burstFireMaxTextBox = textBox17
 	end
@@ -368,7 +368,7 @@ function setupTextBoxes()
 		textBox18.limitsActive = true
 		textBox18.numberMin = 0
 		textBox18.numberMax = 100000
-		textBox18.description = ""
+		textBox18.description = "The amount of force a projectile will put into an object on collision.\nOnly works on dynamic objects."
 		
 		hitForceTextBox = textBox18
 	end
@@ -378,7 +378,7 @@ function setupTextBoxes()
 		textBox19.value = name
 		textBox19.disabled = not customProfile
 		textBox19.width = 300
-		textBox19.description = ""
+		--textBox19.description = ""
 		
 		nameTextBox = textBox19
 	end
@@ -391,7 +391,7 @@ function setupTextBoxes()
 		textBox20.limitsActive = true
 		textBox20.numberMin = 1
 		textBox20.numberMax = 100000
-		textBox20.description = ""
+		textBox20.description = "Bullets in a magazine.\nThis is only enabled in custom profiles."
 		
 		magSizeTextBox = textBox20
 	end
@@ -404,7 +404,7 @@ function setupTextBoxes()
 		textBox21.limitsActive = true
 		textBox21.numberMin = 1
 		textBox21.numberMax = 100000
-		textBox21.description = ""
+		textBox21.description = "Maximum amount of bullets in the players bag.\nThis is only enabled in custom profiles."
 		
 		maxAmmoTextBox = textBox21
 	end
@@ -416,7 +416,7 @@ function setupTextBoxes()
 		textBox22.limitsActive = true
 		textBox22.numberMin = 0
 		textBox22.numberMax = 100000
-		textBox22.description = ""
+		textBox22.description = "Alternative to infinite penetration, takes damage upon hit.\nSoft materials do 1 damage.\nMedium materials do 2 damage.\nHard materials do 3 damage."
 		
 		bulletHealthBox = textBox22
 	end

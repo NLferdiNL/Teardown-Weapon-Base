@@ -18,6 +18,8 @@ local inputLetters = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l"
 
 local textboxes = {}
 
+local descriptionBoxMargin = 20
+
 function textboxClass_tick()
 	for i = 1, #textboxes do
 		local textBox = textboxes[i]
@@ -110,13 +112,19 @@ function textboxClass_drawDescriptions()
 				
 				local textWidth, textHeight = UiGetTextSize(currentTextbox.description)
 				
-				DebugWatch("w", textWidth)
-				DebugWatch("h", textHeight)
+				local boxWidth = mX + textWidth + descriptionBoxMargin
+				
+				local textOffsetX = 10
+				
+				if boxWidth > UiWidth() then
+					UiAlign("top right")
+					textOffsetX = -10
+				end
 				
 				UiColor(1, 1, 1, 0.75)
-				UiImageBox("ui/hud/infobox.png", textWidth + 20, textHeight + 20, 10, 10)
+				UiImageBox("ui/hud/infobox.png", textWidth + descriptionBoxMargin, textHeight + descriptionBoxMargin, 10, 10)
 				
-				UiTranslate(10, 10)
+				UiTranslate(textOffsetX, 10)
 				
 				UiColor(1, 1, 1, 1)
 				UiText(currentTextbox.description)

@@ -10,6 +10,8 @@ toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
 
 -- TODO: Add descriptions to all textboxes. (and update soft radius to explain what soft means in materials)
+-- TODO: Add sound editor
+-- TODO: Add particle editor
 
 name = "Shotgun"
 customProfile = false
@@ -399,6 +401,19 @@ function handleAllProjectiles(dt)
 			local hit, hitPoint, distance, normal, shape = raycast(currPos, directionToNextPos, distanceTraveled)
 			
 			if hit then
+				local mat = GetShapeMaterialAtPosition(shape, hitPoint)
+				local bulletDamage = 1
+				
+				DebugPrint(mat)
+				
+				if mat == "concrete" or mat == "brick" or mat == "weakmetal" then
+					bulletDamage = 2
+				end
+				
+				if mat == "hardmetal" or mat == "hardmasonry" then
+					bulletDamage = 3
+				end
+				
 				doBulletHoleAt(currShot, hitPoint, normal, true)
 				
 				if applyForceOnHit then
@@ -407,9 +422,9 @@ function handleAllProjectiles(dt)
 				
 				DrawLine(currPos, hitPoint)
 				
-				currShot.bulletHealth = currShot.bulletHealth - 1
+				currShot.bulletHealth = currShot.bulletHealth - bulletDamage
 				
-				if currShot.bulletHealth <= 0 then
+				if currShot.bulletHealth < 0 then
 					holeMade = true
 				else
 					nextPos = hitPoint
@@ -803,7 +818,7 @@ function GenerateBulletTrajectory()
 	
 	local gunWidth = 0.5
 	local gunHeight = -0.15
-	local gunLength = -1.25
+	local gunLength = -1.5
 	
 	local gunFrontPos = TransformToParentPoint(gunTransform, Vec(gunWidth, gunHeight, gunLength))
 	local gunFrontPosForward = TransformToParentPoint(gunTransform, Vec(gunWidth, gunHeight, gunLength - 1))
@@ -920,7 +935,7 @@ function shootLogic()
 			
 			if shotFireParticleSettings["enabled"] then
 				setupShotFireParticle()
-				SpawnParticle(gunFrontPos, gunFrontDir, shotFireParticleSettings["lifetime"])
+				SpawnParticle(gunFrontPos, VecScale(gunFrontDir, 5), shotFireParticleSettings["lifetime"])
 			end
 		end
 		
