@@ -75,7 +75,7 @@ local listScreenMaxScroll = 0
 local mainTabTitles = { "Main Options", "Particle Settings", "Sound Settings", "Mod Options" }
 local currentMainTab = 1
 
-local particleTabTitles = {"Hit Particles", "Shot Particles", "Projectile Particle"}
+local particleTabTitles = {"Hit Particles", "Shot Smoke Particles", "Shot Fire Particles", "Projectile Particle"}
 local currentParticleTab = 1
 
 function menu_init()

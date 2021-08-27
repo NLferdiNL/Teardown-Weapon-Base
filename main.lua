@@ -9,9 +9,10 @@
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
 
--- TODO: Add descriptions to all textboxes. (and update soft radius to explain what soft means in materials)
 -- TODO: Add sound editor
 -- TODO: Add particle editor
+-- TODO: Add attention trigger to save profile on profile changes.
+-- TODO: Implement projectile particles.
 
 name = "Shotgun"
 customProfile = false
