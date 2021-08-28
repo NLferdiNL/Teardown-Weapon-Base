@@ -806,7 +806,7 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 			minBox.value = settingData[2] .. ""
 			minBox.numbersOnly = true
 			minBox.limitsActive = true
-			minBox.numberMin = 0
+			minBox.numberMin = -1000
 			minBox.numberMax = 1000
 			minBox.description = "Start value of this property."
 			minBox.onInputFinished = function(i)
@@ -819,7 +819,7 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 			maxBox.value = settingData[3] .. ""
 			maxBox.numbersOnly = true
 			maxBox.limitsActive = true
-			maxBox.numberMin = 0
+			maxBox.numberMin = -1000
 			maxBox.numberMax = 1000
 			maxBox.description = "End value of this property."
 			maxBox.onInputFinished = function(i) getCurrentParticle()[settingName][3] = tonumber(i) end
@@ -830,7 +830,7 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 			fadeInBox.value = settingData[5] .. ""
 			fadeInBox.numbersOnly = true
 			fadeInBox.limitsActive = true
-			fadeInBox.numberMin = 0
+			fadeInBox.numberMin = -1000
 			fadeInBox.numberMax = 1000
 			fadeInBox.description = "Fade In value of this property."
 			fadeInBox.onInputFinished = function(i) getCurrentParticle()[settingName][5] = tonumber(i) end
@@ -841,7 +841,7 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 			fadeOutBox.value = settingData[6] .. ""
 			fadeOutBox.numbersOnly = true
 			fadeOutBox.limitsActive = true
-			fadeOutBox.numberMin = 0
+			fadeOutBox.numberMin = -1000
 			fadeOutBox.numberMax = 1000
 			fadeOutBox.description = "Fade Out value of this property."
 			fadeOutBox.onInputFinished = function(i) getCurrentParticle()[settingName][6] = tonumber(i) end
@@ -871,6 +871,73 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 			UiTranslate(200, 0)
 			
 			textboxClass_render(fadeOutBox)
+		UiPop()
+	UiPop()
+end
+
+function drawParticleColorPicker(hasParticleChanged, offset)
+	UiPush()
+		local currentParticle = getCurrentParticle()
+		local settingData = currentParticle["ParticleColor"]
+		
+		local redBox, redBoxNewBox = textboxClass_getTextBox(textBoxCount + 1)
+		local greenBox, greenBoxNewBox = textboxClass_getTextBox(textBoxCount + 2)
+		local blueBox, blueBoxNewBox = textboxClass_getTextBox(textBoxCount + 3)
+		
+		textBoxCount = textBoxCount + 3
+		
+		if redBoxNewBox then
+			redBox.name = "R"
+			redBox.value = settingData[1 + offset] .. ""
+			redBox.numbersOnly = true
+			redBox.limitsActive = true
+			redBox.numberMin = 0
+			redBox.numberMax = 1
+			redBox.description = "Red value"
+			redBox.onInputFinished = function(i) getCurrentParticle()["ParticleColor"][1 + offset] = tonumber(i) end
+		end
+		
+		if greenBoxNewBox then
+			greenBox.name = "G"
+			greenBox.value = settingData[2 + offset] .. ""
+			greenBox.numbersOnly = true
+			greenBox.limitsActive = true
+			greenBox.numberMin = 0
+			greenBox.numberMax = 1
+			greenBox.description = "Green value"
+			greenBox.onInputFinished = function(i) getCurrentParticle()["ParticleColor"][2 + offset] = tonumber(i) end
+		end
+		
+		if blueBoxNewBox then
+			blueBox.name = "B"
+			blueBox.value = settingData[3 + offset] .. ""
+			blueBox.numbersOnly = true
+			blueBox.limitsActive = true
+			blueBox.numberMin = 0
+			blueBox.numberMax = 1
+			blueBox.description = "Blue value"
+			blueBox.onInputFinished = function(i) getCurrentParticle()["ParticleColor"][3 + offset] = tonumber(i) end
+		end
+		
+		if hasParticleChanged then
+			redBox.value = settingData[1 + offset] .. ""
+			greenBox.value = settingData[2 + offset] .. ""
+			blueBox.value = settingData[3 + offset] .. ""
+		end
+		
+		UiPush()
+			UiAlign("center middle")
+			UiTranslate(125, 0)
+			
+			textboxClass_render(redBox)
+			
+			UiTranslate(150, 0)
+			
+			textboxClass_render(greenBox)
+			
+			UiTranslate(150, 0)
+			
+			textboxClass_render(blueBox)
 		UiPop()
 	UiPop()
 end
@@ -919,6 +986,17 @@ function particleSettings()
 			UiPush()
 				UiTranslate(200, 0)
 				textboxClass_render(particleLifetimeBox)
+			UiPop()
+			
+			UiTranslate(0, 50)
+			
+			UiPush()
+				UiTranslate(-50, 0)
+				drawParticleColorPicker(hasParticleChanged, 0)
+				
+				UiTranslate(600, 0)
+				
+				drawParticleColorPicker(hasParticleChanged, 3)
 			UiPop()
 			
 			UiTranslate(0, 50)

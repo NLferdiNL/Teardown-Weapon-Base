@@ -12,6 +12,7 @@ toolReadableName = "Moddy Weapon"
 -- TODO: Add sound editor
 -- TODO: Finish particle editor
 -- TODO: Fix projectile particles going the wrong way.
+-- TODO: Fix particle boxes not getting updated.
 -- TODO: Add bullet gravity (and to menu)
 -- TODO: Seperate X and Y spread for wide low spread
 -- TODO: Finish the plasma pistol. (Showcase bullet health, projectile particle and bullet gravity.)
@@ -209,7 +210,7 @@ function tick(dt)
 	
 	local currPart = getCurrentParticle()
 	
-	--[[DebugWatch("enabled", currPart.enabled)
+	DebugWatch("enabled", currPart.enabled)
 	DebugWatch("ParticleType", currPart.ParticleType)
 	DebugWatch("ParticleTile", currPart.ParticleTile)
 	DebugWatch("lifetime", currPart.lifetime)
@@ -222,7 +223,7 @@ function tick(dt)
 	DebugWatch("ParticleRotation", tableToText(currPart.ParticleRotation, true, false, false))
 	DebugWatch("ParticleStretch", tableToText(currPart.ParticleStretch, true, false, false))
 	DebugWatch("ParticleSticky", tableToText(currPart.ParticleSticky, true, false, false))
-	DebugWatch("ParticleCollide", tableToText(currPart.ParticleCollide, true, false, false))]]--
+	DebugWatch("ParticleCollide", tableToText(currPart.ParticleCollide, true, false, false))
 	
 	cooldownLogic(dt)
 	
