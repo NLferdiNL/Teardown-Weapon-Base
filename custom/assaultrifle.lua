@@ -34,6 +34,7 @@ assaultrifle = {
 	sfxLength = {},
 	infinitePenetration = false,
 	bulletHealth = 0,
+	projectileGravity = 0,
 	
 	hitParticleSettings = {
 		enabled = true,

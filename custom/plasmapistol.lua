@@ -34,6 +34,7 @@ plasmapistol = {
 	sfxLength = {},
 	infinitePenetration = true,
 	bulletHealth = 0,
+	projectileGravity = -0.25,
 	
 	hitParticleSettings = {
 		enabled = true,

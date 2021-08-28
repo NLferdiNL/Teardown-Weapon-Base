@@ -69,6 +69,8 @@ local bulletHealthBox = nil
 
 local particleLifetimeBox = nil
 
+local projectileGravityBox = nil
+
 local textBoxCount = 0
 
 local weaponListScrollPosition = 0
@@ -177,7 +179,9 @@ function setupTextBoxes()
 	
 	local textBox23, newBox23 = textboxClass_getTextBox(23) -- Particle lifetime
 	
-	textBoxCount = 23
+	local textBox24, newBox24 = textboxClass_getTextBox(24) -- Projectile Gravity
+	
+	textBoxCount = 24
 	
 	if newBox01 then
 		textBox01.name = "Spread"
@@ -455,6 +459,18 @@ function setupTextBoxes()
 		
 		particleLifetimeBox = textBox23
 	end
+	
+	if newBox24 then
+		textBox24.name = "Projectile Gravity"
+		textBox24.value = projectileGravity .. ""
+		textBox24.numbersOnly = true
+		textBox24.limitsActive = true
+		textBox24.numberMin = -1000
+		textBox24.numberMax = 1000
+		textBox24.description = "Gravity applied to projectiles. (Not functional in hitscan currently.)"
+		
+		projectileGravityBox = textBox24
+	end
 end
 
 function toggleButtons(dt)
@@ -606,6 +622,10 @@ function rightsideTextInputMenu(dt)
 			UiTranslate(0, 50)
 			
 			textboxClass_render(maxAmmoTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(projectileGravityBox)
 			
 			UiTranslate(0, 50)
 			
@@ -1314,6 +1334,10 @@ function menuUpdateActions()
 	if particleLifetimeBox ~= nil then
 		particleLifetimeBox.value = getCurrentParticle()["lifetime"] .. ""
 	end
+	
+	if projectileGravityBox ~= nil then
+		projectileGravityBox.value = projectileGravity .. ""
+	end
 end
 
 function menuCloseActions()
@@ -1365,6 +1389,7 @@ function saveToolValues()
 	burstFireMax = tonumber(burstFireMaxTextBox.value)
 	hitForce = tonumber(hitForceTextBox.value)
 	bulletHealth = tonumber(bulletHealthBox.value)
+	projectileGravity = tonumber(projectileGravityBox.value)
 	
 	if customProfile then
 		name = nameTextBox.value

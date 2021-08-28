@@ -34,6 +34,7 @@ rocketlauncher = {
 	sfxLength = {},
 	infinitePenetration = false,
 	bulletHealth = 0,
+	projectileGravity = -0.1,
 	
 	hitParticleSettings = {
 		enabled = true,

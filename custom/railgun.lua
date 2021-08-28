@@ -34,6 +34,7 @@ railgun = {
 	sfxLength = { warmup_start = 4.841 },
 	infinitePenetration = true,
 	bulletHealth = 0,
+	projectileGravity = 0,
 	
 	hitParticleSettings = {
 		enabled = true,

@@ -34,6 +34,7 @@ holecutter = {
 	sfxLength = { shot_start = 0},
 	infinitePenetration = false,
 	bulletHealth = 0,
+	projectileGravity = 0,
 	
 	hitParticleSettings = {
 		enabled = false,

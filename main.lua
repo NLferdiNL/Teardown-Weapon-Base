@@ -13,7 +13,6 @@ toolReadableName = "Moddy Weapon"
 -- TODO: Finish particle editor
 -- TODO: Fix projectile particles going the wrong way.
 -- TODO: Fix particle boxes not getting updated.
--- TODO: Add bullet gravity (and to menu)
 -- TODO: Seperate X and Y spread for wide low spread
 -- TODO: Finish the plasma pistol. (Showcase bullet health, projectile particle and bullet gravity.)
 
@@ -57,7 +56,7 @@ hardRadiusMin = 10
 hardRadiusMax = 15
 bulletHealth = 5
 infinitePenetration = false
-projectileGravity = 0 -- TODO: Add option to menu, implement
+projectileGravity = 0
 sfx = {} -- TODO: Add option to menu
 sfxLength = {}
 fireTime = 0
@@ -399,6 +398,10 @@ function handleAllProjectiles(dt)
 		local currPos = currShot.currentPos
 		
 		local nextPos = VecAdd(currPos, VecScale(currShot.velocity, dt * 10))
+		
+		if projectileGravity ~= 0 then
+			currShot.velocity = VecAdd(currShot.velocity, Vec(0, projectileGravity * dt, 0))
+		end
 		
 		local directionToNextPos = VecNormalize(currShot.velocity)
 		
