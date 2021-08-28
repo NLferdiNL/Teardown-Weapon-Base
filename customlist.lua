@@ -210,6 +210,7 @@ function ApplySettingsByIndex(index)
 	projectileParticleSettings = deepcopy(newSettings.projectileParticleSettings)
 	bulletHealth = newSettings.bulletHealth
 	projectileGravity = newSettings.projectileGravity
+	drawProjectileLine = newSettings.drawProjectileLine
 end
 
 function SaveSettingsToProfile(index)
@@ -267,6 +268,7 @@ function SaveSettingsToProfile(index)
 	newSettings.projectileParticleSettings = deepcopy(projectileParticleSettings)
 	newSettings.bulletHealth = bulletHealth
 	newSettings.projectileGravity = projectileGravity
+	newSettings.drawProjectileLine = drawProjectileLine
 end
 
 function checkSettingsUpToDate(settings)
@@ -278,7 +280,7 @@ function checkSettingsUpToDate(settings)
 end
 
 function updateSettings(settings)
-	if settings["profileVersion"] == nil then -- Version 0
+	if settings["profileVersion"] == nil then -- Below version 1
 		settings["profileVersion"] = 1
 		
 		settings["hitParticleSettings"] = deepcopy(hitParticleSettings)
@@ -298,10 +300,11 @@ function updateSettings(settings)
 		settings["bulletHealth"] = 0
 	end
 	
-	if settings["profileVersion"] <= 2 then -- Version 0
-		settings["profileVersion"] = 2
+	if settings["profileVersion"] < 3 then -- Below version 3
+		settings["profileVersion"] = 3
 		
 		settings["projectileGravity"] = 0
+		settings["drawProjectileLine"] = true
 	end
 	
 	return settings

@@ -35,6 +35,7 @@ rocketlauncher = {
 	infinitePenetration = false,
 	bulletHealth = 0,
 	projectileGravity = -0.1,
+	drawProjectileLine = true,
 	
 	hitParticleSettings = {
 		enabled = true,

@@ -9,8 +9,10 @@
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
 
+-- TODO: Add bindables to mod menu.
 -- TODO: Add sound editor
 -- TODO: Finish particle editor
+-- TODO: Add projectile bouncyness (velocity * normal * bouncyness)
 -- TODO: Fix projectile particles going the wrong way.
 -- TODO: Fix particle boxes not getting updated.
 -- TODO: Seperate X and Y spread for wide low spread
@@ -60,7 +62,7 @@ projectileGravity = 0
 sfx = {} -- TODO: Add option to menu
 sfxLength = {}
 fireTime = 0
-
+drawProjectileLine = true
 
 hitParticleSettings = {
 	enabled = true,
@@ -84,10 +86,10 @@ shotSmokeParticleSettings = {
 	ParticleType = "smoke",
 	ParticleTile = 0,
 	lifetime = 3,
-	ParticleColor = {1, 1, 1, 0, 0, 0},
+	ParticleColor = {0, 1, 0, 1, 1, 1},
 	ParticleRadius = 	{ true, 0.1, 0.3, "linear", 0, 1},
 	ParticleAlpha = 	{ false, 1, 1, "linear", 0, 1},
-	ParticleGravity = 	{ true, 0.4, 0.4, "linear", 0, 1},
+	ParticleGravity = 	{ false, 0.4, 0.4, "linear", 0, 1},
 	ParticleDrag = 		{ false, 0, 0, "linear", 0, 1},
 	ParticleEmissive = 	{ false, 0, 0, "linear", 0, 1},
 	ParticleRotation = 	{ false, 0, 0, "linear", 0, 1},
@@ -100,8 +102,8 @@ shotFireParticleSettings = {
 	enabled = true,
 	ParticleType = "plain",
 	ParticleTile = 3,
-	lifetime = 0.3,
-	ParticleColor = {1, 0.75, 0.4, 0, 0, 0},
+	lifetime = 0.5,
+	ParticleColor = {0, 1, 0, 1, 1, 1},
 	ParticleRadius = 	{ true, 0.4, 0.2, "smooth", 0, 1},
 	ParticleAlpha = 	{ false, 1, 1, "linear", 0, 1},
 	ParticleGravity = 	{ false, 0, 0, "linear", 0, 1},
@@ -114,14 +116,14 @@ shotFireParticleSettings = {
 }
 
 projectileParticleSettings = {
-	enabled = false,
+	enabled = true,
 	ParticleType = "smoke",
 	ParticleTile = 0,
 	lifetime = 3,
-	ParticleColor = {0.25, 0.25, 0.25, 1, 1, 1},
-	ParticleRadius = 	{ true, 0.5, 1, "linear", 0, 1},
+	ParticleColor = {0, 1, 1, 1, 1, 1},
+	ParticleRadius = 	{ true, 0.1, 0.1, "linear", 0, 1},
 	ParticleAlpha = 	{ false, 1, 1, "linear", 0, 1},
-	ParticleGravity = 	{ true, 1, 1, "linear", 0, 1},
+	ParticleGravity = 	{ false, 1, 1, "linear", 0, 1},
 	ParticleDrag = 		{ false, 0, 0, "linear", 0, 1},
 	ParticleEmissive = 	{ false, 0, 0, "linear", 0, 1},
 	ParticleRotation = 	{ false, 0, 0, "linear", 0, 1},
@@ -170,6 +172,7 @@ local firedShotLineClass = {
 }
 
 local bulletProjectileClass = {
+	drawLine = true,
 	lifetime = maxDistance,
 	bulletHealth = 0,
 	currentPos = nil,
@@ -209,7 +212,7 @@ function tick(dt)
 	
 	local currPart = getCurrentParticle()
 	
-	DebugWatch("enabled", currPart.enabled)
+	--[[DebugWatch("enabled", currPart.enabled)
 	DebugWatch("ParticleType", currPart.ParticleType)
 	DebugWatch("ParticleTile", currPart.ParticleTile)
 	DebugWatch("lifetime", currPart.lifetime)
@@ -222,7 +225,7 @@ function tick(dt)
 	DebugWatch("ParticleRotation", tableToText(currPart.ParticleRotation, true, false, false))
 	DebugWatch("ParticleStretch", tableToText(currPart.ParticleStretch, true, false, false))
 	DebugWatch("ParticleSticky", tableToText(currPart.ParticleSticky, true, false, false))
-	DebugWatch("ParticleCollide", tableToText(currPart.ParticleCollide, true, false, false))
+	DebugWatch("ParticleCollide", tableToText(currPart.ParticleCollide, true, false, false))]]--
 	
 	cooldownLogic(dt)
 	
@@ -372,6 +375,7 @@ function createProjectileBullet(startPos, direction)
 	firedProjectile.softRadius = math.random(softRadiusMin, softRadiusMax) / 10
 	firedProjectile.mediumRadius = math.random(mediumRadiusMin, mediumRadiusMax) / 10
 	firedProjectile.hardRadius = math.random(hardRadiusMin, hardRadiusMax) / 10
+	firedProjectile.drawLine = drawProjectileLine
 	
 	return firedProjectile
 end
@@ -417,7 +421,10 @@ function handleAllProjectiles(dt)
 			DebugWatch("minDist", currShot.explosiveSize * minExplosiveDistanceMultiplier)
 			DebugWatch("velocity", math.abs(10 - distanceTraveled))--]]--
 			
-			DrawLine(currPos, nextPos)
+			if currShot.drawLine then
+				DrawLine(currPos, nextPos)
+			end
+			
 			if (currShot.explosive and (VecDist(currPos, playerPos) > currShot.explosiveSize * minExplosiveDistanceMultiplier + math.abs(10 - distanceTraveled) or not smartExplosiveBullets)) or not currShot.explosive then
 				for i = 0, distanceTraveled, infinitePenetrationHitScanDamageStep do
 					local damageStepPos = VecAdd(currPos, VecScale(directionToNextPos, i))
@@ -439,7 +446,9 @@ function handleAllProjectiles(dt)
 					applyForceToHitObject(shape, hitPoint, directionToNextPos)
 				end
 				
-				DrawLine(currPos, hitPoint)
+				if currShot.drawLine then
+					DrawLine(currPos, hitPoint)
+				end
 				
 				currShot.bulletHealth = currShot.bulletHealth - bulletDamage
 				
@@ -455,7 +464,9 @@ function handleAllProjectiles(dt)
 					SpawnParticle(currPos, directionToNextPos, projectileParticleSettings["lifetime"])
 				end
 				
-				DrawLine(currPos, nextPos)
+				if currShot.drawLine then
+					DrawLine(currPos, nextPos)
+				end
 			end
 		end
 		
@@ -488,6 +499,7 @@ function handleAllFiredShotLines(dt)
 		else
 			local alpha = currShot.lifetime / firedShotLineClass.lifetime
 		
+			
 			DrawLine(currShot.startPos, currShot.endPos, 1, 1, 1, alpha)
 		end
 	end
@@ -879,11 +891,11 @@ function getBulletDamage(shape, hitPoint)
 	
 	if mat == "concrete" or mat == "brick" or mat == "weakmetal" then
 		bulletDamage = 2
-	end
-	
-	if mat == "hardmetal" or mat == "hardmasonry" then
+	elseif mat == "hardmetal" or mat == "hardmasonry" then
 		bulletDamage = 3
 	end
+	
+	
 	
 	return bulletDamage
 end
@@ -1026,9 +1038,11 @@ function shootLogic()
 		end
 		
 		if hitscanBullets then
-			local firedShot = createFiredShot(gunFrontPos, hitPoint)
-			
-			table.insert(firedShotLines, firedShot)
+			if drawProjectileLine then
+				local firedShot = createFiredShot(gunFrontPos, hitPoint)
+				
+				table.insert(firedShotLines, firedShot)
+			end
 		else
 			local firedProjectile = createProjectileBullet(shotStartPos, shotDirection)
 			

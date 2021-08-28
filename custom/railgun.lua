@@ -35,6 +35,7 @@ railgun = {
 	infinitePenetration = true,
 	bulletHealth = 0,
 	projectileGravity = 0,
+	drawProjectileLine = true,
 	
 	hitParticleSettings = {
 		enabled = true,

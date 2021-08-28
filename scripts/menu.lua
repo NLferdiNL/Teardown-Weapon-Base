@@ -473,30 +473,47 @@ function setupTextBoxes()
 	end
 end
 
-function toggleButtons(dt)
+function modOptionsPage()
+	UiPush()
+		UiTranslate(0, 50)
+		
+		drawToggle("Infinite Ammo: ", infiniteAmmo, function (i) infiniteAmmo = i; hasAValueBeenChanged = customProfile end)
+				
+		UiTranslate(0, 50)
+		
+		drawToggle("Infinite Mag: ", infiniteMag, function (i) infiniteMag = i; hasAValueBeenChanged = customProfile end)
+		
+		UiTranslate(0, 50)
+		
+		drawToggle("Sound: ", soundEnabled, function (i) soundEnabled = i; hasAValueBeenChanged = customProfile end)
+		
+		UiTranslate(0, 50)
+	UiPop()
+end
+
+function mainToggleButtons(dt)
 	UiPush()
 		UiTranslate(0, 50)
 		
 		UiPush()
 			UiTranslate(-UiWidth() * (menuWidth / 4.5), 0)
-		
-			drawToggle("Infinite Ammo: ", infiniteAmmo, function (i) infiniteAmmo = i; hasAValueBeenChanged = customProfile end)
-			
-			UiTranslate(0, 50)
-			
-			drawToggle("Infinite Mag: ", infiniteMag, function (i) infiniteMag = i; hasAValueBeenChanged = customProfile end)
-			
-			UiTranslate(0, 50)
-			
-			drawToggle("Sound: ", soundEnabled, function (i) soundEnabled = i; hasAValueBeenChanged = customProfile end)
-			
-			UiTranslate(0, 50)
-			
 			drawToggle("Hitscan bullets: ", hitscanBullets, function (i) hitscanBullets = i; hasAValueBeenChanged = customProfile end)
 			
 			UiTranslate(0, 50)
 			
 			drawToggle("Apply Force To Hit Objects: ", applyForceOnHit, function (i) applyForceOnHit = i; hasAValueBeenChanged = customProfile end)
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Draw Projectile Line: ", drawProjectileLine, function (i) drawProjectileLine = i; hasAValueBeenChanged = customProfile end)
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Explosive Bullets: ", explosiveBullets, function (i) explosiveBullets = i; hasAValueBeenChanged = customProfile end)
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Incendiary Bullets: ", incendiaryBullets, function (i) incendiaryBullets = i; hasAValueBeenChanged = customProfile end)
 		UiPop()
 		
 		UiPush()
@@ -507,14 +524,6 @@ function toggleButtons(dt)
 			UiTranslate(0, 50)
 			
 			drawToggle("Infinite Penetration: ", infinitePenetration, function (i) infinitePenetration = i; hasAValueBeenChanged = customProfile end)
-			
-			UiTranslate(0, 50)
-			
-			drawToggle("Explosive Bullets: ", explosiveBullets, function (i) explosiveBullets = i; hasAValueBeenChanged = customProfile end)
-			
-			UiTranslate(0, 50)
-			
-			drawToggle("Incendiary Bullets: ", incendiaryBullets, function (i) incendiaryBullets = i; hasAValueBeenChanged = customProfile end)
 			
 			UiTranslate(0, 50)
 			
@@ -657,7 +666,7 @@ function mainSettings()
 				EditCustomName(GetCurrentSelectedWeaponIndex(), name)
 			end
 			
-			toggleButtons(dt)
+			mainToggleButtons(dt)
 			
 			leftsideTextInputMenu(dt)
 			middleSideTextInputMenu(dt)
@@ -1174,7 +1183,7 @@ function menu_draw(dt)
 		elseif currentMainTab == 3 then
 		
 		elseif currentMainTab == 4 then
-		
+			modOptionsPage()
 		end
 	UiPop()
 	

@@ -36,6 +36,7 @@ forcegun = {
 	infinitePenetration = false,
 	bulletHealth = 0,
 	projectileGravity = 0,
+	drawProjectileLine = true,
 	
 	hitParticleSettings = {
 		enabled = false,
