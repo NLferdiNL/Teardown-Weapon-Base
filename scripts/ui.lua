@@ -47,3 +47,17 @@ function drawToggle(label, value, callback)
 		end
 	UiPop()
 end
+
+function drawToggleBox(value, callback)
+	UiPush()
+		local image = "ui/common/score-target-taken.png"
+		
+		if not value then
+			image = "ui/common/score-target.png" 
+		end
+		
+		if UiImageButton(image, 60, 60) then
+			callback(not value)
+		end
+	UiPop()
+end

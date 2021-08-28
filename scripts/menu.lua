@@ -67,6 +67,10 @@ local maxAmmoTextBox = nil
 
 local bulletHealthBox = nil
 
+local particleLifetimeBox = nil
+
+local textBoxCount = 0
+
 local weaponListScrollPosition = 0
 local isMouseInWeaponList = false
 local listScreenHeight = 0
@@ -77,6 +81,11 @@ local currentMainTab = 1
 
 local particleTabTitles = {"Hit Particles", "Shot Smoke Particles", "Shot Fire Particles", "Projectile Particle"}
 local currentParticleTab = 1
+
+local particleSettingNames = {"ParticleRadius", "ParticleAlpha", "ParticleGravity", "ParticleDrag", "ParticleEmissive", "ParticleRotation", "ParticleStretch", "ParticleSticky", "ParticleCollide" } 
+local particleReadableNames = {"Particle Radius", "Particle Alpha", "Particle Gravity", "Particle Drag", "Particle Emissive", "Particle Rotation", "Particle Stretch", "Particle Sticky", "Particle Collide" } 
+
+local hasAValueBeenChanged = false
 
 function menu_init()
 	binds["Open_Menu"] = menuOpenKey
@@ -89,6 +98,12 @@ function menu_tick(dt)
 		if not menuOpened then
 			menuCloseActions()
 		end
+	end
+	
+	checkValuesChanged()
+	
+	if hasChangedSettings() then
+		hasAValueBeenChanged = false
 	end
 	
 	if menuOpened and hasChangedSettings() then
@@ -159,6 +174,10 @@ function setupTextBoxes()
 	local textBox21, newBox21 = textboxClass_getTextBox(21) -- maxAmmo
 	
 	local textBox22, newBox22 = textboxClass_getTextBox(22) -- bulletHealth
+	
+	local textBox23, newBox23 = textboxClass_getTextBox(23) -- Particle lifetime
+	
+	textBoxCount = 23
 	
 	if newBox01 then
 		textBox01.name = "Spread"
@@ -423,6 +442,19 @@ function setupTextBoxes()
 		
 		bulletHealthBox = textBox22
 	end
+	
+	if newBox23 then
+		textBox23.name = "Particle Lifetime"
+		textBox23.value = getCurrentParticle()["lifetime"] .. ""
+		textBox23.numbersOnly = true
+		textBox23.limitsActive = true
+		textBox23.numberMin = 0.01
+		textBox23.numberMax = 1000
+		textBox23.description = "How long the particle will be around for."
+		textBox23.onInputFinished = function(i) getCurrentParticle()["lifetime"] = tonumber(i) end
+		
+		particleLifetimeBox = textBox23
+	end
 end
 
 function toggleButtons(dt)
@@ -432,41 +464,45 @@ function toggleButtons(dt)
 		UiPush()
 			UiTranslate(-UiWidth() * (menuWidth / 4.5), 0)
 		
-			drawToggle("Infinite Ammo: ", infiniteAmmo, function (i) infiniteAmmo = i end)
+			drawToggle("Infinite Ammo: ", infiniteAmmo, function (i) infiniteAmmo = i; hasAValueBeenChanged = customProfile end)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Infinite Mag: ", infiniteMag, function (i) infiniteMag = i end)
+			drawToggle("Infinite Mag: ", infiniteMag, function (i) infiniteMag = i; hasAValueBeenChanged = customProfile end)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Sound: ", soundEnabled, function (i) soundEnabled = i end)
+			drawToggle("Sound: ", soundEnabled, function (i) soundEnabled = i; hasAValueBeenChanged = customProfile end)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Hitscan bullets: ", hitscanBullets, function (i) hitscanBullets = i end)
+			drawToggle("Hitscan bullets: ", hitscanBullets, function (i) hitscanBullets = i; hasAValueBeenChanged = customProfile end)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Apply Force To Hit Objects: ", applyForceOnHit, function (i) applyForceOnHit = i end)
+			drawToggle("Apply Force To Hit Objects: ", applyForceOnHit, function (i) applyForceOnHit = i; hasAValueBeenChanged = customProfile end)
 		UiPop()
 		
 		UiPush()
 			UiTranslate(UiWidth() * (menuWidth / 4.5), 0)
 			
-			drawToggle("Full Auto: ", fullAuto, function (i) fullAuto = i end)
+			drawToggle("Full Auto: ", fullAuto, function (i) fullAuto = i; hasAValueBeenChanged = customProfile end)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Infinite Penetration: ", infinitePenetration, function (i) infinitePenetration = i end)
+			drawToggle("Infinite Penetration: ", infinitePenetration, function (i) infinitePenetration = i; hasAValueBeenChanged = customProfile end)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Explosive Bullets: ", explosiveBullets, function (i) explosiveBullets = i end)
+			drawToggle("Explosive Bullets: ", explosiveBullets, function (i) explosiveBullets = i; hasAValueBeenChanged = customProfile end)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Incendiary Bullets: ", incendiaryBullets, function (i) incendiaryBullets = i end)
+			drawToggle("Incendiary Bullets: ", incendiaryBullets, function (i) incendiaryBullets = i; hasAValueBeenChanged = customProfile end)
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Additive(Shotgun) Reload: ", additiveReload, function (i) additiveReload = i; hasAValueBeenChanged = customProfile end)
 		UiPop()
 	UiPop()
 end
@@ -723,11 +759,12 @@ function bottomMenuButtons()
 			UiTranslate(210, 0)
 			
 			UiPush()
-			if savedCustomProfiles ~= customProfiles then
+			if savedCustomProfiles ~= customProfiles or hasAValueBeenChanged then
 				greenAttentionButtonStyle()
 			end
 			
 			if UiTextButton("Save Profiles" , 200, 40) then
+				hasAValueBeenChanged = false
 				saveToolValues()
 				saveCustomProfiles()
 			end
@@ -742,12 +779,158 @@ function bottomMenuButtons()
 	UiPop()
 end
 
+function renderParticleSetting(settingReadableName, settingName, hasParticleChanged)
+	UiPush()
+		UiFont("regular.ttf", 26)
+		UiAlign("left middle")
+		
+		local settingData = getCurrentParticle()[settingName]
+		
+		drawToggleBox(settingData[1], function(i) settingData[1] = i end)
+		
+		UiTranslate(60, 0)
+		
+		UiText(settingReadableName)
+		
+		UiTranslate(200, 0)
+		
+		local minBox, minBoxNewBox = textboxClass_getTextBox(textBoxCount + 1)
+		local maxBox, maxBoxNewBox = textboxClass_getTextBox(textBoxCount + 2)
+		local fadeInBox, fadeInNewBox = textboxClass_getTextBox(textBoxCount + 3)
+		local fadeOutBox, fadeOutNewBox = textboxClass_getTextBox(textBoxCount + 4)
+		
+		textBoxCount = textBoxCount + 4
+		
+		if minBoxNewBox then
+			minBox.name = "Min"
+			minBox.value = settingData[2] .. ""
+			minBox.numbersOnly = true
+			minBox.limitsActive = true
+			minBox.numberMin = 0
+			minBox.numberMax = 1000
+			minBox.description = "Start value of this property."
+			minBox.onInputFinished = function(i)
+				getCurrentParticle()[settingName][2] = tonumber(i) 
+			end
+		end
+		
+		if maxBoxNewBox then
+			maxBox.name = "Max"
+			maxBox.value = settingData[3] .. ""
+			maxBox.numbersOnly = true
+			maxBox.limitsActive = true
+			maxBox.numberMin = 0
+			maxBox.numberMax = 1000
+			maxBox.description = "End value of this property."
+			maxBox.onInputFinished = function(i) getCurrentParticle()[settingName][3] = tonumber(i) end
+		end
+		
+		if fadeInNewBox then
+			fadeInBox.name = "Fade In"
+			fadeInBox.value = settingData[5] .. ""
+			fadeInBox.numbersOnly = true
+			fadeInBox.limitsActive = true
+			fadeInBox.numberMin = 0
+			fadeInBox.numberMax = 1000
+			fadeInBox.description = "Fade In value of this property."
+			fadeInBox.onInputFinished = function(i) getCurrentParticle()[settingName][5] = tonumber(i) end
+		end
+		
+		if fadeOutBox then
+			fadeOutBox.name = "Fade Out"
+			fadeOutBox.value = settingData[6] .. ""
+			fadeOutBox.numbersOnly = true
+			fadeOutBox.limitsActive = true
+			fadeOutBox.numberMin = 0
+			fadeOutBox.numberMax = 1000
+			fadeOutBox.description = "Fade Out value of this property."
+			fadeOutBox.onInputFinished = function(i) getCurrentParticle()[settingName][6] = tonumber(i) end
+		end
+		
+		if hasParticleChanged then
+			minBox.value = settingData[2] .. ""
+			maxBox.value = settingData[3] .. ""
+			fadeInBox.value = settingData[5] .. ""
+			fadeOutBox.value = settingData[6] .. ""
+		end
+		
+		UiPush()
+			UiAlign("center middle")
+			UiTranslate(125, 0)
+			
+			textboxClass_render(minBox)
+			
+			UiTranslate(200, 0)
+			
+			textboxClass_render(maxBox)
+			
+			UiTranslate(200, 0)
+			
+			textboxClass_render(fadeInBox)
+			
+			UiTranslate(200, 0)
+			
+			textboxClass_render(fadeOutBox)
+		UiPop()
+	UiPop()
+end
+
+function getCurrentParticle()
+	local currentParticle = hitParticleSettings
+		
+	if currentParticleTab == 2 then
+		currentParticle = shotSmokeParticleSettings
+	elseif currentParticleTab == 3 then
+		currentParticle = shotFireParticleSettings
+	elseif currentParticleTab == 4 then
+		currentParticle = projectileParticleSettings
+	end
+	
+	return currentParticle
+end
+
 function particleSettings()
 	UiPush()
 		UiTranslate(0, 60)
 		
 		UiPush()
-			drawTabs(menuWidth, particleTabTitles, currentParticleTab, function(i) currentParticleTab = i end)
+			local particleChanged = false
+			
+			drawTabs(menuWidth, particleTabTitles, currentParticleTab, function(i) currentParticleTab = i; particleChanged = true end)
+			
+			if hasChangedSettings() then
+				particleChanged = true
+			end
+			
+			local currentParticle = getCurrentParticle()
+			
+			if particleChanged then
+				if particleLifetimeBox ~= nil then
+					particleLifetimeBox.value = currentParticle["lifetime"] .. ""
+				end
+			end
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Particle Enabled: ", currentParticle["enabled"], function (i) currentParticle["enabled"] = i; hasAValueBeenChanged = customProfile end)
+			
+			UiTranslate(-menuWidth * UiWidth() / 2 + 20, 50)
+			
+			UiPush()
+				UiTranslate(200, 0)
+				textboxClass_render(particleLifetimeBox)
+			UiPop()
+			
+			UiTranslate(0, 50)
+			
+			UiPush()
+			for i = 1, #particleSettingNames do
+				local currentSettingName = particleSettingNames[i]
+				local currentSettingReadableName = particleReadableNames[i]
+				renderParticleSetting(currentSettingReadableName, currentSettingName, particleChanged)
+				UiTranslate(0, 50)
+			end
+			UiPop()
 		UiPop()
 	UiPop()
 end
@@ -798,6 +981,10 @@ function weaponQuickMenu()
 				
 				UiPush()
 					UiTranslate(0, i * 30 + 2 - weaponListScrollPosition)
+					
+					if i + 1 == GetCurrentSelectedWeaponIndex() then
+						UiButtonImageBox("ui/common/box-outline-6.png", 6, 6, 0, 1, 0, 1)
+					end
 					
 					local textWidth, textHeight = UiGetTextSize(weapon)
 					local fontSize = 26
@@ -1045,6 +1232,10 @@ function menuUpdateActions()
 	if bulletHealthBox ~= nil then
 		bulletHealthBox.value = bulletHealth .. ""
 	end
+	
+	if particleLifetimeBox ~= nil then
+		particleLifetimeBox.value = getCurrentParticle()["lifetime"] .. ""
+	end
 end
 
 function menuCloseActions()
@@ -1056,6 +1247,16 @@ function menuCloseActions()
 	updateSavedBinds()
 
 	saveSettings()
+end
+
+function checkValuesChanged()
+	if not customProfile then
+		return
+	end
+	
+	if textboxClass_anyInputActive() then
+		hasAValueBeenChanged = true
+	end
 end
 
 function updateSavedBinds()

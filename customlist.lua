@@ -10,6 +10,7 @@
 #include "custom/lasercutter.lua"
 #include "custom/forcegun.lua"
 #include "custom/holecutter.lua"
+#include "custom/plasmapistol.lua"
 
 local customList = {
 	shotgun,
@@ -22,6 +23,7 @@ local customList = {
 	lasercutter,
 	forcegun,
 	holecutter,
+	plasmapistol,
 }
 
 local customListDefaultCount = #customList
@@ -202,11 +204,12 @@ function ApplySettingsByIndex(index)
 	sfxLength = newSettings.sfxLength
 	infinitePenetration = newSettings.infinitePenetration
 	--particlesEnabled = newSettings.particlesEnabled
-	hitParticleSettings = newSettings.hitParticleSettings
-	shotSmokeParticleSettings = newSettings.shotSmokeParticleSettings
-	shotFireParticleSettings = newSettings.shotFireParticleSettings
-	projectileParticleSettings = newSettings.projectileParticleSettings
+	hitParticleSettings = deepcopy(newSettings.hitParticleSettings)
+	shotSmokeParticleSettings = deepcopy(newSettings.shotSmokeParticleSettings)
+	shotFireParticleSettings = deepcopy(newSettings.shotFireParticleSettings)
+	projectileParticleSettings = deepcopy(newSettings.projectileParticleSettings)
 	bulletHealth = newSettings.bulletHealth
+	projectileGravity = newSettings.projectileGravity
 end
 
 function SaveSettingsToProfile(index)
@@ -258,11 +261,12 @@ function SaveSettingsToProfile(index)
 	--sfxLength = newSettings.sfxLength
 	--newSettings.particlesEnabled = particlesEnabled
 	newSettings.infinitePenetration = infinitePenetration
-	newSettings.hitParticleSettings = hitParticleSettings
-	newSettings.shotSmokeParticleSettings = shotSmokeParticleSettings
-	newSettings.shotFireParticleSettings = shotFireParticleSettings
-	newSettings.projectileParticleSettings = projectileParticleSettings
+	newSettings.hitParticleSettings = deepcopy(hitParticleSettings)
+	newSettings.shotSmokeParticleSettings = deepcopy(shotSmokeParticleSettings)
+	newSettings.shotFireParticleSettings = deepcopy(shotFireParticleSettings)
+	newSettings.projectileParticleSettings = deepcopy(projectileParticleSettings)
 	newSettings.bulletHealth = bulletHealth
+	newSettings.projectileGravity = projectileGravity
 end
 
 function checkSettingsUpToDate(settings)
@@ -277,10 +281,10 @@ function updateSettings(settings)
 	if settings["profileVersion"] == nil then -- Version 0
 		settings["profileVersion"] = 1
 		
-		settings["hitParticleSettings"] = hitParticleSettings
-		settings["shotSmokeParticleSettings"] = shotSmokeParticleSettings
-		settings["shotFireParticleSettings"] = shotFireParticleSettings
-		settings["projectileParticleSettings"] = projectileParticleSettings
+		settings["hitParticleSettings"] = deepcopy(hitParticleSettings)
+		settings["shotSmokeParticleSettings"] = deepcopy(shotSmokeParticleSettings)
+		settings["shotFireParticleSettings"] = deepcopy(shotFireParticleSettings)
+		settings["projectileParticleSettings"] = deepcopy(projectileParticleSettings)
 		
 		if not settings["particlesEnabled"] then
 			settings["hitParticleSettings"]["enabled"] = false
@@ -292,6 +296,12 @@ function updateSettings(settings)
 		settings["particlesEnabled"] = nil
 		
 		settings["bulletHealth"] = 0
+	end
+	
+	if settings["profileVersion"] <= 2 then -- Version 0
+		settings["profileVersion"] = 2
+		
+		settings["projectileGravity"] = 0
 	end
 	
 	return settings

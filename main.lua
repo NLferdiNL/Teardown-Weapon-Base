@@ -10,14 +10,15 @@ toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
 
 -- TODO: Add sound editor
--- TODO: Add particle editor
--- TODO: Add attention trigger to save profile on profile changes.
--- TODO: Implement projectile particles.
--- TODO: Add bullet gravity
+-- TODO: Finish particle editor
+-- TODO: Fix projectile particles going the wrong way.
+-- TODO: Add bullet gravity (and to menu)
+-- TODO: Seperate X and Y spread for wide low spread
+-- TODO: Finish the plasma pistol. (Showcase bullet health, projectile particle and bullet gravity.)
 
 name = "Shotgun"
 customProfile = false
-additiveReload = true -- TODO: Add option to menu
+additiveReload = true
 additiveReloading = false
 magSize = 30
 currMag = 0
@@ -55,9 +56,11 @@ hardRadiusMin = 10
 hardRadiusMax = 15
 bulletHealth = 5
 infinitePenetration = false
+projectileGravity = 0 -- TODO: Add option to menu, implement
 sfx = {} -- TODO: Add option to menu
 sfxLength = {}
 fireTime = 0
+
 
 hitParticleSettings = {
 	enabled = true,
@@ -150,6 +153,7 @@ infinitePenetrationHitScanStart = 5
 minExplosiveDistanceMultiplier = 6
 minExplosiveDistanceHitscanMultiplier = 7.5
 infinitePenetrationHitScanDamageStep = 0.2
+hitscanParticleStep = 0.2
 
 -- CHEATS:
 
@@ -202,6 +206,23 @@ function tick(dt)
 	end
 
 	menu_tick(dt)
+	
+	local currPart = getCurrentParticle()
+	
+	--[[DebugWatch("enabled", currPart.enabled)
+	DebugWatch("ParticleType", currPart.ParticleType)
+	DebugWatch("ParticleTile", currPart.ParticleTile)
+	DebugWatch("lifetime", currPart.lifetime)
+	DebugWatch("ParticleColor", tableToText(currPart.ParticleColor, true, false, false))
+	DebugWatch("ParticleRadius", tableToText(currPart.ParticleRadius, true, false, false))
+	DebugWatch("ParticleAlpha", tableToText(currPart.ParticleAlpha, true, false, false))
+	DebugWatch("ParticleGravity", tableToText(currPart.ParticleGravity, true, false, false))
+	DebugWatch("ParticleDrag", tableToText(currPart.ParticleDrag, true, false, false))
+	DebugWatch("ParticleEmissive", tableToText(currPart.ParticleEmissive, true, false, false))
+	DebugWatch("ParticleRotation", tableToText(currPart.ParticleRotation, true, false, false))
+	DebugWatch("ParticleStretch", tableToText(currPart.ParticleStretch, true, false, false))
+	DebugWatch("ParticleSticky", tableToText(currPart.ParticleSticky, true, false, false))
+	DebugWatch("ParticleCollide", tableToText(currPart.ParticleCollide, true, false, false))]]--
 	
 	cooldownLogic(dt)
 	
@@ -397,6 +418,10 @@ function handleAllProjectiles(dt)
 				for i = 0, distanceTraveled, infinitePenetrationHitScanDamageStep do
 					local damageStepPos = VecAdd(currPos, VecScale(directionToNextPos, i))
 					doBulletHoleAt(currShot, damageStepPos, VecDir(damageStepPos, playerPos), false)
+					if projectileParticleSettings["enabled"] then
+						setupParticleFromSettings(projectileParticleSettings)
+						SpawnParticle(currPos, VecDir(currPos, damageStepPos), projectileParticleSettings["lifetime"])
+					end
 				end
 			end
 		else
@@ -421,6 +446,11 @@ function handleAllProjectiles(dt)
 					distanceTraveled = VecDist(currPos, nextPos)
 				end
 			else
+				if projectileParticleSettings["enabled"] then
+					setupParticleFromSettings(projectileParticleSettings)
+					SpawnParticle(currPos, directionToNextPos, projectileParticleSettings["lifetime"])
+				end
+				
 				DrawLine(currPos, nextPos)
 			end
 		end
@@ -883,6 +913,8 @@ function doHitScanShot(shotStartPos, shotDirection)
 		normal = VecDir(hitPoint, shotStartPos)
 	end
 	
+	local finalHitPoint = hitPoint
+	
 	if infinitePenetration then
 		local fakeBullet = fakeHitScanBullet()
 		
@@ -896,6 +928,12 @@ function doHitScanShot(shotStartPos, shotDirection)
 			local currPos = VecAdd(shotStartPos, VecScale(shotDirection, i))
 			
 			doBulletHoleAt(fakeBullet, currPos, normal, i >= maxDistance)
+			
+			if projectileParticleSettings["enabled"] then
+				setupParticleFromSettings(projectileParticleSettings)
+				
+				SpawnParticle(currPos, shotDirection, projectileParticleSettings["lifetime"])
+			end
 		end
 	else
 		if hit and bulletHealth > 0 then
@@ -920,9 +958,23 @@ function doHitScanShot(shotStartPos, shotDirection)
 				local bulletDamage = getBulletDamage(shape, hitPoint)
 				
 				currBulletHealth = currBulletHealth - bulletDamage
+				
+				finalHitPoint = hitPoint
 			end
 		else
 			doBulletHoleAt(fakeHitScanBullet(), hitPoint, normal, hit)
+		end
+		
+		if projectileParticleSettings["enabled"] then
+			setupParticleFromSettings(projectileParticleSettings)
+			
+			local finalHitDistance = VecDist(shotStartPos, finalHitPoint)
+			
+			for i = 0, finalHitDistance, hitscanParticleStep do
+				local currentPos = VecAdd(shotStartPos, VecScale(shotDirection, i))
+				
+				SpawnParticle(currentPos, shotDirection, projectileParticleSettings["lifetime"])
+			end
 		end
 	end
 	

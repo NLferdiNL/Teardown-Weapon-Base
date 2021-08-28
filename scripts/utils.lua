@@ -1,14 +1,30 @@
-function tableToText(inputTable, loopThroughTables)
+function tableToText(inputTable, loopThroughTables, useIPairs, addIndex, addNewLine)
 	loopThroughTables = loopThroughTables or true
-
+	useIPairs = useIPairs or false
+	addIndex = addIndex or true
+	addNewLine = addNewLine or false
+	
 	local returnString = "{ "
-	for key, value in pairs(inputTable) do
-		if type(value) == "string" or type(value) == "number" then
-			returnString = returnString .. key .." = " .. value .. ", "
-		elseif type(value) == "table" and loopThroughTables then
-			returnString = returnString .. key .. " = " .. tableToText(value) .. ", "
-		else
-			returnString = returnString .. key .. " = " .. tostring(value) .. ", "
+	
+	if useIPairs then
+		for key, value in ipairs(inputTable) do
+			if type(value) == "string" or type(value) == "number" then
+				returnString = returnString .. (not addIndex and key .. " = " or " ") .. value .. (addNewLine and ",\n" or ", ")
+			elseif type(value) == "table" and loopThroughTables then
+				returnString = returnString .. (not addIndex and key .. " = " or " ") .. tableToText(value, loopThroughTables, useIPairs, addIndex, addNewLine) .. (addNewLine and ",\n" or ", ")
+			else
+				returnString = returnString .. (not addIndex and key .. " = " or " ") .. tostring(value) .. (addNewLine and ",\n" or ", ")
+			end
+		end
+	else
+		for key, value in pairs(inputTable) do
+			if type(value) == "string" or type(value) == "number" then
+				returnString = returnString .. (not addIndex and key .. " = " or " ") .. value .. (addNewLine and ",\n" or ", ")
+			elseif type(value) == "table" and loopThroughTables then
+				returnString = returnString .. (not addIndex and key .. " = " or "") .. tableToText(value, loopThroughTables, useIPairs, addIndex, addNewLine) .. (addNewLine and ",\n" or ", ")
+			else
+				returnString = returnString .. (not addIndex and key .. " = " or " ") .. tostring(value) .. (addNewLine and ",\n" or ", ")
+			end
 		end
 	end
 	returnString = returnString .. "}"
