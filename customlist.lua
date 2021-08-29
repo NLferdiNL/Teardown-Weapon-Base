@@ -276,11 +276,15 @@ function checkSettingsUpToDate(settings)
 		return false
 	end
 	
+	if settings["profileVersion"] < blankProfile["profileVersion"] then
+		return false
+	end
+	
 	return true
 end
 
 function updateSettings(settings)
-	if settings["profileVersion"] == nil then -- Below version 1
+	if settings["profileVersion"] == nil or settings["profileVersion"] <= 0 then -- Below version 1
 		settings["profileVersion"] = 1
 		
 		settings["hitParticleSettings"] = deepcopy(hitParticleSettings)
@@ -305,6 +309,29 @@ function updateSettings(settings)
 		
 		settings["projectileGravity"] = 0
 		settings["drawProjectileLine"] = true
+	end
+	
+	if settings["profileVersion"] < 4 then -- Below version 3
+		settings["profileVersion"] = 4
+		
+		local particleSettingNames = {"ParticleRadius", "ParticleAlpha", "ParticleGravity", "ParticleDrag", "ParticleEmissive", "ParticleRotation", "ParticleStretch", "ParticleSticky", "ParticleCollide" } 
+		
+		local interpolationMethods = { linear = 1, smooth = 2, easein = 3, easeout = 4, constant = 5 }
+		
+		function updateInterpolation(setting)
+			setting[4] = interpolationMethods[setting[4]]
+		end
+		
+		function updateParticle(particle)
+			for i = 1, #particleSettingNames do
+				updateInterpolation(particle[particleSettingNames[i]])
+			end
+		end
+		
+		updateParticle(settings["hitParticleSettings"])
+		updateParticle(settings["shotSmokeParticleSettings"])
+		updateParticle(settings["shotFireParticleSettings"])
+		updateParticle(settings["projectileParticleSettings"])
 	end
 	
 	return settings

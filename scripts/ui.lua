@@ -50,14 +50,17 @@ end
 
 function drawToggleBox(value, callback)
 	UiPush()
-		local image = "ui/common/score-target-taken.png"
+		local image = "ui/common/box-outline-6.png"
 		
-		if not value then
-			image = "ui/common/score-target.png" 
+		if UiImageButton(image, 120, 120) then
+			callback(not value)
 		end
 		
-		if UiImageButton(image, 60, 60) then
-			callback(not value)
+		if value then
+			UiPush()
+				UiColorFilter(0, 1, 0)
+				UiImageBox("ui/terminal/checkmark.png", 25, 25, 0, 0)
+			UiPop()
 		end
 	UiPop()
 end

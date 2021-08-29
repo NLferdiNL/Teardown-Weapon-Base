@@ -14,9 +14,7 @@ toolReadableName = "Moddy Weapon"
 -- TODO: Finish particle editor
 -- TODO: Add projectile bouncyness (velocity * normal * bouncyness)
 -- TODO: Fix projectile particles going the wrong way.
--- TODO: Fix particle boxes not getting updated.
 -- TODO: Seperate X and Y spread for wide low spread
--- TODO: Finish the plasma pistol. (Showcase bullet health, projectile particle and bullet gravity.)
 
 name = "Shotgun"
 customProfile = false
@@ -148,7 +146,7 @@ exampleParticle = {
 	ParticleStretch = 	{ false, 0, 0, "linear", 0, 1},
 	ParticleSticky = 	{ false, 0, 0, "linear", 0, 1},
 	ParticleCollide = 	{ true, 1, 1, "linear", 0, 1},
-}}]]--
+}--]]--
 
 -- MISC/UNSORTED:
 infinitePenetrationHitScanStart = 5
@@ -164,6 +162,8 @@ hitscanParticleStep = 0.2
 --infiniteMag = false
 --soundEnabled = true
 smartExplosiveBullets = true
+
+interpolationMethods = { "Linear", "Smooth", "Easein", "Easeout", "Constant" }
 
 local firedShotLineClass = {
 	lifetime = 0.4,
@@ -212,7 +212,8 @@ function tick(dt)
 	
 	local currPart = getCurrentParticle()
 	
-	--[[DebugWatch("enabled", currPart.enabled)
+	--[\[
+	DebugWatch("enabled", currPart.enabled)
 	DebugWatch("ParticleType", currPart.ParticleType)
 	DebugWatch("ParticleTile", currPart.ParticleTile)
 	DebugWatch("lifetime", currPart.lifetime)
@@ -225,7 +226,7 @@ function tick(dt)
 	DebugWatch("ParticleRotation", tableToText(currPart.ParticleRotation, true, false, false))
 	DebugWatch("ParticleStretch", tableToText(currPart.ParticleStretch, true, false, false))
 	DebugWatch("ParticleSticky", tableToText(currPart.ParticleSticky, true, false, false))
-	DebugWatch("ParticleCollide", tableToText(currPart.ParticleCollide, true, false, false))]]--
+	DebugWatch("ParticleCollide", tableToText(currPart.ParticleCollide, true, false, false))--]]--
 	
 	cooldownLogic(dt)
 	
@@ -789,7 +790,9 @@ function setupParticleLerpSetting(settings, callback)
 	if settings[2] == settings[3] then
 		callback(settings[2])
 	else
-		callback(settings[2], settings[3], settings[4], settings[5], settings[6])
+		local interpolationMethod = interpolationMethods[settings[4]]:lower()
+	
+		callback(settings[2], settings[3], interpolationMethod, settings[5], settings[6])
 	end
 end
 

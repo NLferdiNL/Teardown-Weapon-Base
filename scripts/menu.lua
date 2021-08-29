@@ -88,6 +88,7 @@ local particleSettingNames = {"ParticleRadius", "ParticleAlpha", "ParticleGravit
 local particleReadableNames = {"Particle Radius", "Particle Alpha", "Particle Gravity", "Particle Drag", "Particle Emissive", "Particle Rotation", "Particle Stretch", "Particle Sticky", "Particle Collide" } 
 
 local hasAValueBeenChanged = false
+local updateParticleSettings = false
 
 function menu_init()
 	binds["Open_Menu"] = menuOpenKey
@@ -106,6 +107,7 @@ function menu_tick(dt)
 	
 	if hasChangedSettings() then
 		hasAValueBeenChanged = false
+		updateParticleSettings = true
 	end
 	
 	if menuOpened and hasChangedSettings() then
@@ -808,6 +810,48 @@ function bottomMenuButtons()
 	UiPop()
 end
 
+function renderParticleInterpolationSelector(settingData)
+	local currentInterpolationIndex = settingData[4]
+	local optionWidth = 175
+	local margin = 10
+	UiPush()
+		UiFont("regular.ttf", 26)
+		UiAlign("center middle")
+		
+		UiImageBox("ui/common/box-outline-6.png", optionWidth, 40, 6, 6)
+		
+		UiPush()
+			UiAlign("left middle")
+			UiTranslate(-optionWidth / 2 + margin, 0)
+			if UiImageButton("MOD/sprites/arrow-left.png", 60, 60) then
+				currentInterpolationIndex = currentInterpolationIndex - 1
+				hasAValueBeenChanged = customProfile
+				
+				if currentInterpolationIndex < 1 then
+					currentInterpolationIndex = #interpolationMethods
+				end
+			end
+		UiPop()
+		
+		UiText(interpolationMethods[currentInterpolationIndex])
+		
+		UiPush()
+			UiAlign("right middle")
+			UiTranslate(optionWidth / 2 - margin, 0)
+			if UiImageButton("MOD/sprites/arrow-right.png", 60, 60)	then
+				currentInterpolationIndex = currentInterpolationIndex + 1
+				hasAValueBeenChanged = customProfile
+				
+				if currentInterpolationIndex > #interpolationMethods then
+					currentInterpolationIndex = 1
+				end
+			end
+		UiPop()
+		
+		settingData[4] = currentInterpolationIndex
+	UiPop()
+end
+
 function renderParticleSetting(settingReadableName, settingName, hasParticleChanged)
 	UiPush()
 		UiFont("regular.ttf", 26)
@@ -885,15 +929,19 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 		
 		UiPush()
 			UiAlign("center middle")
-			UiTranslate(125, 0)
+			UiTranslate(75, 0)
 			
 			textboxClass_render(minBox)
 			
-			UiTranslate(200, 0)
+			UiTranslate(150, 0)
 			
 			textboxClass_render(maxBox)
 			
-			UiTranslate(200, 0)
+			UiTranslate(150, 0)
+			
+			renderParticleInterpolationSelector(settingData)
+			
+			UiTranslate(225, 0)
 			
 			textboxClass_render(fadeInBox)
 			
@@ -990,17 +1038,11 @@ function particleSettings()
 		UiTranslate(0, 60)
 		
 		UiPush()
-			local particleChanged = false
-			
-			drawTabs(menuWidth, particleTabTitles, currentParticleTab, function(i) currentParticleTab = i; particleChanged = true end)
-			
-			if hasChangedSettings() then
-				particleChanged = true
-			end
+			drawTabs(menuWidth, particleTabTitles, currentParticleTab, function(i) currentParticleTab = i; updateParticleSettings = true end)
 			
 			local currentParticle = getCurrentParticle()
 			
-			if particleChanged then
+			if updateParticleSettings then
 				if particleLifetimeBox ~= nil then
 					particleLifetimeBox.value = currentParticle["lifetime"] .. ""
 				end
@@ -1020,12 +1062,12 @@ function particleSettings()
 			UiTranslate(0, 50)
 			
 			UiPush()
-				UiTranslate(-50, 0)
-				drawParticleColorPicker(hasParticleChanged, 0)
+				UiTranslate(-70, 0)
+				drawParticleColorPicker(updateParticleSettings, 0)
 				
-				UiTranslate(600, 0)
+				UiTranslate(450, 0)
 				
-				drawParticleColorPicker(hasParticleChanged, 3)
+				drawParticleColorPicker(updateParticleSettings, 3)
 			UiPop()
 			
 			UiTranslate(0, 50)
@@ -1034,9 +1076,11 @@ function particleSettings()
 			for i = 1, #particleSettingNames do
 				local currentSettingName = particleSettingNames[i]
 				local currentSettingReadableName = particleReadableNames[i]
-				renderParticleSetting(currentSettingReadableName, currentSettingName, particleChanged)
+				renderParticleSetting(currentSettingReadableName, currentSettingName, updateParticleSettings)
 				UiTranslate(0, 50)
 			end
+			
+			updateParticleSettings = false
 			UiPop()
 		UiPop()
 	UiPop()
