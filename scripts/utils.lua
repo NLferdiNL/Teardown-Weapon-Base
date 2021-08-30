@@ -49,6 +49,10 @@ function rndVec(length)
 	return VecScale(v, length)	
 end
 
+function Lerp(a, b, t)
+    return a + (b - a) * t
+end
+
 function VecDir(a, b)
 	return VecNormalize(VecSub(b, a))
 end

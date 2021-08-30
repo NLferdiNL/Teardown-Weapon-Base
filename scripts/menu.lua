@@ -192,7 +192,7 @@ function setupTextBoxes()
 		textBox01.limitsActive = true
 		textBox01.numberMin = 0
 		textBox01.numberMax = 100
-		textBox01.description = "Determines how big the spread circle will be.\nValues between 0 and 0.1 work the most realistic."
+		textBox01.description = "Determines how big the spread circle will be.\nValues between 0 and 0.1 work the most realistic.\nMin: 0 | Max: 100"
 		
 		spreadTextBox = textBox01
 	end
@@ -203,8 +203,8 @@ function setupTextBoxes()
 		textBox02.numbersOnly = true
 		textBox02.limitsActive = true
 		textBox02.numberMin = 1
-		textBox02.numberMax = 100
-		textBox02.description = "The amount of projectiles fired. For example useful for shotguns."
+		textBox02.numberMax = 1000
+		textBox02.description = "The amount of projectiles fired. For example useful for shotguns.\nMin: 1 | Max: 1000"
 		
 		projectilesTextBox = textBox02
 	end
@@ -216,7 +216,7 @@ function setupTextBoxes()
 		textBox03.limitsActive = true
 		textBox03.numberMin = 0
 		textBox03.numberMax = 100
-		textBox03.description = "The amount of time before you can shoot again after shooting."
+		textBox03.description = "The amount of time before you can shoot again after shooting.\nMin: 0 | Max: 100"
 		
 		shotCooldownTimeTextBox = textBox03
 	end
@@ -228,7 +228,7 @@ function setupTextBoxes()
 		textBox04.limitsActive = true
 		textBox04.numberMin = 0
 		textBox04.numberMax = 100
-		textBox04.description = "The time it takes to reload your gun."
+		textBox04.description = "The time it takes to reload your gun.\nMin: 0 | Max: 100"
 		
 		maxReloadTimeTextBox = textBox04
 	end
@@ -240,7 +240,7 @@ function setupTextBoxes()
 		textBox05.limitsActive = true
 		textBox05.numberMin = 0
 		textBox05.numberMax = 100
-		textBox05.description = "This indicates how close it has to be to the spread circle minimumly."
+		textBox05.description = "This indicates how close it has to be to the spread circle minimumly.\nMin: 0 | Max: 100"
 		
 		minRndSpreadTextBox = textBox05
 	end
@@ -252,7 +252,7 @@ function setupTextBoxes()
 		textBox06.limitsActive = true
 		textBox06.numberMin = 0
 		textBox06.numberMax = 100
-		textBox06.description = "This indicates how close it has to be to the spread circle maximumly."
+		textBox06.description = "This indicates how close it has to be to the spread circle maximumly.\nMin: 0 | Max: 100"
 		
 		maxRndSpreadTextBox = textBox06
 	end
@@ -264,7 +264,7 @@ function setupTextBoxes()
 		textBox07.limitsActive = true
 		textBox07.numberMin = 1
 		textBox07.numberMax = 10000
-		textBox07.description = "How fast the bullet will travel, in meters."
+		textBox07.description = "How fast the bullet will travel, in meters.\nMin: 0 | Max: 10000"
 		
 		projectileBulletSpeedTextBox = textBox07
 	end
@@ -276,7 +276,7 @@ function setupTextBoxes()
 		textBox08.limitsActive = true
 		textBox08.numberMin = 0
 		textBox08.numberMax = 4
-		textBox08.description = "Minimum explosive size. Picks a value between this and the maximum below.\nValues between 0.1 and 0.5 will all go to 0.5 due to engine limits."
+		textBox08.description = "Minimum explosive size. Picks a value between this and the maximum below.\nValues between 0.1 and 0.5 will all go to 0.5 due to engine limits.\nMin: 0.5 | Max: 4"
 		
 		explosiveBulletMinSizeTextBox = textBox08
 	end
@@ -288,7 +288,7 @@ function setupTextBoxes()
 		textBox09.limitsActive = true
 		textBox09.numberMin = 0
 		textBox09.numberMax = 4
-		textBox09.description = "Maxmimum explosive size. Picks a value between this and the minimum above.\nLimited to 4 due to engine limits."
+		textBox09.description = "Maxmimum explosive size. Picks a value between this and the minimum above.\nLimited to 4 due to engine limits.\nMin: 0.5 | Max: 4"
 		
 		explosiveBulletMaxSizeTextBox = textBox09
 	end
@@ -300,7 +300,7 @@ function setupTextBoxes()
 		textBox10.limitsActive = true
 		textBox10.numberMin = 0
 		textBox10.numberMax = 1000
-		textBox10.description = "Minimum soft radius damage. Picks a value between this and the maximum below.\nSoft materials are glass, foliage, dirt, wood, plaster and plastic.\nValue is used in meters."
+		textBox10.description = "Minimum soft radius damage. Picks a value between this and the maximum below.\nSoft materials are glass, foliage, dirt, wood, plaster and plastic.\nValue is used in meters.\nMin: 0 | Max: 1000"
 		
 		softRadiusMinTextBox = textBox10
 	end
@@ -312,7 +312,7 @@ function setupTextBoxes()
 		textBox11.limitsActive = true
 		textBox11.numberMin = 0
 		textBox11.numberMax = 1000
-		textBox11.description = "Maximum soft radius damage. Picks a value between this and the minimum above.\nSoft materials are glass, foliage, dirt, wood, plaster and plastic.\nValue is used in meters."
+		textBox11.description = "Maximum soft radius damage. Picks a value between this and the minimum above.\nSoft materials are glass, foliage, dirt, wood, plaster and plastic.\nValue is used in meters.\nMin: 0 | Max: 1000"
 		
 		softRadiusMaxTextBox = textBox11
 	end
@@ -324,7 +324,7 @@ function setupTextBoxes()
 		textBox12.limitsActive = true
 		textBox12.numberMin = 0
 		textBox12.numberMax = 1000
-		textBox12.description = "Minimum medium radius damage. Picks a value between this and the maximum below.\nMedium materials are concrete, brick and weak metal.\nValue is used in meters."
+		textBox12.description = "Minimum medium radius damage. Picks a value between this and the maximum below.\nMedium materials are concrete, brick and weak metal.\nMaximum of this may not be higher than the previous tier.\nValue is used in meters.\nMin: 0 | Max: 1000"
 		
 		mediumRadiusMinTextBox = textBox12
 	end
@@ -336,7 +336,7 @@ function setupTextBoxes()
 		textBox13.limitsActive = true
 		textBox13.numberMin = 0
 		textBox13.numberMax = 1000
-		textBox13.description = "Maximum medium radius damage. Picks a value between this and the minimum above.\nMedium materials are concrete, brick and weak metal.\nValue is used in meters."
+		textBox13.description = "Maximum medium radius damage. Picks a value between this and the minimum above.\nMedium materials are concrete, brick and weak metal.\nMaximum of this may not be higher than the previous tier.\nValue is used in meters.\nMin: 0 | Max: 1000"
 		
 		mediumRadiusMaxTextBox = textBox13
 	end
@@ -348,7 +348,7 @@ function setupTextBoxes()
 		textBox14.limitsActive = true
 		textBox14.numberMin = 0
 		textBox14.numberMax = 1000
-		textBox14.description = "Minimum hard radius damage. Picks a value between this and the maximum below.\nHard materials are hard metal and hard masonry.\nValue is used in meters."
+		textBox14.description = "Minimum hard radius damage. Picks a value between this and the maximum below.\nHard materials are hard metal and hard masonry.\nMaximum of this may not be higher than the previous tier.\nValue is used in meters.\nMin: 0 | Max: 1000"
 		
 		hardRadiusMinTextBox = textBox14
 	end
@@ -360,7 +360,7 @@ function setupTextBoxes()
 		textBox15.limitsActive = true
 		textBox15.numberMin = 0
 		textBox15.numberMax = 1000
-		textBox15.description = "Maximum hard radius damage. Picks a value between this and the minimum above.\nHard materials are hard metal and hard masonry.\nValue is used in meters."
+		textBox15.description = "Maximum hard radius damage. Picks a value between this and the minimum above.\nHard materials are hard metal and hard masonry.\nMaximum of this may not be higher than the previous tier.\nValue is used in meters.\nMin: 0 | Max: 1000"
 		
 		hardRadiusMaxTextBox = textBox15
 	end
@@ -371,8 +371,8 @@ function setupTextBoxes()
 		textBox16.numbersOnly = true
 		textBox16.limitsActive = true
 		textBox16.numberMin = 1
-		textBox16.numberMax = 1000
-		textBox16.description = "Maximum amount of distance the projectile(s) will travel, in meters."
+		textBox16.numberMax = 10000
+		textBox16.description = "Maximum amount of distance the projectile(s) will travel, in meters.\nMin: 0 | Max: 10000"
 		
 		maxDistanceTextBox = textBox16
 	end
@@ -384,7 +384,7 @@ function setupTextBoxes()
 		textBox17.limitsActive = true
 		textBox17.numberMin = 0
 		textBox17.numberMax = 1000
-		textBox17.description = "The max amount of sequential bullets that will fire when the trigger is held."
+		textBox17.description = "The max amount of sequential bullets that will fire when the trigger is held.\nMin: 0 | Max: 1000"
 		
 		burstFireMaxTextBox = textBox17
 	end
@@ -396,7 +396,7 @@ function setupTextBoxes()
 		textBox18.limitsActive = true
 		textBox18.numberMin = 0
 		textBox18.numberMax = 100000
-		textBox18.description = "The amount of force a projectile will put into an object on collision.\nOnly works on dynamic objects."
+		textBox18.description = "The amount of force a projectile will put into an object on collision.\nOnly works on dynamic objects.\nMin: 0 | Max: 100000"
 		
 		hitForceTextBox = textBox18
 	end
@@ -419,7 +419,7 @@ function setupTextBoxes()
 		textBox20.limitsActive = true
 		textBox20.numberMin = 1
 		textBox20.numberMax = 100000
-		textBox20.description = "Bullets in a magazine.\nThis is only enabled in custom profiles."
+		textBox20.description = "Bullets in a magazine.\nThis is only enabled in custom profiles.\nMin: 1 | Max: 100000"
 		
 		magSizeTextBox = textBox20
 	end
@@ -432,7 +432,7 @@ function setupTextBoxes()
 		textBox21.limitsActive = true
 		textBox21.numberMin = 1
 		textBox21.numberMax = 100000
-		textBox21.description = "Maximum amount of bullets in the players bag.\nThis is only enabled in custom profiles."
+		textBox21.description = "Maximum amount of bullets in the players bag.\nThis is only enabled in custom profiles.\nMin: 0 | Max: 100000"
 		
 		maxAmmoTextBox = textBox21
 	end
@@ -444,7 +444,7 @@ function setupTextBoxes()
 		textBox22.limitsActive = true
 		textBox22.numberMin = 0
 		textBox22.numberMax = 100000
-		textBox22.description = "Alternative to infinite penetration, takes damage upon hit.\nSoft materials do 1 damage.\nMedium materials do 2 damage.\nHard materials do 3 damage."
+		textBox22.description = "Alternative to infinite penetration, takes damage upon hit.\nSoft materials do 1 damage.\nMedium materials do 2 damage.\nHard materials do 3 damage.\nMin: 0 | Max: 100000"
 		
 		bulletHealthBox = textBox22
 	end
@@ -456,7 +456,7 @@ function setupTextBoxes()
 		textBox23.limitsActive = true
 		textBox23.numberMin = 0.01
 		textBox23.numberMax = 1000
-		textBox23.description = "How long the particle will be around for."
+		textBox23.description = "How long the particle will be around for.\nMin: 0.01 | Max: 1000"
 		textBox23.onInputFinished = function(i) getCurrentParticle()["lifetime"] = tonumber(i) end
 		
 		particleLifetimeBox = textBox23
@@ -469,7 +469,7 @@ function setupTextBoxes()
 		textBox24.limitsActive = true
 		textBox24.numberMin = -1000
 		textBox24.numberMax = 1000
-		textBox24.description = "Gravity applied to projectiles. (Not functional in hitscan currently.)"
+		textBox24.description = "Gravity applied to projectiles. (Not functional in hitscan currently.)\nMin: -1000 | Max: 1000"
 		
 		projectileGravityBox = textBox24
 	end
@@ -479,17 +479,29 @@ function modOptionsPage()
 	UiPush()
 		UiTranslate(0, 50)
 		
-		drawToggle("Infinite Ammo: ", infiniteAmmo, function (i) infiniteAmmo = i; hasAValueBeenChanged = customProfile end)
+		drawToggle("Infinite Ammo: ", infiniteAmmo, function (i) infiniteAmmo = i; hasAValueBeenChanged = true end)
 				
 		UiTranslate(0, 50)
 		
-		drawToggle("Infinite Mag: ", infiniteMag, function (i) infiniteMag = i; hasAValueBeenChanged = customProfile end)
+		drawToggle("Infinite Mag: ", infiniteMag, function (i) infiniteMag = i; hasAValueBeenChanged = true end)
 		
 		UiTranslate(0, 50)
 		
-		drawToggle("Sound: ", soundEnabled, function (i) soundEnabled = i; hasAValueBeenChanged = customProfile end)
+		drawToggle("Sound: ", soundEnabled, function (i) soundEnabled = i; hasAValueBeenChanged = true end)
 		
 		UiTranslate(0, 50)
+		
+		UiPush()
+			UiTranslate(-50, 0)
+			for i = 1, #bindOrder do
+				local id = bindOrder[i]
+				local key = binds[id]
+				drawRebindable(id, key)
+				UiTranslate(0, 50)
+			end
+		UiPop()
+		
+		--UiTranslate(0, 50 * (#bindOrder + 1))
 	UiPop()
 end
 
@@ -499,37 +511,37 @@ function mainToggleButtons(dt)
 		
 		UiPush()
 			UiTranslate(-UiWidth() * (menuWidth / 4.5), 0)
-			drawToggle("Hitscan bullets: ", hitscanBullets, function (i) hitscanBullets = i; hasAValueBeenChanged = customProfile end)
+			drawToggle("Hitscan bullets: ", hitscanBullets, function (i) hitscanBullets = i; hasAValueBeenChanged = true end, "Instant bullets, for ex. classic Doom.")
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Apply Force To Hit Objects: ", applyForceOnHit, function (i) applyForceOnHit = i; hasAValueBeenChanged = customProfile end)
+			drawToggle("Apply Force To Hit Objects: ", applyForceOnHit, function (i) applyForceOnHit = i; hasAValueBeenChanged = true end, "Push an object when hit by a projectile.\nInfinite Penetration: Overrides this and disables it.")
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Draw Projectile Line: ", drawProjectileLine, function (i) drawProjectileLine = i; hasAValueBeenChanged = customProfile end)
+			drawToggle("Draw Projectile Line: ", drawProjectileLine, function (i) drawProjectileLine = i; hasAValueBeenChanged = true end, "Draw a line where the projectile is.")
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Explosive Bullets: ", explosiveBullets, function (i) explosiveBullets = i; hasAValueBeenChanged = customProfile end)
+			drawToggle("Explosive Bullets: ", explosiveBullets, function (i) explosiveBullets = i; hasAValueBeenChanged = true end, "Explode on impact bullets.\nInfinite Penetration: Creates constant explosions as it travels.")
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Incendiary Bullets: ", incendiaryBullets, function (i) incendiaryBullets = i; hasAValueBeenChanged = customProfile end)
+			drawToggle("Incendiary Bullets: ", incendiaryBullets, function (i) incendiaryBullets = i; hasAValueBeenChanged = true end, "Burn on impact bullets.\nInfinite Penetration: Creates constant fires as it travels.")
 		UiPop()
 		
 		UiPush()
 			UiTranslate(UiWidth() * (menuWidth / 4.5), 0)
 			
-			drawToggle("Full Auto: ", fullAuto, function (i) fullAuto = i; hasAValueBeenChanged = customProfile end)
+			drawToggle("Full Auto: ", fullAuto, function (i) fullAuto = i; hasAValueBeenChanged = true end, "Hold to repeatedly fire, limited by shot cooldown time.")
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Infinite Penetration: ", infinitePenetration, function (i) infinitePenetration = i; hasAValueBeenChanged = customProfile end)
+			drawToggle("Infinite Penetration: ", infinitePenetration, function (i) infinitePenetration = i; hasAValueBeenChanged = true end, "Enabling this will mean the bullet will not stop for anything and keep traveling.\nEven if it cannot destroy whatever it touches.")
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Additive(Shotgun) Reload: ", additiveReload, function (i) additiveReload = i; hasAValueBeenChanged = customProfile end)
+			drawToggle("Additive(Shotgun) Reload: ", additiveReload, function (i) additiveReload = i; hasAValueBeenChanged = true end, "Reload bullets one by one, rather than by magazine.")
 		UiPop()
 	UiPop()
 end
@@ -628,29 +640,15 @@ function rightsideTextInputMenu(dt)
 			
 			UiTranslate(0, 50)
 			
+			textboxClass_render(projectileGravityBox)
+			
+			UiTranslate(0, 50)
+			
 			textboxClass_render(magSizeTextBox)
 			
 			UiTranslate(0, 50)
 			
 			textboxClass_render(maxAmmoTextBox)
-			
-			UiTranslate(0, 50)
-			
-			textboxClass_render(projectileGravityBox)
-			
-			UiTranslate(0, 50)
-			
-			UiPush()
-				UiTranslate(-50, 0)
-				for i = 1, #bindOrder do
-					local id = bindOrder[i]
-					local key = binds[id]
-					drawRebindable(id, key)
-					UiTranslate(0, 50)
-				end
-			UiPop()
-			
-			--UiTranslate(0, 50 * (#bindOrder + 1))
 		UiPop()
 	UiPop()
 end
@@ -677,18 +675,44 @@ function mainSettings()
 	UiPop()
 end
 
+function drawBox(text, fontSize, bold, margin, boxColor4, textColor4)
+	UiPush()
+		fontSize = fontSize or 26
+		bold = bold or false
+		margin = margin or 20
+		
+		if bold then
+			UiFont("bold.ttf", fontSize)
+		else
+			UiFont("regular.ttf", fontSize)
+		end
+		
+		local titleBoxWidth, titleBoxHeight = UiGetTextSize(text)
+		UiPush()
+			if boxColor4 ~= nil then
+				c_UiColorFilter(boxColor4)
+			end
+			
+			UiImageBox("ui/hud/infobox.png", titleBoxWidth + margin, titleBoxHeight + margin, 10, 10)
+		UiPop()
+		
+		UiPush()
+			if textColor4 ~= nil then
+				c_UiColorFilter(textColor4)
+			end
+			
+			UiText(text)
+		UiPop()
+	UiPop()
+end
+
 function drawTitle()
 	UiPush()
 		UiTranslate(0, -40)
-		UiFont("bold.ttf", 45)
 		
 		local titleText = toolReadableName .. " Settings"
 		
-		local titleBoxWidth, titleBoxHeight = UiGetTextSize(titleText)
-		
-		UiImageBox("ui/hud/infobox.png", titleBoxWidth + 20, titleBoxHeight + 20, 10, 10)
-		
-		UiText(titleText)
+		drawBox(titleText, 45, true)
 	UiPop()
 end
 
@@ -782,7 +806,9 @@ function bottomMenuButtons()
 			UiTranslate(210, 0)
 			
 			if UiTextButton("Copy Profile" , 200, 40) then
-				CreateNewCustom(GetCurrentSelectedWeaponIndex())
+				saveToolValues()
+			
+				CreateNewCustomFromLoaded()
 				
 				updateScrollSize()
 			end
@@ -825,7 +851,7 @@ function renderParticleInterpolationSelector(settingData)
 			UiTranslate(-optionWidth / 2 + margin, 0)
 			if UiImageButton("MOD/sprites/arrow-left.png", 60, 60) then
 				currentInterpolationIndex = currentInterpolationIndex - 1
-				hasAValueBeenChanged = customProfile
+				hasAValueBeenChanged = true
 				
 				if currentInterpolationIndex < 1 then
 					currentInterpolationIndex = #interpolationMethods
@@ -840,7 +866,7 @@ function renderParticleInterpolationSelector(settingData)
 			UiTranslate(optionWidth / 2 - margin, 0)
 			if UiImageButton("MOD/sprites/arrow-right.png", 60, 60)	then
 				currentInterpolationIndex = currentInterpolationIndex + 1
-				hasAValueBeenChanged = customProfile
+				hasAValueBeenChanged = true
 				
 				if currentInterpolationIndex > #interpolationMethods then
 					currentInterpolationIndex = 1
@@ -881,7 +907,7 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 			minBox.limitsActive = true
 			minBox.numberMin = -1000
 			minBox.numberMax = 1000
-			minBox.description = "Start value of this property."
+			minBox.description = "Start value of this property.\nMin: -1000 | Max: 1000"
 			minBox.onInputFinished = function(i)
 				getCurrentParticle()[settingName][2] = tonumber(i) 
 			end
@@ -894,7 +920,7 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 			maxBox.limitsActive = true
 			maxBox.numberMin = -1000
 			maxBox.numberMax = 1000
-			maxBox.description = "End value of this property."
+			maxBox.description = "End value of this property.\nMin: -1000 | Max: 1000"
 			maxBox.onInputFinished = function(i) getCurrentParticle()[settingName][3] = tonumber(i) end
 		end
 		
@@ -905,7 +931,7 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 			fadeInBox.limitsActive = true
 			fadeInBox.numberMin = -1000
 			fadeInBox.numberMax = 1000
-			fadeInBox.description = "Fade In value of this property."
+			fadeInBox.description = "Fade In value of this property.\nMin: -1000 | Max: 1000"
 			fadeInBox.onInputFinished = function(i) getCurrentParticle()[settingName][5] = tonumber(i) end
 		end
 		
@@ -916,7 +942,7 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 			fadeOutBox.limitsActive = true
 			fadeOutBox.numberMin = -1000
 			fadeOutBox.numberMax = 1000
-			fadeOutBox.description = "Fade Out value of this property."
+			fadeOutBox.description = "Fade Out value of this property.\nMin: -1000 | Max: 1000"
 			fadeOutBox.onInputFinished = function(i) getCurrentParticle()[settingName][6] = tonumber(i) end
 		end
 		
@@ -952,7 +978,7 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 	UiPop()
 end
 
-function drawParticleColorPicker(hasParticleChanged, offset)
+function drawParticleColorPicker(hasParticleChanged, offset, description)
 	UiPush()
 		local currentParticle = getCurrentParticle()
 		local settingData = currentParticle["ParticleColor"]
@@ -970,7 +996,12 @@ function drawParticleColorPicker(hasParticleChanged, offset)
 			redBox.limitsActive = true
 			redBox.numberMin = 0
 			redBox.numberMax = 1
-			redBox.description = "Red value"
+			redBox.description = "Red value\nMin: 0 | Max: 1"
+			
+			if description ~= nil then
+				redBox.description = description .. redBox.description
+			end
+			
 			redBox.onInputFinished = function(i) getCurrentParticle()["ParticleColor"][1 + offset] = tonumber(i) end
 		end
 		
@@ -981,7 +1012,12 @@ function drawParticleColorPicker(hasParticleChanged, offset)
 			greenBox.limitsActive = true
 			greenBox.numberMin = 0
 			greenBox.numberMax = 1
-			greenBox.description = "Green value"
+			greenBox.description = "Green value\nMin: 0 | Max: 1"
+			
+			if description ~= nil then
+				greenBox.description = description .. greenBox.description
+			end
+			
 			greenBox.onInputFinished = function(i) getCurrentParticle()["ParticleColor"][2 + offset] = tonumber(i) end
 		end
 		
@@ -992,7 +1028,12 @@ function drawParticleColorPicker(hasParticleChanged, offset)
 			blueBox.limitsActive = true
 			blueBox.numberMin = 0
 			blueBox.numberMax = 1
-			blueBox.description = "Blue value"
+			blueBox.description = "Blue value\nMin: 0 | Max: 1"
+			
+			if description ~= nil then
+				blueBox.description = description .. blueBox.description
+			end
+			
 			blueBox.onInputFinished = function(i) getCurrentParticle()["ParticleColor"][3 + offset] = tonumber(i) end
 		end
 		
@@ -1033,6 +1074,79 @@ function getCurrentParticle()
 	return currentParticle
 end
 
+function drawParticleTilePicker(pickerWidth, pickerHeight, arrowWidth, pickerInnerMargin)
+	local particleRows = 4
+	local particleCols = 4
+	
+	local total = particleRows * particleCols - 1
+	
+	local imageSize = 130 * particleRows
+	local tileSize = 130
+	
+	local currentParticle = getCurrentParticle()
+	
+	UiPush()
+		UiTranslate(UiWidth() * menuWidth - 350)
+		c_UiColor(Color4.White)
+		UiRect(pickerWidth, pickerHeight)
+		
+		UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
+		
+		UiPush()
+			UiWindow(pickerWidth - pickerInnerMargin, pickerHeight - pickerInnerMargin, true)
+			
+			UiAlign("top left")
+			
+			UiPush()
+				c_UiColor(Color4.Black)
+				UiRect(UiWidth(), UiHeight())
+			UiPop()
+			
+			local index = currentParticle["ParticleTile"]
+			
+			local currentX = index % particleRows
+			local currentY = math.floor(index / particleRows)
+			
+			UiTranslate(-currentX * tileSize, -currentY * tileSize)
+			UiImageBox("MOD/sprites/particles.png", imageSize, imageSize, 0, 0)
+		UiPop()
+		
+		UiPush()
+			UiTranslate(-pickerWidth / 2, 0)
+			UiAlign("right middle")
+			if UiTextButton("<", arrowWidth, pickerHeight) then
+				index = index - 1
+				
+				if index > 6 and index < 12 then
+					index = 6
+				elseif index < 0 then
+					index = total
+				end
+				
+				hasAValueBeenChanged = true
+			end
+		UiPop()
+		
+		UiPush()
+			UiTranslate(pickerWidth / 2, 0)
+			UiAlign("left middle")
+			if UiTextButton(">", arrowWidth, pickerHeight) then
+				index = index + 1
+				
+				if index > 6 and index < 12 then
+					index = 12
+				elseif index > total then
+					index = 0
+				end
+				
+				hasAValueBeenChanged = true
+			end
+		UiPop()
+		
+		currentParticle["ParticleTile"] = index
+	UiPop()
+end
+
 function particleSettings()
 	UiPush()
 		UiTranslate(0, 60)
@@ -1050,24 +1164,30 @@ function particleSettings()
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Particle Enabled: ", currentParticle["enabled"], function (i) currentParticle["enabled"] = i; hasAValueBeenChanged = customProfile end)
+			drawToggle("Particle Enabled: ", currentParticle["enabled"], function (i) currentParticle["enabled"] = i; hasAValueBeenChanged = true end, "Spawn this particle?")
 			
 			UiTranslate(-menuWidth * UiWidth() / 2 + 20, 50)
 			
 			UiPush()
 				UiTranslate(200, 0)
 				textboxClass_render(particleLifetimeBox)
+				
+				drawParticleTilePicker(130, 130, 30, 3)
 			UiPop()
 			
 			UiTranslate(0, 50)
 			
 			UiPush()
 				UiTranslate(-70, 0)
-				drawParticleColorPicker(updateParticleSettings, 0)
+				drawParticleColorPicker(updateParticleSettings, 0, "Start color.\n")
 				
-				UiTranslate(450, 0)
+				UiTranslate(500, 0)
 				
-				drawParticleColorPicker(updateParticleSettings, 3)
+				UiText("to")
+				
+				UiTranslate(-40, 0)
+				
+				drawParticleColorPicker(updateParticleSettings, 3, "End color.\n")
 			UiPop()
 			
 			UiTranslate(0, 50)
@@ -1210,6 +1330,19 @@ function menu_draw(dt)
 			bottomMenuButtons()
 		UiPop()
 		
+		if hasAValueBeenChanged then
+			UiPush()
+				UiTranslate(0, UiHeight() * menuHeight + 30)
+				
+				if customProfile then
+					drawBox("Remember to save your changes!", 26, false, 20, Color4.Red, Color4.Red)
+				else
+					UiTranslate(0, 26)
+					drawBox("If you wish to save these changes,\ncopy these to a custom profile.", 26, false, 20, Color4.Red, Color4.Red)
+				end
+			UiPop()
+		end
+		
 		drawTitle()
 		
 		UiTranslate(0, 30)
@@ -1231,9 +1364,10 @@ function menu_draw(dt)
 		end
 	UiPop()
 	
-	textboxClass_drawDescriptions()
-	
 	weaponQuickMenu()
+	
+	textboxClass_drawDescriptions()
+	c_drawDescription()
 end
 
 function checkMouseScroll()
@@ -1296,6 +1430,7 @@ function menuUpdateActions()
 	if nameTextBox ~= nil then
 		nameTextBox.value = name
 		nameTextBox.disabled = not customProfile
+		nameTextBox.description = "Only active on custom profiles."
 	end
 	
 	if spreadTextBox ~= nil then

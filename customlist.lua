@@ -129,6 +129,18 @@ function CreateNewCustom(copyIndex)
 	customList[#customList + 1] = newProfileObject
 end
 
+function CreateNewCustomFromLoaded()
+	local newProfileObject = deepcopy(blankProfile)
+	
+	loadSettingsToProfile(newProfileObject)
+	
+	newProfileObject.name = newProfileObject.name .. " Copy"
+	
+	customProfiles = customProfiles + 1
+	
+	customList[#customList + 1] = newProfileObject
+end
+
 function EditCustomName(index, name)
 	if not customList[index].customProfile then
 		return
@@ -224,6 +236,18 @@ function SaveSettingsToProfile(index)
 		return
 	end
 	
+	loadSettingsToProfile(newSettings)
+end
+
+function loadSettingsToProfile(newSettings)
+	if newSettings == nil then
+		return
+	end
+	
+	if not newSettings.customProfile then
+		return
+	end
+
 	newSettings.name = name
 	--customProfile = newSettings.customProfile
 	newSettings.additiveReload = additiveReload

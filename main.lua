@@ -11,7 +11,7 @@ toolReadableName = "Moddy Weapon"
 
 -- TODO: Add bindables to mod menu.
 -- TODO: Add sound editor
--- TODO: Finish particle editor
+-- TODO: Finish particle editor: Particle Type
 -- TODO: Add projectile bouncyness (velocity * normal * bouncyness)
 -- TODO: Fix projectile particles going the wrong way.
 -- TODO: Seperate X and Y spread for wide low spread
@@ -210,9 +210,9 @@ function tick(dt)
 
 	menu_tick(dt)
 	
+	--[/[
 	local currPart = getCurrentParticle()
 	
-	--[\[
 	DebugWatch("enabled", currPart.enabled)
 	DebugWatch("ParticleType", currPart.ParticleType)
 	DebugWatch("ParticleTile", currPart.ParticleTile)
