@@ -210,7 +210,7 @@ function tick(dt)
 
 	menu_tick(dt)
 	
-	--[/[
+	--[[
 	local currPart = getCurrentParticle()
 	
 	DebugWatch("enabled", currPart.enabled)

@@ -372,7 +372,7 @@ function setupTextBoxes()
 		textBox16.limitsActive = true
 		textBox16.numberMin = 1
 		textBox16.numberMax = 10000
-		textBox16.description = "Maximum amount of distance the projectile(s) will travel, in meters.\nMin: 0 | Max: 10000"
+		textBox16.description = "Maximum amount of distance the projectile(s) will travel, in meters.\nMin: 1 | Max: 10000"
 		
 		maxDistanceTextBox = textBox16
 	end
