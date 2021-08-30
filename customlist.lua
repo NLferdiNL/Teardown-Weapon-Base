@@ -131,10 +131,14 @@ end
 
 function CreateNewCustomFromLoaded()
 	local newProfileObject = deepcopy(blankProfile)
+	local weaponIndex = GetCurrentSelectedWeaponIndex()
+	local profileUnloadedData = GetSettingsByIndex(weaponIndex)
 	
 	loadSettingsToProfile(newProfileObject)
 	
 	newProfileObject.name = newProfileObject.name .. " Copy"
+	newProfileObject.sfx = profileUnloadedData.sfx
+	newProfileObject.sfxLength = profileUnloadedData.sfxLength
 	
 	customProfiles = customProfiles + 1
 	
@@ -222,6 +226,7 @@ function ApplySettingsByIndex(index)
 	projectileParticleSettings = deepcopy(newSettings.projectileParticleSettings)
 	bulletHealth = newSettings.bulletHealth
 	projectileGravity = newSettings.projectileGravity
+	projectileBouncyness = newSettings.projectileBouncyness
 	drawProjectileLine = newSettings.drawProjectileLine
 end
 
@@ -292,6 +297,7 @@ function loadSettingsToProfile(newSettings)
 	newSettings.projectileParticleSettings = deepcopy(projectileParticleSettings)
 	newSettings.bulletHealth = bulletHealth
 	newSettings.projectileGravity = projectileGravity
+	newSettings.projectileBouncyness = projectileBouncyness
 	newSettings.drawProjectileLine = drawProjectileLine
 end
 
@@ -335,7 +341,7 @@ function updateSettings(settings)
 		settings["drawProjectileLine"] = true
 	end
 	
-	if settings["profileVersion"] < 4 then -- Below version 3
+	if settings["profileVersion"] < 4 then -- Below version 4
 		settings["profileVersion"] = 4
 		
 		local particleSettingNames = {"ParticleRadius", "ParticleAlpha", "ParticleGravity", "ParticleDrag", "ParticleEmissive", "ParticleRotation", "ParticleStretch", "ParticleSticky", "ParticleCollide" } 
@@ -356,6 +362,26 @@ function updateSettings(settings)
 		updateParticle(settings["shotSmokeParticleSettings"])
 		updateParticle(settings["shotFireParticleSettings"])
 		updateParticle(settings["projectileParticleSettings"])
+	end
+	
+	if settings["profileVersion"] < 5 then -- Below version 5
+		settings["profileVersion"] = 5
+		
+		local particleTypes = { smoke = 1, plain = 2, }
+		
+		function updateType(settings)
+			settings["ParticleType"] = particleTypes[settings["ParticleType"]]
+		end
+		
+		updateType(settings["hitParticleSettings"])
+		updateType(settings["shotSmokeParticleSettings"])
+		updateType(settings["shotFireParticleSettings"])
+		updateType(settings["projectileParticleSettings"])
+	end
+	
+	if settings["profileVersion"] < 6 then -- Below version 6
+		settings["profileVersion"] = 6
+		settings["projectileBouncyness"] = 0
 	end
 	
 	return settings

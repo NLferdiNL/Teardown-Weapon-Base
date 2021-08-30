@@ -262,7 +262,7 @@ function setupTextBoxes()
 		textBox07.value = projectileBulletSpeed .. ""
 		textBox07.numbersOnly = true
 		textBox07.limitsActive = true
-		textBox07.numberMin = 1
+		textBox07.numberMin = 0
 		textBox07.numberMax = 10000
 		textBox07.description = "How fast the bullet will travel, in meters.\nMin: 0 | Max: 10000"
 		
@@ -406,7 +406,7 @@ function setupTextBoxes()
 		textBox19.value = name
 		textBox19.disabled = not customProfile
 		textBox19.width = 300
-		--textBox19.description = ""
+		textBox19.description = "Only active on custom profiles."
 		
 		nameTextBox = textBox19
 	end
@@ -675,7 +675,7 @@ function mainSettings()
 	UiPop()
 end
 
-function drawBox(text, fontSize, bold, margin, boxColor4, textColor4)
+function drawBox(text, fontSize, bold, maxWidth, margin, boxColor4, textColor4)
 	UiPush()
 		fontSize = fontSize or 26
 		bold = bold or false
@@ -685,6 +685,10 @@ function drawBox(text, fontSize, bold, margin, boxColor4, textColor4)
 			UiFont("bold.ttf", fontSize)
 		else
 			UiFont("regular.ttf", fontSize)
+		end
+		
+		if maxWidth then
+			UiWordWrap(maxWidth)
 		end
 		
 		local titleBoxWidth, titleBoxHeight = UiGetTextSize(text)
@@ -821,7 +825,7 @@ function bottomMenuButtons()
 			end
 			
 			if UiTextButton("Save Profiles" , 200, 40) then
-				hasAValueBeenChanged = false
+				hasAValueBeenChanged = not customProfile
 				saveToolValues()
 				saveCustomProfiles()
 			end
@@ -835,11 +839,12 @@ function bottomMenuButtons()
 		UiPop()
 	UiPop()
 end
-
-function renderParticleInterpolationSelector(settingData)
-	local currentInterpolationIndex = settingData[4]
+--renderParticleInterpolationSelector
+function renderParticleStringVarSelector(settingData, settingKey, settingTypes)
+	local currentSettingIndex = settingData[settingKey]
 	local optionWidth = 175
 	local margin = 10
+	
 	UiPush()
 		UiFont("regular.ttf", 26)
 		UiAlign("center middle")
@@ -850,31 +855,31 @@ function renderParticleInterpolationSelector(settingData)
 			UiAlign("left middle")
 			UiTranslate(-optionWidth / 2 + margin, 0)
 			if UiImageButton("MOD/sprites/arrow-left.png", 60, 60) then
-				currentInterpolationIndex = currentInterpolationIndex - 1
+				currentSettingIndex = currentSettingIndex - 1
 				hasAValueBeenChanged = true
 				
-				if currentInterpolationIndex < 1 then
-					currentInterpolationIndex = #interpolationMethods
+				if currentSettingIndex < 1 then
+					currentSettingIndex = #settingTypes
 				end
 			end
 		UiPop()
 		
-		UiText(interpolationMethods[currentInterpolationIndex])
+		UiText(settingTypes[currentSettingIndex])
 		
 		UiPush()
 			UiAlign("right middle")
 			UiTranslate(optionWidth / 2 - margin, 0)
 			if UiImageButton("MOD/sprites/arrow-right.png", 60, 60)	then
-				currentInterpolationIndex = currentInterpolationIndex + 1
+				currentSettingIndex = currentSettingIndex + 1
 				hasAValueBeenChanged = true
 				
-				if currentInterpolationIndex > #interpolationMethods then
-					currentInterpolationIndex = 1
+				if currentSettingIndex > #settingTypes then
+					currentSettingIndex = 1
 				end
 			end
 		UiPop()
 		
-		settingData[4] = currentInterpolationIndex
+		settingData[settingKey] = currentSettingIndex
 	UiPop()
 end
 
@@ -965,7 +970,7 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 			
 			UiTranslate(150, 0)
 			
-			renderParticleInterpolationSelector(settingData)
+			renderParticleStringVarSelector(settingData, 4, interpolationMethods)
 			
 			UiTranslate(225, 0)
 			
@@ -1086,7 +1091,6 @@ function drawParticleTilePicker(pickerWidth, pickerHeight, arrowWidth, pickerInn
 	local currentParticle = getCurrentParticle()
 	
 	UiPush()
-		UiTranslate(UiWidth() * menuWidth - 350)
 		c_UiColor(Color4.White)
 		UiRect(pickerWidth, pickerHeight)
 		
@@ -1172,6 +1176,12 @@ function particleSettings()
 				UiTranslate(200, 0)
 				textboxClass_render(particleLifetimeBox)
 				
+				UiTranslate(200, 0)
+				renderParticleStringVarSelector(currentParticle, "ParticleType", particleTypes)
+			UiPop()
+			
+			UiPush()
+				UiTranslate(UiWidth() * menuWidth - 150, 0)
 				drawParticleTilePicker(130, 130, 30, 3)
 			UiPop()
 			
@@ -1203,6 +1213,14 @@ function particleSettings()
 			updateParticleSettings = false
 			UiPop()
 		UiPop()
+	UiPop()
+end
+
+function soundSettings()
+	UiPush()
+		UiTranslate(0, 100)
+		UiFont("bold.ttf", 48)
+		UiText("Coming next update!")
 	UiPop()
 end
 
@@ -1330,15 +1348,16 @@ function menu_draw(dt)
 			bottomMenuButtons()
 		UiPop()
 		
-		if hasAValueBeenChanged then
+		if hasAValueBeenChanged or savedCustomProfiles ~= customProfiles then
 			UiPush()
 				UiTranslate(0, UiHeight() * menuHeight + 30)
 				
 				if customProfile then
-					drawBox("Remember to save your changes!", 26, false, 20, Color4.Red, Color4.Red)
+					UiTranslate(0, 13)
+					drawBox("Remember to save your changes!\nCurrent changes are lost upon restart/profile switch!", 26, false, 500, 20, Color4.Red, Color4.Red)
 				else
 					UiTranslate(0, 26)
-					drawBox("If you wish to save these changes,\ncopy these to a custom profile.", 26, false, 20, Color4.Red, Color4.Red)
+					drawBox("If you wish to save these changes, copy these to a custom profile.\nCurrent changes are lost upon restart/profile switch!", 26, false, 500, 20, Color4.Red, Color4.Red)
 				end
 			UiPop()
 		end
@@ -1358,7 +1377,7 @@ function menu_draw(dt)
 		elseif currentMainTab == 2 then
 			particleSettings()
 		elseif currentMainTab == 3 then
-		
+			soundSettings()
 		elseif currentMainTab == 4 then
 			modOptionsPage()
 		end
@@ -1430,7 +1449,12 @@ function menuUpdateActions()
 	if nameTextBox ~= nil then
 		nameTextBox.value = name
 		nameTextBox.disabled = not customProfile
-		nameTextBox.description = "Only active on custom profiles."
+		
+		if not customProfile then
+			nameTextBox.description = "Only active on custom profiles."
+		else
+			nameTextBox.description = ""
+		end
 	end
 	
 	if spreadTextBox ~= nil then

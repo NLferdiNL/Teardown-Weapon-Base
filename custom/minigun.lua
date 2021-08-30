@@ -44,11 +44,12 @@ minigun = {
 	infinitePenetration = false,
 	bulletHealth = 0,
 	projectileGravity = 0,
-	drawProjectileLine = true,
+	projectileBouncyness = 0,
+	drawProjectileLine = false,
 	
 	hitParticleSettings = {
 		enabled = true,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 5,
 		ParticleColor = {1, 1, 1, 1, 1, 1},
@@ -65,7 +66,7 @@ minigun = {
 
 	shotSmokeParticleSettings = {
 		enabled = true,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 3,
 		ParticleColor = {1, 1, 1, 0, 0, 0},
@@ -82,7 +83,7 @@ minigun = {
 
 	shotFireParticleSettings = {
 		enabled = true,
-		ParticleType = "plain",
+		ParticleType = 2,
 		ParticleTile = 3,
 		lifetime = 0.3,
 		ParticleColor = {1, 0.75, 0.4, 0, 0, 0},
@@ -98,14 +99,14 @@ minigun = {
 	},
 
 	projectileParticleSettings = {
-		enabled = false,
-		ParticleType = "smoke",
+		enabled = true,
+		ParticleType = 1,
 		ParticleTile = 0,
-		lifetime = 3,
+		lifetime = 0.3,
 		ParticleColor = {0.25, 0.25, 0.25, 1, 1, 1},
-		ParticleRadius = 	{ true, 0.5, 1, 1, 0, 1},
-		ParticleAlpha = 	{ false, 1, 1, 1, 0, 1},
-		ParticleGravity = 	{ true, 1, 1, 1, 0, 1},
+		ParticleRadius = 	{ true, 0.05, 0.05, 1, 0, 1},
+		ParticleAlpha = 	{ true, 0.1, 0.1, 1, 0, 1},
+		ParticleGravity = 	{ false, 1, 1, 1, 0, 1},
 		ParticleDrag = 		{ false, 0, 0, 1, 0, 1},
 		ParticleEmissive = 	{ false, 0, 0, 1, 0, 1},
 		ParticleRotation = 	{ false, 0, 0, 1, 0, 1},

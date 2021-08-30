@@ -1,6 +1,6 @@
 blankProfile = {
 	name = "Blank Profile",
-	profileVersion = 4,
+	profileVersion = 6,
 	customProfile = true,
 	additiveReload = false,
 	magSize = 15,
@@ -37,11 +37,12 @@ blankProfile = {
 	infinitePenetration = false,
 	bulletHealth = 0,
 	projectileGravity = 0,
+	projectileBouncyness = 0,
 	drawProjectileLine = true,
 	
 	hitParticleSettings = {
 		enabled = true,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 5,
 		ParticleColor = {1, 1, 1, 1, 1, 1},
@@ -58,7 +59,7 @@ blankProfile = {
 
 	shotSmokeParticleSettings = {
 		enabled = true,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 3,
 		ParticleColor = {1, 1, 1, 0, 0, 0},
@@ -75,7 +76,7 @@ blankProfile = {
 
 	shotFireParticleSettings = {
 		enabled = true,
-		ParticleType = "plain",
+		ParticleType = 2,
 		ParticleTile = 3,
 		lifetime = 0.3,
 		ParticleColor = {1, 0.75, 0.4, 0, 0, 0},
@@ -92,7 +93,7 @@ blankProfile = {
 
 	projectileParticleSettings = {
 		enabled = false,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 3,
 		ParticleColor = {0.25, 0.25, 0.25, 1, 1, 1},

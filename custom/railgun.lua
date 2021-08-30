@@ -35,11 +35,12 @@ railgun = {
 	infinitePenetration = true,
 	bulletHealth = 0,
 	projectileGravity = 0,
+	projectileBouncyness = 0,
 	drawProjectileLine = true,
 	
 	hitParticleSettings = {
 		enabled = true,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 5,
 		ParticleColor = {1, 1, 1, 1, 1, 1},
@@ -56,7 +57,7 @@ railgun = {
 
 	shotSmokeParticleSettings = {
 		enabled = true,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 3,
 		ParticleColor = {1, 1, 1, 0, 0, 0},
@@ -73,7 +74,7 @@ railgun = {
 
 	shotFireParticleSettings = {
 		enabled = true,
-		ParticleType = "plain",
+		ParticleType = 2,
 		ParticleTile = 3,
 		lifetime = 0.3,
 		ParticleColor = {1, 0.75, 0.4, 0, 0, 0},
@@ -90,7 +91,7 @@ railgun = {
 
 	projectileParticleSettings = {
 		enabled = true,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 7,
 		ParticleColor = {0, 1, 1, 0, 0, 0},

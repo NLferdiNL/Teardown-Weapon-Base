@@ -35,11 +35,12 @@ plasmapistol = {
 	infinitePenetration = false,
 	bulletHealth = 5,
 	projectileGravity = -1,
+	projectileBouncyness = 0,
 	drawProjectileLine = false,
 	
 	hitParticleSettings = {
 		enabled = true,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 5,
 		ParticleColor = {1, 1, 1, 1, 1, 1},
@@ -56,7 +57,7 @@ plasmapistol = {
 
 	shotSmokeParticleSettings = {
 		enabled = true,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 3,
 		ParticleColor = {0, 0.25, 1, 0, 0, 0},
@@ -73,7 +74,7 @@ plasmapistol = {
 
 	shotFireParticleSettings = {
 		enabled = true,
-		ParticleType = "plain",
+		ParticleType = 2,
 		ParticleTile = 3,
 		lifetime = 0.5,
 		ParticleColor = {0, 1, 1, 1, 1, 1},
@@ -90,7 +91,7 @@ plasmapistol = {
 
 	projectileParticleSettings = {
 		enabled = true,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 0.5,
 		ParticleColor = {0, 1, 1, 1, 1, 1},

@@ -35,11 +35,12 @@ holecutter = {
 	infinitePenetration = false,
 	bulletHealth = 0,
 	projectileGravity = 0,
+	projectileBouncyness = 0,
 	drawProjectileLine = true,
 	
 	hitParticleSettings = {
 		enabled = false,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 5,
 		ParticleColor = {1, 1, 1, 1, 1, 1},
@@ -56,7 +57,7 @@ holecutter = {
 
 	shotSmokeParticleSettings = {
 		enabled = false,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 3,
 		ParticleColor = {1, 1, 1, 0, 0, 0},
@@ -73,7 +74,7 @@ holecutter = {
 
 	shotFireParticleSettings = {
 		enabled = false,
-		ParticleType = "plain",
+		ParticleType = 2,
 		ParticleTile = 3,
 		lifetime = 0.3,
 		ParticleColor = {1, 0.75, 0.4, 0, 0, 0},
@@ -90,7 +91,7 @@ holecutter = {
 
 	projectileParticleSettings = {
 		enabled = false,
-		ParticleType = "smoke",
+		ParticleType = 1,
 		ParticleTile = 0,
 		lifetime = 3,
 		ParticleColor = {0.25, 0.25, 0.25, 1, 1, 1},

@@ -11,10 +11,9 @@ toolReadableName = "Moddy Weapon"
 
 -- TODO: Add bindables to mod menu.
 -- TODO: Add sound editor
--- TODO: Finish particle editor: Particle Type
 -- TODO: Add projectile bouncyness (velocity * normal * bouncyness)
--- TODO: Fix projectile particles going the wrong way.
 -- TODO: Seperate X and Y spread for wide low spread
+-- TODO: Projectile lighting
 
 name = "Shotgun"
 customProfile = false
@@ -57,6 +56,7 @@ hardRadiusMax = 15
 bulletHealth = 5
 infinitePenetration = false
 projectileGravity = 0
+projectileBouncyness = 0
 sfx = {} -- TODO: Add option to menu
 sfxLength = {}
 fireTime = 0
@@ -64,7 +64,7 @@ drawProjectileLine = true
 
 hitParticleSettings = {
 	enabled = true,
-	ParticleType = "smoke",
+	ParticleType = 1,
 	ParticleTile = 0,
 	lifetime = 5,
 	ParticleColor = {1, 1, 1, 1, 1, 1},
@@ -81,7 +81,7 @@ hitParticleSettings = {
 
 shotSmokeParticleSettings = {
 	enabled = true,
-	ParticleType = "smoke",
+	ParticleType = 1,
 	ParticleTile = 0,
 	lifetime = 3,
 	ParticleColor = {0, 1, 0, 1, 1, 1},
@@ -98,7 +98,7 @@ shotSmokeParticleSettings = {
 
 shotFireParticleSettings = {
 	enabled = true,
-	ParticleType = "plain",
+	ParticleType = 2,
 	ParticleTile = 3,
 	lifetime = 0.5,
 	ParticleColor = {0, 1, 0, 1, 1, 1},
@@ -115,7 +115,7 @@ shotFireParticleSettings = {
 
 projectileParticleSettings = {
 	enabled = true,
-	ParticleType = "smoke",
+	ParticleType = 1,
 	ParticleTile = 0,
 	lifetime = 3,
 	ParticleColor = {0, 1, 1, 1, 1, 1},
@@ -133,7 +133,7 @@ projectileParticleSettings = {
 --[[
 exampleParticle = {
 	enabled = true,
-	ParticleType = "smoke",
+	ParticleType = 1,
 	ParticleTile = 0,
 	lifetime = 3,
 	ParticleColor = {0.25, 0.25, 0.25, 1, 1, 1},
@@ -163,7 +163,8 @@ hitscanParticleStep = 0.2
 --soundEnabled = true
 smartExplosiveBullets = true
 
-interpolationMethods = { "Linear", "Smooth", "Easein", "Easeout", "Constant" }
+interpolationMethods = { "Linear", "Smooth", "Easein", "Easeout", "Constant", }
+particleTypes = { "Smoke", "Plain", }
 
 local firedShotLineClass = {
 	lifetime = 0.4,
@@ -432,7 +433,7 @@ function handleAllProjectiles(dt)
 					doBulletHoleAt(currShot, damageStepPos, VecDir(damageStepPos, playerPos), false)
 					if projectileParticleSettings["enabled"] then
 						setupParticleFromSettings(projectileParticleSettings)
-						SpawnParticle(currPos, VecDir(currPos, damageStepPos), projectileParticleSettings["lifetime"])
+						SpawnParticle(damageStepPos, VecDir(damageStepPos, nextPos), projectileParticleSettings["lifetime"])
 					end
 				end
 			end
@@ -467,6 +468,14 @@ function handleAllProjectiles(dt)
 				
 				if currShot.drawLine then
 					DrawLine(currPos, nextPos)
+				end
+			end
+			
+			if projectileParticleSettings["enabled"] then
+				setupParticleFromSettings(projectileParticleSettings)
+				for i = 0, distanceTraveled, infinitePenetrationHitScanDamageStep do
+					local damageStepPos = VecAdd(currPos, VecScale(directionToNextPos, i))
+						SpawnParticle(damageStepPos, VecDir(damageStepPos, nextPos), projectileParticleSettings["lifetime"])
 				end
 			end
 		end
@@ -799,7 +808,7 @@ end
 function setupParticleFromSettings(settings)
 	ParticleReset()
 	
-	ParticleType(settings["ParticleType"])
+	ParticleType(particleTypes[settings["ParticleType"]]:lower())
 	ParticleTile(settings["ParticleTile"])
 	
 	local particleColorSettings = settings["ParticleColor"]
