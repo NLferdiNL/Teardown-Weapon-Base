@@ -1,29 +1,54 @@
-function tableToText(inputTable, loopThroughTables, useIPairs, addIndex, addNewLine)
+function tableToText(inputTable, loopThroughTables, useIPairs, addIndex, addNewLine, printSeperately)
 	loopThroughTables = loopThroughTables or true
 	useIPairs = useIPairs or false
 	addIndex = addIndex or true
 	addNewLine = addNewLine or false
+	printSeperately = printSeperately or false
 	
 	local returnString = "{ "
 	
 	if useIPairs then
 		for key, value in ipairs(inputTable) do
 			if type(value) == "string" or type(value) == "number" then
-				returnString = returnString .. (not addIndex and key .. " = " or " ") .. value .. (addNewLine and ",\n" or ", ")
+				if printSeperately then
+					DebugPrint((addIndex and key .. " = " or " ") .. value)
+				else
+					returnString = returnString .. (addIndex and key .. " = " or " ") .. value .. (addNewLine and ",\n" or ", ")
+				end
 			elseif type(value) == "table" and loopThroughTables then
-				returnString = returnString .. (not addIndex and key .. " = " or " ") .. tableToText(value, loopThroughTables, useIPairs, addIndex, addNewLine) .. (addNewLine and ",\n" or ", ")
+				if printSeperately then
+					DebugPrint((addIndex and key .. " = " or " ") .. tableToText(value, loopThroughTables, useIPairs, addIndex, addNewLine, printSeperately))
+				else
+					returnString = returnString .. (addIndex and key .. " = " or " ") .. tableToText(value, loopThroughTables, useIPairs, addIndex, addNewLine, printSeperately) .. (addNewLine and ",\n" or ", ")
+				end
 			else
-				returnString = returnString .. (not addIndex and key .. " = " or " ") .. tostring(value) .. (addNewLine and ",\n" or ", ")
+				if printSeperately then
+					DebugPrint((addIndex and key .. " = " or " ") .. tostring(value) .. (addNewLine and ",\n" or ", "))
+				else
+					returnString = returnString .. (addIndex and key .. " = " or " ") .. tostring(value) .. (addNewLine and ",\n" or ", ")
+				end
 			end
 		end
 	else
 		for key, value in pairs(inputTable) do
 			if type(value) == "string" or type(value) == "number" then
-				returnString = returnString .. (not addIndex and key .. " = " or " ") .. value .. (addNewLine and ",\n" or ", ")
+				if printSeperately then
+					DebugPrint((addIndex and key .. " = " or " ") .. value)
+				else
+					returnString = returnString .. (addIndex and key .. " = " or " ") .. value .. (addNewLine and ",\n" or ", ")
+				end
 			elseif type(value) == "table" and loopThroughTables then
-				returnString = returnString .. (not addIndex and key .. " = " or "") .. tableToText(value, loopThroughTables, useIPairs, addIndex, addNewLine) .. (addNewLine and ",\n" or ", ")
+				if printSeperately then
+					DebugPrint((addIndex and key .. " = " or " ") .. tableToText(value, loopThroughTables, useIPairs, addIndex, addNewLine, printSeperately))
+				else
+					returnString = returnString .. (addIndex and key .. " = " or " ") .. tableToText(value, loopThroughTables, useIPairs, addIndex, addNewLine, printSeperately) .. (addNewLine and ",\n" or ", ")
+				end
 			else
-				returnString = returnString .. (not addIndex and key .. " = " or " ") .. tostring(value) .. (addNewLine and ",\n" or ", ")
+				if printSeperately then
+					DebugPrint((addIndex and key .. " = " or " ") .. tostring(value) .. (addNewLine and ",\n" or ", "))
+				else
+					returnString = returnString .. (addIndex and key .. " = " or " ") .. tostring(value) .. (addNewLine and ",\n" or ", ")
+				end
 			end
 		end
 	end
@@ -31,6 +56,25 @@ function tableToText(inputTable, loopThroughTables, useIPairs, addIndex, addNewL
 	
 	return returnString
 end
+
+function tableToText_legacy(inputTable, loopThroughTables)
+	loopThroughTables = loopThroughTables or true
+
+	local returnString = "{ "
+	for key, value in pairs(inputTable) do
+		if type(value) == "string" or type(value) == "number" then
+			returnString = returnString .. key .." = " .. value .. ", "
+		elseif type(value) == "table" and loopThroughTables then
+			returnString = returnString .. key .. " = " .. tableToText(value) .. ", "
+		else
+			returnString = returnString .. key .. " = " .. tostring(value) .. ", "
+		end
+	end
+	returnString = returnString .. "}"
+
+	return returnString
+end
+
 
 function roundToTwoDecimals(a) -- To support older mods incase I update the utils.lua
 	--return math.floor(a * 100)/100

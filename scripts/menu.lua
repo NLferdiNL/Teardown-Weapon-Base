@@ -41,8 +41,6 @@ local spreadTextBox = nil
 local projectilesTextBox = nil
 local shotCooldownTimeTextBox = nil
 local maxReloadTimeTextBox = nil
-local minRndSpreadTextBox = nil
-local maxRndSpreadTextBox = nil
 local projectileBulletSpeedTextBox = nil
 local explosiveBulletMinSizeTextBox = nil
 local explosiveBulletMaxSizeTextBox = nil
@@ -70,6 +68,12 @@ local bulletHealthBox = nil
 local particleLifetimeBox = nil
 
 local projectileGravityBox = nil
+
+local minXSpreadBox = nil
+local maxXSpreadBox = nil
+
+local minYSpreadBox = nil
+local maxYSpreadBox = nil
 
 local textBoxCount = 0
 
@@ -150,8 +154,8 @@ function setupTextBoxes()
 	local textBox02, newBox02 = textboxClass_getTextBox(2) -- projectiles
 	local textBox03, newBox03 = textboxClass_getTextBox(3) -- shotCooldownTime
 	local textBox04, newBox04 = textboxClass_getTextBox(4) -- maxReloadTime
-	local textBox05, newBox05 = textboxClass_getTextBox(5) -- minRndSpread
-	local textBox06, newBox06 = textboxClass_getTextBox(6) -- maxRndSpread
+	local textBox05, newBox05 = textboxClass_getTextBox(5) -- minXSpread
+	local textBox06, newBox06 = textboxClass_getTextBox(6) -- maxXSpread
 	local textBox07, newBox07 = textboxClass_getTextBox(7) -- projectileBulletSpeed
 	
 	local textBox08, newBox08 = textboxClass_getTextBox(8) -- explosiveBulletMinSize
@@ -183,7 +187,10 @@ function setupTextBoxes()
 	
 	local textBox24, newBox24 = textboxClass_getTextBox(24) -- Projectile Gravity
 	
-	textBoxCount = 24
+	local textBox25, newBox25 = textboxClass_getTextBox(25) -- minYSpread
+	local textBox26, newBox26 = textboxClass_getTextBox(26) -- maxYSpread
+	
+	textBoxCount = 26
 	
 	if newBox01 then
 		textBox01.name = "Spread"
@@ -234,27 +241,27 @@ function setupTextBoxes()
 	end
 
 	if newBox05 then
-		textBox05.name = "Min Rnd Spread"
-		textBox05.value = minRndSpread .. ""
+		textBox05.name = "Min X Spread"
+		textBox05.value = minXSpread .. ""
 		textBox05.numbersOnly = true
 		textBox05.limitsActive = true
 		textBox05.numberMin = 0
-		textBox05.numberMax = 100
-		textBox05.description = "This indicates how close it has to be to the spread circle minimumly.\nMin: 0 | Max: 100"
+		textBox05.numberMax = 1
+		textBox05.description = "This indicates how close it has to be to the spread circle minimumly horizontally.\nMin: 0 | Max: 1"
 		
-		minRndSpreadTextBox = textBox05
+		minXSpreadBox = textBox05
 	end
 
 	if newBox06 then
-		textBox06.name = "Max Rnd Spread"
-		textBox06.value = maxRndSpread .. ""
+		textBox06.name = "Max X Spread"
+		textBox06.value = maxXSpread .. ""
 		textBox06.numbersOnly = true
 		textBox06.limitsActive = true
 		textBox06.numberMin = 0
-		textBox06.numberMax = 100
-		textBox06.description = "This indicates how close it has to be to the spread circle maximumly.\nMin: 0 | Max: 100"
+		textBox06.numberMax = 1
+		textBox06.description = "This indicates how close it has to be to the spread circle maximumly horizontally.\nMin: 0 | Max: 1"
 		
-		maxRndSpreadTextBox = textBox06
+		maxXSpreadBox = textBox06
 	end
 
 	if newBox07 then
@@ -473,6 +480,30 @@ function setupTextBoxes()
 		
 		projectileGravityBox = textBox24
 	end
+	
+	if newBox25 then
+		textBox25.name = "Min Y Spread"
+		textBox25.value = minYSpread .. ""
+		textBox25.numbersOnly = true
+		textBox25.limitsActive = true
+		textBox25.numberMin = 0
+		textBox25.numberMax = 1
+		textBox25.description = "This indicates how close it has to be to the spread circle minimumly vertically.\nMin: 0 | Max: 1"
+		
+		minYSpreadBox = textBox25
+	end
+
+	if newBox26 then
+		textBox26.name = "Max Y Spread"
+		textBox26.value = maxYSpread .. ""
+		textBox26.numbersOnly = true
+		textBox26.limitsActive = true
+		textBox26.numberMin = 0
+		textBox26.numberMax = 1
+		textBox26.description = "This indicates how close it has to be to the spread circle maximumly vertically.\nMin: 0 | Max: 1"
+		
+		maxYSpreadBox = textBox26
+	end
 end
 
 function modOptionsPage()
@@ -569,19 +600,19 @@ function leftsideTextInputMenu(dt)
 			
 			UiTranslate(0, 50)
 			
-			textboxClass_render(minRndSpreadTextBox)
-			
-			UiTranslate(0, 50)
-			
-			textboxClass_render(maxRndSpreadTextBox)
-			
-			UiTranslate(0, 50)
-			
 			textboxClass_render(projectileBulletSpeedTextBox)
 			
 			UiTranslate(0, 50)
 		
 			textboxClass_render(maxDistanceTextBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(minXSpreadBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(maxXSpreadBox)
 		UiPop()
 	UiPop()
 end
@@ -612,12 +643,12 @@ function middleSideTextInputMenu(dt)
 		textboxClass_render(hardRadiusMaxTextBox)
 		
 		UiTranslate(0, 50)
-		
-		textboxClass_render(explosiveBulletMinSizeTextBox)
 			
+		textboxClass_render(minYSpreadBox)
+		
 		UiTranslate(0, 50)
 		
-		textboxClass_render(explosiveBulletMaxSizeTextBox)
+		textboxClass_render(maxYSpreadBox)
 	UiPop()
 end
 
@@ -627,6 +658,14 @@ function rightsideTextInputMenu(dt)
 		
 		UiPush()
 			UiTranslate(explosiveBulletMinSizeTextBox.width, 50)
+		
+			textboxClass_render(explosiveBulletMinSizeTextBox)
+				
+			UiTranslate(0, 50)
+			
+			textboxClass_render(explosiveBulletMaxSizeTextBox)
+			
+			UiTranslate(0, 50)
 			
 			textboxClass_render(burstFireMaxTextBox)
 			
@@ -1473,12 +1512,20 @@ function menuUpdateActions()
 		maxReloadTimeTextBox.value = maxReloadTime .. ""
 	end
 	
-	if minRndSpreadTextBox ~= nil then
-		minRndSpreadTextBox.value = minRndSpread .. ""
+	if minXSpreadBox ~= nil then
+		minXSpreadBox.value = minXSpread .. ""
 	end
 	
-	if maxRndSpreadTextBox ~= nil then
-		maxRndSpreadTextBox.value = maxRndSpread .. ""
+	if maxXSpreadBox ~= nil then
+		maxXSpreadBox.value = maxXSpread .. ""
+	end
+	
+	if minYSpreadBox ~= nil then
+		minYSpreadBox.value = minYSpread .. ""
+	end
+	
+	if maxYSpreadBox ~= nil then
+		maxYSpreadBox.value = maxYSpread .. ""
 	end
 	
 	if projectileBulletSpeedTextBox ~= nil then
@@ -1564,10 +1611,6 @@ function menuCloseActions()
 end
 
 function checkValuesChanged()
-	if not customProfile then
-		return
-	end
-	
 	if textboxClass_anyInputActive() then
 		hasAValueBeenChanged = true
 	end
@@ -1576,32 +1619,50 @@ end
 function updateSavedBinds()
 	menuOpenKey = binds["Open_Menu"]
 end
-	
+
+
 function saveToolValues()
 	if spreadTextBox == nil then
 		setupTextBoxes()
 	end
 
 	spread = tonumber(spreadTextBox.value)
+	
 	projectiles = tonumber(projectilesTextBox.value)
+	
 	shotCooldownTime = tonumber(shotCooldownTimeTextBox.value)
+	
 	maxReloadTime = tonumber(maxReloadTimeTextBox.value)
-	minRndSpread = tonumber(minRndSpreadTextBox.value)
-	maxRndSpread = tonumber(maxRndSpreadTextBox.value)
+	
 	projectileBulletSpeed = tonumber(projectileBulletSpeedTextBox.value)
+	
 	explosiveBulletMinSize = tonumber(explosiveBulletMinSizeTextBox.value)
 	explosiveBulletMaxSize = tonumber(explosiveBulletMaxSizeTextBox.value)
+	
 	softRadiusMin = tonumber(softRadiusMinTextBox.value)
 	softRadiusMax = tonumber(softRadiusMaxTextBox.value)
+	
 	mediumRadiusMin = tonumber(mediumRadiusMinTextBox.value)
 	mediumRadiusMax = tonumber(mediumRadiusMaxTextBox.value)
+	
 	hardRadiusMin = tonumber(hardRadiusMinTextBox.value)
 	hardRadiusMax = tonumber(hardRadiusMaxTextBox.value)
+	
 	maxDistance = tonumber(maxDistanceTextBox.value)
+	
 	burstFireMax = tonumber(burstFireMaxTextBox.value)
+	
 	hitForce = tonumber(hitForceTextBox.value)
+	
 	bulletHealth = tonumber(bulletHealthBox.value)
+	
 	projectileGravity = tonumber(projectileGravityBox.value)
+	
+	minXSpread = tonumber(minXSpreadBox.value)
+	maxXSpread = tonumber(maxXSpreadBox.value)
+
+	minYSpread = tonumber(minYSpreadBox.value)
+	maxYSpread = tonumber(maxYSpreadBox.value)
 	
 	if customProfile then
 		name = nameTextBox.value

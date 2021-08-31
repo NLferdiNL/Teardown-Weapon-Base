@@ -9,11 +9,11 @@
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
 
--- TODO: Add bindables to mod menu.
 -- TODO: Add sound editor
 -- TODO: Add projectile bouncyness (velocity * normal * bouncyness)
--- TODO: Seperate X and Y spread for wide low spread
+-- TODO: Line color.
 -- TODO: Projectile lighting
+-- TODO: Fix sparse array bug preventing to update classic profiles.
 
 name = "Shotgun"
 customProfile = false
@@ -36,8 +36,10 @@ burstFireMax = 0
 burstFire = burstFireMax
 maxReloadTime = 3
 reloadTime = 0
-minRndSpread = 1
-maxRndSpread = 10
+minXSpread = 0
+maxXSpread = 1
+minYSpread = 0
+maxYSpread = 1
 maxDistance = 100
 hitForce = 4000
 hitscanBullets = true
@@ -854,8 +856,8 @@ function GenerateRandomSpread()
 	--[[local xSpread = math.random(-spread * 100, spread * 100) / 100
 	local ySpread = math.random(-spread * 100, spread * 100) / 100]]--
 	
-	local xSpread = endPos[1] * (math.random(minRndSpread, maxRndSpread) / 10)
-	local ySpread = endPos[3] * (math.random(minRndSpread, maxRndSpread) / 10)
+	local xSpread = endPos[1] * math.random(minXSpread, maxXSpread)
+	local ySpread = endPos[3] * math.random(minYSpread, maxYSpread)
 	
 	return Vec(xSpread, ySpread, 0)
 end
@@ -1108,10 +1110,16 @@ end
 -- Misc Functions
 
 function checkRandomValues()
-	if minRndSpread > maxRndSpread then
-		local backup = minRndSpread
-		minRndSpread = maxRndSpread
-		maxRndSpread = backup
+	if minXSpread > maxXSpread then
+		local backup = minXSpread
+		minXSpread = maxXSpread
+		maxXSpread = backup
+	end
+	
+	if minYSpread > maxYSpread then
+		local backup = minYSpread
+		minYSpread = maxYSpread
+		maxYSpread = backup
 	end
 
 	if explosiveBulletMinSize > explosiveBulletMaxSize then

@@ -199,8 +199,10 @@ function ApplySettingsByIndex(index)
 	burstFire = burstFireMax
 	maxReloadTime = newSettings.maxReloadTime
 	reloadTime = 0
-	minRndSpread = newSettings.minRndSpread
-	maxRndSpread = newSettings.maxRndSpread
+	minXSpread = newSettings.minXSpread
+	maxXSpread = newSettings.maxXSpread
+	minYSpread = newSettings.minYSpread
+	maxYSpread = newSettings.maxYSpread
 	maxDistance = newSettings.maxDistance
 	hitForce = newSettings.hitForce
 	hitscanBullets = newSettings.hitscanBullets
@@ -270,8 +272,10 @@ function loadSettingsToProfile(newSettings)
 	newSettings.burstFireMax = burstFireMax
 	newSettings.burstFire = burstFireMax
 	newSettings.maxReloadTime = maxReloadTime
-	newSettings.minRndSpread = minRndSpread
-	newSettings.maxRndSpread = maxRndSpread
+	newSettings.minXSpread = minXSpread
+	newSettings.maxXSpread = maxXSpread
+	newSettings.minYSpread = minYSpread
+	newSettings.maxYSpread = maxYSpread
 	newSettings.maxDistance = maxDistance
 	newSettings.hitForce = hitForce
 	newSettings.hitscanBullets = hitscanBullets
@@ -317,10 +321,10 @@ function updateSettings(settings)
 	if settings["profileVersion"] == nil or settings["profileVersion"] <= 0 then -- Below version 1
 		settings["profileVersion"] = 1
 		
-		settings["hitParticleSettings"] = deepcopy(hitParticleSettings)
-		settings["shotSmokeParticleSettings"] = deepcopy(shotSmokeParticleSettings)
-		settings["shotFireParticleSettings"] = deepcopy(shotFireParticleSettings)
-		settings["projectileParticleSettings"] = deepcopy(projectileParticleSettings)
+		settings["hitParticleSettings"] = deepcopy(blankProfile["hitParticleSettings"])
+		settings["shotSmokeParticleSettings"] = deepcopy(blankProfile["shotSmokeParticleSettings"])
+		settings["shotFireParticleSettings"] = deepcopy(blankProfile["shotFireParticleSettings"])
+		settings["projectileParticleSettings"] = deepcopy(blankProfile["projectileParticleSettings"])
 		
 		if not settings["particlesEnabled"] then
 			settings["hitParticleSettings"]["enabled"] = false
@@ -382,6 +386,31 @@ function updateSettings(settings)
 	if settings["profileVersion"] < 6 then -- Below version 6
 		settings["profileVersion"] = 6
 		settings["projectileBouncyness"] = 0
+	end
+	
+	if settings["profileVersion"] < 7 then -- Below version 7
+		settings["profileVersion"] = 7
+		
+		local minSpread = settings["minRndSpread"]
+		local maxSpread = settings["maxRndSpread"]
+		
+		if minSpread > 10 then
+			minSpread = 10
+		end
+		
+		if maxSpread > 10 then
+			maxSpread = 10
+		end
+		
+		settings["minXSpread"] = minSpread / 10
+		settings["maxXSpread"] = maxSpread / 10
+		
+		settings["minYSpread"] = minSpread / 10
+		settings["maxYSpread"] = maxSpread / 10
+		
+		settings["minRndSpread"] = nil
+		settings["maxRndSpread"] = nil
+		
 	end
 	
 	return settings
