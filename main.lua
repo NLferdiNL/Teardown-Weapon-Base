@@ -13,7 +13,6 @@ toolReadableName = "Moddy Weapon"
 -- TODO: Add projectile bouncyness (velocity * normal * bouncyness)
 -- TODO: Line color.
 -- TODO: Projectile lighting
--- TODO: Fix sparse array bug preventing to update classic profiles.
 
 name = "Shotgun"
 customProfile = false
