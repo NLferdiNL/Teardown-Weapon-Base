@@ -352,35 +352,39 @@ function updateSettings(settings)
 		
 		local interpolationMethods = { linear = 1, smooth = 2, easein = 3, easeout = 4, constant = 5 }
 		
-		function updateInterpolation(setting)
-			setting[4] = interpolationMethods[setting[4]]
-		end
-		
-		function updateParticle(particle)
-			for i = 1, #particleSettingNames do
-				updateInterpolation(particle[particleSettingNames[i]])
+		if type(settings["hitParticleSettings"][4]) == "string" then
+			function updateInterpolation(setting)
+				setting[4] = interpolationMethods[setting[4]]
 			end
+			
+			function updateParticle(particle)
+				for i = 1, #particleSettingNames do
+					updateInterpolation(particle[particleSettingNames[i]])
+				end
+			end
+			
+			updateParticle(settings["hitParticleSettings"])
+			updateParticle(settings["shotSmokeParticleSettings"])
+			updateParticle(settings["shotFireParticleSettings"])
+			updateParticle(settings["projectileParticleSettings"])
 		end
-		
-		updateParticle(settings["hitParticleSettings"])
-		updateParticle(settings["shotSmokeParticleSettings"])
-		updateParticle(settings["shotFireParticleSettings"])
-		updateParticle(settings["projectileParticleSettings"])
 	end
 	
 	if settings["profileVersion"] < 5 then -- Below version 5
 		settings["profileVersion"] = 5
 		
-		local particleTypes = { smoke = 1, plain = 2, }
-		
-		function updateType(settings)
-			settings["ParticleType"] = particleTypes[settings["ParticleType"]]
+		if type(settings["hitParticleSettings"]["ParticleType"]) == "string" then
+			local particleTypes = { smoke = 1, plain = 2, }
+			
+			function updateType(settings)
+				settings["ParticleType"] = particleTypes[settings["ParticleType"]]
+			end
+			
+			updateType(settings["hitParticleSettings"])
+			updateType(settings["shotSmokeParticleSettings"])
+			updateType(settings["shotFireParticleSettings"])
+			updateType(settings["projectileParticleSettings"])
 		end
-		
-		updateType(settings["hitParticleSettings"])
-		updateType(settings["shotSmokeParticleSettings"])
-		updateType(settings["shotFireParticleSettings"])
-		updateType(settings["projectileParticleSettings"])
 	end
 	
 	if settings["profileVersion"] < 6 then -- Below version 6

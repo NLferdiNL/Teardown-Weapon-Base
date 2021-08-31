@@ -76,26 +76,8 @@ end
 function saveCustomProfiles()
 	local customListDefaultCount = GetCustomListDefaultCount()
 	
-	--[[function test(tablet)
-		for key, value in pairs(tablet) do
-			if value == nil then
-				DebugPrint("nil " .. key)
-			elseif type(value) == "nil" then
-				DebugPrint("nil " .. key)
-			elseif type(value) == "table" then
-				test(value)
-			end
-		end
-	end]]--
-	
-	--tableToText(inputTable, loopThroughTables, useIPairs, addIndex, addNewLine, printSeperately)
-	--test(customList[1 + customListDefaultCount])
-	
 	for i = 1, customProfiles do
 		local currentProfileObject = customList[i + customListDefaultCount]
-		
-		--DebugPrint("test: " .. i)
-		--DebugPrint(tableToText_legacy(currentProfileObject))
 		
 		local ammoBackup = currentProfileObject.currAmmo
 		local magBackup = currentProfileObject.currMag
