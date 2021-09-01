@@ -75,6 +75,8 @@ local maxXSpreadBox = nil
 local minYSpreadBox = nil
 local maxYSpreadBox = nil
 
+local projectileBouncynessBox = nil
+
 local textBoxCount = 0
 
 local weaponListScrollPosition = 0
@@ -190,7 +192,9 @@ function setupTextBoxes()
 	local textBox25, newBox25 = textboxClass_getTextBox(25) -- minYSpread
 	local textBox26, newBox26 = textboxClass_getTextBox(26) -- maxYSpread
 	
-	textBoxCount = 26
+	local textBox27, newBox27 = textboxClass_getTextBox(27) -- projectileBouncyness
+	
+	textBoxCount = 27
 	
 	if newBox01 then
 		textBox01.name = "Spread"
@@ -504,6 +508,18 @@ function setupTextBoxes()
 		
 		maxYSpreadBox = textBox26
 	end
+	
+	if newBox27 then
+		textBox27.name = "Projectile Bouncyness"
+		textBox27.value = projectileBouncyness .. ""
+		textBox27.numbersOnly = true
+		textBox27.limitsActive = true
+		textBox27.numberMin = 0
+		textBox27.numberMax = 1
+		textBox27.description = "How strong the projectile bounces on hit.\nMin: 0 | Max: 1"
+		
+		projectileBouncynessBox = textBox27
+	end
 end
 
 function modOptionsPage()
@@ -550,10 +566,6 @@ function mainToggleButtons(dt)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Draw Projectile Line: ", drawProjectileLine, function (i) drawProjectileLine = i; hasAValueBeenChanged = true end, "Draw a line where the projectile is.")
-			
-			UiTranslate(0, 50)
-			
 			drawToggle("Explosive Bullets: ", explosiveBullets, function (i) explosiveBullets = i; hasAValueBeenChanged = true end, "Explode on impact bullets.\nInfinite Penetration: Creates constant explosions as it travels.")
 			
 			UiTranslate(0, 50)
@@ -573,13 +585,17 @@ function mainToggleButtons(dt)
 			UiTranslate(0, 50)
 			
 			drawToggle("Additive(Shotgun) Reload: ", additiveReload, function (i) additiveReload = i; hasAValueBeenChanged = true end, "Reload bullets one by one, rather than by magazine.")
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Draw Projectile Line: ", drawProjectileLine, function (i) drawProjectileLine = i; hasAValueBeenChanged = true end, "Draw a line where the projectile is.")
 		UiPop()
 	UiPop()
 end
 
-function leftsideTextInputMenu(dt)
+function leftsideTextInputMenu(dt, buttonCount)
 	UiPush()
-		UiTranslate(-UiWidth() * (menuWidth / 3.5), 6 * 50)
+		UiTranslate(-UiWidth() * (menuWidth / 3.5), buttonCount * 50)
 			
 		UiPush()
 			UiTranslate(spreadTextBox.width, 0)
@@ -617,9 +633,9 @@ function leftsideTextInputMenu(dt)
 	UiPop()
 end
 
-function middleSideTextInputMenu(dt)
+function middleSideTextInputMenu(dt, buttonCount)
 	UiPush()	
-		UiTranslate(UiWidth() * (menuWidth / 10), 6 * 50)
+		UiTranslate(UiWidth() * (menuWidth / 10), buttonCount * 50)
 		textboxClass_render(softRadiusMinTextBox)
 			
 		UiTranslate(0, 50)
@@ -652,12 +668,12 @@ function middleSideTextInputMenu(dt)
 	UiPop()
 end
 
-function rightsideTextInputMenu(dt)
+function rightsideTextInputMenu(dt, buttonCount)
 	UiPush()
-		UiTranslate(UiWidth() * (menuWidth / 3.5), 5 * 50)
+		UiTranslate(UiWidth() * (menuWidth / 3.5), buttonCount * 50)
 		
 		UiPush()
-			UiTranslate(explosiveBulletMinSizeTextBox.width, 50)
+			UiTranslate(explosiveBulletMinSizeTextBox.width, 0)
 		
 			textboxClass_render(explosiveBulletMinSizeTextBox)
 				
@@ -680,6 +696,10 @@ function rightsideTextInputMenu(dt)
 			UiTranslate(0, 50)
 			
 			textboxClass_render(projectileGravityBox)
+			
+			UiTranslate(0, 50)
+			
+			textboxClass_render(projectileBouncynessBox)
 			
 			UiTranslate(0, 50)
 			
@@ -707,9 +727,9 @@ function mainSettings()
 			
 			mainToggleButtons(dt)
 			
-			leftsideTextInputMenu(dt)
-			middleSideTextInputMenu(dt)
-			rightsideTextInputMenu(dt)
+			leftsideTextInputMenu(dt, 5)
+			middleSideTextInputMenu(dt, 5)
+			rightsideTextInputMenu(dt, 5)
 		UiPop()
 	UiPop()
 end
@@ -1597,6 +1617,10 @@ function menuUpdateActions()
 	if projectileGravityBox ~= nil then
 		projectileGravityBox.value = projectileGravity .. ""
 	end
+	
+	if projectileBouncynessBox ~= nil then
+		projectileBouncynessBox.value = projectileBouncyness .. ""
+	end
 end
 
 function menuCloseActions()
@@ -1663,6 +1687,8 @@ function saveToolValues()
 
 	minYSpread = tonumber(minYSpreadBox.value)
 	maxYSpread = tonumber(maxYSpreadBox.value)
+	
+	projectileBouncyness = tonumber(projectileBouncynessBox.value)
 	
 	if customProfile then
 		name = nameTextBox.value

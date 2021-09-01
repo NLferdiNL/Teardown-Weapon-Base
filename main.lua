@@ -69,15 +69,15 @@ hitParticleSettings = {
 	ParticleTile = 0,
 	lifetime = 5,
 	ParticleColor = {1, 1, 1, 1, 1, 1},
-	ParticleRadius = 	{ true, 0.5, 1, "linear", 0, 1},
-	ParticleAlpha = 	{ false, 1, 1, "linear", 0, 1},
-	ParticleGravity = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleDrag = 		{ false, 0, 0, "linear", 0, 1},
-	ParticleEmissive = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleRotation = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleStretch = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleSticky = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleCollide = 	{ true, 1, 1, "linear", 0, 1},
+	ParticleRadius = 	{ true, 0.5, 1, 1, 0, 1},
+	ParticleAlpha = 	{ false, 1, 1, 1, 0, 1},
+	ParticleGravity = 	{ false, 0, 0, 1, 0, 1},
+	ParticleDrag = 		{ false, 0, 0, 1, 0, 1},
+	ParticleEmissive = 	{ false, 0, 0, 1, 0, 1},
+	ParticleRotation = 	{ false, 0, 0, 1, 0, 1},
+	ParticleStretch = 	{ false, 0, 0, 1, 0, 1},
+	ParticleSticky = 	{ false, 0, 0, 1, 0, 1},
+	ParticleCollide = 	{ true, 1, 1, 1, 0, 1},
 }
 
 shotSmokeParticleSettings = {
@@ -86,15 +86,15 @@ shotSmokeParticleSettings = {
 	ParticleTile = 0,
 	lifetime = 3,
 	ParticleColor = {0, 1, 0, 1, 1, 1},
-	ParticleRadius = 	{ true, 0.1, 0.3, "linear", 0, 1},
-	ParticleAlpha = 	{ false, 1, 1, "linear", 0, 1},
-	ParticleGravity = 	{ false, 0.4, 0.4, "linear", 0, 1},
-	ParticleDrag = 		{ false, 0, 0, "linear", 0, 1},
-	ParticleEmissive = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleRotation = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleStretch = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleSticky = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleCollide = 	{ true, 1, 1, "linear", 0, 1},
+	ParticleRadius = 	{ true, 0.1, 0.3, 1, 0, 1},
+	ParticleAlpha = 	{ false, 1, 1, 1, 0, 1},
+	ParticleGravity = 	{ false, 0.4, 0.4, 1, 0, 1},
+	ParticleDrag = 		{ false, 0, 0, 1, 0, 1},
+	ParticleEmissive = 	{ false, 0, 0, 1, 0, 1},
+	ParticleRotation = 	{ false, 0, 0, 1, 0, 1},
+	ParticleStretch = 	{ false, 0, 0, 1, 0, 1},
+	ParticleSticky = 	{ false, 0, 0, 1, 0, 1},
+	ParticleCollide = 	{ true, 1, 1, 1, 0, 1},
 }
 
 shotFireParticleSettings = {
@@ -103,32 +103,32 @@ shotFireParticleSettings = {
 	ParticleTile = 3,
 	lifetime = 0.5,
 	ParticleColor = {0, 1, 0, 1, 1, 1},
-	ParticleRadius = 	{ true, 0.4, 0.2, "smooth", 0, 1},
-	ParticleAlpha = 	{ false, 1, 1, "linear", 0, 1},
-	ParticleGravity = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleDrag = 		{ false, 0, 0, "linear", 0, 1},
-	ParticleEmissive = 	{ true, 1, 0, "smooth", 0, 1},
-	ParticleRotation = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleStretch = 	{ true, 1, 0.3, "linear", 0, 1},
-	ParticleSticky = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleCollide = 	{ true, 1, 1, "linear", 0, 1},
+	ParticleRadius = 	{ true, 0.4, 0.2, 2, 0, 1},
+	ParticleAlpha = 	{ false, 1, 1, 1, 0, 1},
+	ParticleGravity = 	{ false, 0, 0, 1, 0, 1},
+	ParticleDrag = 		{ false, 0, 0, 1, 0, 1},
+	ParticleEmissive = 	{ true, 1, 0, 2, 0, 1},
+	ParticleRotation = 	{ false, 0, 0, 1, 0, 1},
+	ParticleStretch = 	{ true, 1, 0.3, 1, 0, 1},
+	ParticleSticky = 	{ false, 0, 0, 1, 0, 1},
+	ParticleCollide = 	{ true, 1, 1, 1, 0, 1},
 }
 
 projectileParticleSettings = {
-	enabled = true,
+	enabled = false,
 	ParticleType = 1,
 	ParticleTile = 0,
 	lifetime = 3,
 	ParticleColor = {0, 1, 1, 1, 1, 1},
-	ParticleRadius = 	{ true, 0.1, 0.1, "linear", 0, 1},
-	ParticleAlpha = 	{ false, 1, 1, "linear", 0, 1},
-	ParticleGravity = 	{ false, 1, 1, "linear", 0, 1},
-	ParticleDrag = 		{ false, 0, 0, "linear", 0, 1},
-	ParticleEmissive = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleRotation = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleStretch = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleSticky = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleCollide = 	{ true, 1, 1, "linear", 0, 1},
+	ParticleRadius = 	{ true, 0.1, 0.1, 1, 0, 1},
+	ParticleAlpha = 	{ false, 1, 1, 1, 0, 1},
+	ParticleGravity = 	{ false, 1, 1, 1, 0, 1},
+	ParticleDrag = 		{ false, 0, 0, 1, 0, 1},
+	ParticleEmissive = 	{ false, 0, 0, 1, 0, 1},
+	ParticleRotation = 	{ false, 0, 0, 1, 0, 1},
+	ParticleStretch = 	{ false, 0, 0, 1, 0, 1},
+	ParticleSticky = 	{ false, 0, 0, 1, 0, 1},
+	ParticleCollide = 	{ true, 1, 1, 1, 0, 1},
 }
 
 --[[
@@ -138,15 +138,15 @@ exampleParticle = {
 	ParticleTile = 0,
 	lifetime = 3,
 	ParticleColor = {0.25, 0.25, 0.25, 1, 1, 1},
-	ParticleRadius = 	{ true, 0.5, 1, "linear", 0, 1},
-	ParticleAlpha = 	{ false, 1, 1, "linear", 0, 1},
-	ParticleGravity = 	{ true, 1, 1, "linear", 0, 1},
-	ParticleDrag = 		{ false, 0, 0, "linear", 0, 1},
-	ParticleEmissive = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleRotation = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleStretch = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleSticky = 	{ false, 0, 0, "linear", 0, 1},
-	ParticleCollide = 	{ true, 1, 1, "linear", 0, 1},
+	ParticleRadius = 	{ true, 0.5, 1, 1, 0, 1},
+	ParticleAlpha = 	{ false, 1, 1, 1, 0, 1},
+	ParticleGravity = 	{ true, 1, 1, 1, 0, 1},
+	ParticleDrag = 		{ false, 0, 0, 1, 0, 1},
+	ParticleEmissive = 	{ false, 0, 0, 1, 0, 1},
+	ParticleRotation = 	{ false, 0, 0, 1, 0, 1},
+	ParticleStretch = 	{ false, 0, 0, 1, 0, 1},
+	ParticleSticky = 	{ false, 0, 0, 1, 0, 1},
+	ParticleCollide = 	{ true, 1, 1, 1, 0, 1},
 }--]]--
 
 -- MISC/UNSORTED:
@@ -168,9 +168,8 @@ interpolationMethods = { "Linear", "Smooth", "Easein", "Easeout", "Constant", }
 particleTypes = { "Smoke", "Plain", }
 
 local firedShotLineClass = {
-	lifetime = 0.4,
-	startPos = nil,
-	endPos = nil,
+	lifetime = 5000.4,
+	points = {},
 }
 
 local bulletProjectileClass = {
@@ -186,6 +185,8 @@ local bulletProjectileClass = {
 	softRadius = 0,
 	mediumRadius = 0,
 	hardRadius = 0,
+	projectileGravity = 0,
+	projectileBouncyness = 0,
 }
 
 local firedProjectiles = {}
@@ -379,20 +380,37 @@ function createProjectileBullet(startPos, direction)
 	firedProjectile.mediumRadius = math.random(mediumRadiusMin, mediumRadiusMax) / 10
 	firedProjectile.hardRadius = math.random(hardRadiusMin, hardRadiusMax) / 10
 	firedProjectile.drawLine = drawProjectileLine
+	firedProjectile.projectileGravity = projectileGravity
+	firedProjectile.projectileBouncyness = projectileBouncyness
 	
 	return firedProjectile
 end
 
-function createFiredShot(startPos, endPos)
+function createFiredShot(startPos, points)
 	local firedShot = deepcopy(firedShotLineClass)
 	
-	firedShot.startPos = startPos
-	firedShot.endPos = endPos
+	firedShot.points[1] = startPos
+	
+	for i = 1, #points do
+		firedShot.points[i + 1] = points[i]
+	end
 	
 	return firedShot
 end
 
 -- Object handlers
+
+function projectileBounce(currShot, normal)
+	local bounceVel = nil
+	if currShot.projectileBouncyness > 0 then
+		local velocity = VecCopy(currShot.velocity)
+		local dot = currShot.projectileBouncyness * VecDot(normal,velocity)
+		
+		bounceVel = VecSub(currShot.velocity, VecScale(normal, dot*2))
+	end
+	
+	return currShot.projectileBouncyness, bounceVel
+end
 
 function handleAllProjectiles(dt)
 	if #firedProjectiles <= 0 then
@@ -406,8 +424,8 @@ function handleAllProjectiles(dt)
 		
 		local nextPos = VecAdd(currPos, VecScale(currShot.velocity, dt * 10))
 		
-		if projectileGravity ~= 0 then
-			currShot.velocity = VecAdd(currShot.velocity, Vec(0, projectileGravity * dt, 0))
+		if currShot.projectileGravity ~= 0 then
+			currShot.velocity = VecAdd(currShot.velocity, Vec(0, currShot.projectileGravity * dt, 0))
 		end
 		
 		local directionToNextPos = VecNormalize(currShot.velocity)
@@ -458,6 +476,13 @@ function handleAllProjectiles(dt)
 				if currShot.bulletHealth < 0 then
 					holeMade = true
 				else
+					local bounced, bounceVel = projectileBounce(currShot, normal)
+					
+					if bounced then
+						currShot.velocity = bounceVel
+						hitPoint = VecAdd(hitPoint, VecScale(normal, 0.05))
+					end
+					
 					nextPos = hitPoint
 					distanceTraveled = VecDist(currPos, nextPos)
 				end
@@ -476,7 +501,7 @@ function handleAllProjectiles(dt)
 				setupParticleFromSettings(projectileParticleSettings)
 				for i = 0, distanceTraveled, infinitePenetrationHitScanDamageStep do
 					local damageStepPos = VecAdd(currPos, VecScale(directionToNextPos, i))
-						SpawnParticle(damageStepPos, VecDir(damageStepPos, nextPos), projectileParticleSettings["lifetime"])
+					SpawnParticle(damageStepPos, VecDir(damageStepPos, nextPos), projectileParticleSettings["lifetime"])
 				end
 			end
 		end
@@ -504,14 +529,16 @@ function handleAllFiredShotLines(dt)
 		local currShot = firedShotLines[i]
 		
 		currShot.lifetime = currShot.lifetime - dt
-		
 		if currShot.lifetime <= 0 then
 			table.remove(firedShotLines, i, 1)
 		else
 			local alpha = currShot.lifetime / firedShotLineClass.lifetime
-		
-			
-			DrawLine(currShot.startPos, currShot.endPos, 1, 1, 1, alpha)
+			for j = 1, #currShot.points - 1 do
+				local pointA = currShot.points[j]
+				local pointB = currShot.points[j + 1]
+				
+				DrawLine(pointA, pointB, 1, 1, 1, alpha)
+			end
 		end
 	end
 end
@@ -934,17 +961,13 @@ function doBulletHoleAt(bullet, hitPoint, normal, hitParticles)
 	end
 end
 
-function doHitScanShot(shotStartPos, shotDirection)
-	local hit, hitPoint, distance, normal, shape = raycast(shotStartPos, shotDirection, maxDistance)
-	
-	if not hit then
-		hitPoint = VecAdd(shotStartPos, VecScale(shotDirection, 500))
-		normal = VecDir(hitPoint, shotStartPos)
-	end
-	
-	local finalHitPoint = hitPoint
+function doHitScanShot(gunFrontPos, shotStartPos, shotDirection)
+	local hitPoints = { gunFrontPos }
 	
 	if infinitePenetration then
+		local hitPoint = VecAdd(shotStartPos, VecScale(shotDirection, maxDistance))
+		local normal = VecDir(hitPoint, shotStartPos)
+	
 		local fakeBullet = fakeHitScanBullet()
 		
 		local startIndex = 0
@@ -964,21 +987,47 @@ function doHitScanShot(shotStartPos, shotDirection)
 				SpawnParticle(currPos, shotDirection, projectileParticleSettings["lifetime"])
 			end
 		end
+		
+		hitPoints[1] = VecAdd(shotStartPos, VecScale(shotDirection, maxDistance))
 	else
+		local hit, hitPoint, distance, normal, shape = raycast(shotStartPos, shotDirection, maxDistance)
+	
 		if hit and bulletHealth > 0 then
 			local bulletDamage = getBulletDamage(shape, hitPoint)
 			
 			local fakeBullet = fakeHitScanBullet()
 			
+			fakeBullet.velocity = VecScale(shotDirection, projectileSpeed)
+			
+			local bounced, bounceVel = projectileBounce(fakeBullet, normal)
+			
+			if bounced then
+				fakeBullet.velocity = bounceVel
+				fakeBullet.currentPos = VecAdd(hitPoint, VecScale(normal, 0.05))
+			else
+				fakeBullet.currentPos = hitPoint
+			end
+			
 			local currBulletHealth = bulletHealth - bulletDamage
 			
 			doBulletHoleAt(fakeBullet, hitPoint, normal, hit)
 			
+			hitPoints[#hitPoints + 1] = hitPoint
+			
+			local distanceTraveledFromStart = VecDist(shotStartPos, hitPoint)
+			
+			local distanceLeft = maxDistance - distanceTraveledFromStart
+			
+			if applyForceOnHit and hit then
+				applyForceToHitObject(shape, hitPoint, shotDirection)
+			end
+			
 			while currBulletHealth > 0 do
-				local hit, hitPoint, distance, normal, shape = raycast(shotStartPos, shotDirection, maxDistance)
+				local hit, hitPoint, distance, normal, shape = raycast(fakeBullet.currentPos, VecDir(fakeBullet.currentPos, fakeBullet.velocity), distanceLeft)
 				
 				if not hit then
 					currBulletHealth = 0
+					hitPoints[#hitPoints + 1] =  VecAdd(fakeBullet.currentPos, VecScale(shotDirection, distanceLeft))
 					break
 				end
 				
@@ -986,32 +1035,50 @@ function doHitScanShot(shotStartPos, shotDirection)
 				
 				local bulletDamage = getBulletDamage(shape, hitPoint)
 				
+				local bounced, bounceVel = projectileBounce(fakeBullet, normal)
+				
+				local distanceTraveled = VecDist(fakeBullet.currentPos, hitPoint)
+				
+				distanceLeft = distanceLeft - distanceTraveled
+				
+				if bounced then
+					fakeBullet.velocity = bounceVel
+					fakeBullet.currentPos = VecAdd(hitPoint, VecScale(normal, 0.05))
+				else
+					fakeBullet.currentPos = hitPoint
+				end
+				
 				currBulletHealth = currBulletHealth - bulletDamage
 				
-				finalHitPoint = hitPoint
+				hitPoints[#hitPoints + 1] = fakeBullet.currentPos
 			end
 		else
+			hitPoints[2] = VecAdd(shotStartPos, VecScale(shotDirection, maxDistance))
 			doBulletHoleAt(fakeHitScanBullet(), hitPoint, normal, hit)
 		end
+		
+		DebugPrint(#hitPoints)
 		
 		if projectileParticleSettings["enabled"] then
 			setupParticleFromSettings(projectileParticleSettings)
 			
-			local finalHitDistance = VecDist(shotStartPos, finalHitPoint)
-			
-			for i = 0, finalHitDistance, hitscanParticleStep do
-				local currentPos = VecAdd(shotStartPos, VecScale(shotDirection, i))
+			for i = 1, #hitPoints - 1 do
+				local pointA = hitPoints[i]
+				local pointB = hitPoints[i + 1]
 				
-				SpawnParticle(currentPos, shotDirection, projectileParticleSettings["lifetime"])
+				local currPointDist = VecDist(pointA, pointB)
+				local currDir = VecDir(pointA, pointB)
+				
+				for i = 0, currPointDist, hitscanParticleStep do
+					local currentPos = VecAdd(pointA, VecScale(currDir, i))
+					
+					SpawnParticle(currentPos, currDir, projectileParticleSettings["lifetime"])
+				end
 			end
 		end
 	end
 	
-	if applyForceOnHit and hit then
-		applyForceToHitObject(shape, hitPoint, shotDirection)
-	end
-		
-	return hitPoint
+	return hitPoints
 end
 
 function shootLogic()
@@ -1035,7 +1102,7 @@ function shootLogic()
 		local hitPoint = nil
 		
 		if hitscanBullets then
-			hitPoint = doHitScanShot(shotStartPos, shotDirection)
+			hitPoints = doHitScanShot(gunFrontPos, shotStartPos, shotDirection)
 		end
 		
 		if i == 1 then
@@ -1052,7 +1119,7 @@ function shootLogic()
 		
 		if hitscanBullets then
 			if drawProjectileLine then
-				local firedShot = createFiredShot(gunFrontPos, hitPoint)
+				local firedShot = createFiredShot(gunFrontPos, hitPoints)
 				
 				table.insert(firedShotLines, firedShot)
 			end
