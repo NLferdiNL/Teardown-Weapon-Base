@@ -250,8 +250,8 @@ function setupTextBoxes()
 		textBox05.numbersOnly = true
 		textBox05.limitsActive = true
 		textBox05.numberMin = 0
-		textBox05.numberMax = 1
-		textBox05.description = "This indicates how close it has to be to the spread circle minimumly horizontally.\nMin: 0 | Max: 1"
+		textBox05.numberMax = 10
+		textBox05.description = "This indicates how close it has to be to the spread circle minimumly horizontally.\nMin: 0 | Max: 10"
 		
 		minXSpreadBox = textBox05
 	end
@@ -262,8 +262,8 @@ function setupTextBoxes()
 		textBox06.numbersOnly = true
 		textBox06.limitsActive = true
 		textBox06.numberMin = 0
-		textBox06.numberMax = 1
-		textBox06.description = "This indicates how close it has to be to the spread circle maximumly horizontally.\nMin: 0 | Max: 1"
+		textBox06.numberMax = 10
+		textBox06.description = "This indicates how close it has to be to the spread circle maximumly horizontally.\nMin: 0 | Max: 10"
 		
 		maxXSpreadBox = textBox06
 	end
@@ -480,7 +480,7 @@ function setupTextBoxes()
 		textBox24.limitsActive = true
 		textBox24.numberMin = -1000
 		textBox24.numberMax = 1000
-		textBox24.description = "Gravity applied to projectiles. (Not functional in hitscan currently.)\nMin: -1000 | Max: 1000"
+		textBox24.description = "Gravity applied to projectiles.\n(Disabled in hitscan.)\nMin: -1000 | Max: 1000"
 		
 		projectileGravityBox = textBox24
 	end
@@ -491,8 +491,8 @@ function setupTextBoxes()
 		textBox25.numbersOnly = true
 		textBox25.limitsActive = true
 		textBox25.numberMin = 0
-		textBox25.numberMax = 1
-		textBox25.description = "This indicates how close it has to be to the spread circle minimumly vertically.\nMin: 0 | Max: 1"
+		textBox25.numberMax = 10
+		textBox25.description = "This indicates how close it has to be to the spread circle minimumly vertically.\nMin: 0 | Max: 10"
 		
 		minYSpreadBox = textBox25
 	end
@@ -503,8 +503,8 @@ function setupTextBoxes()
 		textBox26.numbersOnly = true
 		textBox26.limitsActive = true
 		textBox26.numberMin = 0
-		textBox26.numberMax = 1
-		textBox26.description = "This indicates how close it has to be to the spread circle maximumly vertically.\nMin: 0 | Max: 1"
+		textBox26.numberMax = 10
+		textBox26.description = "This indicates how close it has to be to the spread circle maximumly vertically.\nMin: 0 | Max: 10"
 		
 		maxYSpreadBox = textBox26
 	end
@@ -516,7 +516,7 @@ function setupTextBoxes()
 		textBox27.limitsActive = true
 		textBox27.numberMin = 0
 		textBox27.numberMax = 1
-		textBox27.description = "How strong the projectile bounces on hit.\nMin: 0 | Max: 1"
+		textBox27.description = "How strong the projectile bounces on hit.\nBest results between 0.6 and 1.\n(Disabled in infinite penetration.)\nMin: 0 | Max: 1"
 		
 		projectileBouncynessBox = textBox27
 	end

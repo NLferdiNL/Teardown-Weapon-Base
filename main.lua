@@ -168,7 +168,7 @@ interpolationMethods = { "Linear", "Smooth", "Easein", "Easeout", "Constant", }
 particleTypes = { "Smoke", "Plain", }
 
 local firedShotLineClass = {
-	lifetime = 5000.4,
+	lifetime = 0.4,
 	points = {},
 }
 
@@ -402,14 +402,16 @@ end
 
 function projectileBounce(currShot, normal)
 	local bounceVel = nil
-	if currShot.projectileBouncyness > 0 then
-		local velocity = VecCopy(currShot.velocity)
-		local dot = currShot.projectileBouncyness * VecDot(normal,velocity)
+	local bounced = currShot.projectileBouncyness > 0
+	
+	if bounced then
+		local velocity = VecScale(currShot.velocity, currShot.projectileBouncyness)
+		local dot = VecDot(normal, velocity)
 		
-		bounceVel = VecSub(currShot.velocity, VecScale(normal, dot*2))
+		bounceVel = VecSub(currShot.velocity, VecScale(normal, dot * 2))
 	end
 	
-	return currShot.projectileBouncyness, bounceVel
+	return bounced, bounceVel
 end
 
 function handleAllProjectiles(dt)
@@ -882,8 +884,8 @@ function GenerateRandomSpread()
 	--[[local xSpread = math.random(-spread * 100, spread * 100) / 100
 	local ySpread = math.random(-spread * 100, spread * 100) / 100]]--
 	
-	local xSpread = endPos[1] * math.random(minXSpread, maxXSpread)
-	local ySpread = endPos[3] * math.random(minYSpread, maxYSpread)
+	local xSpread = endPos[1] * math.random(minXSpread, maxXSpread) / 10
+	local ySpread = endPos[3] * math.random(minYSpread, maxYSpread) / 10
 	
 	return Vec(xSpread, ySpread, 0)
 end
@@ -913,7 +915,7 @@ function GenerateBulletTrajectory()
 	return gunFrontPos, gunFrontDir, cameraTransform.pos, shotDirection
 end
 
-function fakeHitScanBullet()
+function fakeHitScanBullet(pos, dir)
 	local newBullet = createProjectileBullet(Vec(0, 0, 0), Vec(0, 0, 0))
 
 	return newBullet
@@ -995,9 +997,7 @@ function doHitScanShot(gunFrontPos, shotStartPos, shotDirection)
 		if hit and bulletHealth > 0 then
 			local bulletDamage = getBulletDamage(shape, hitPoint)
 			
-			local fakeBullet = fakeHitScanBullet()
-			
-			fakeBullet.velocity = VecScale(shotDirection, projectileSpeed)
+			local fakeBullet = createProjectileBullet(hitPoint, shotDirection)
 			
 			local bounced, bounceVel = projectileBounce(fakeBullet, normal)
 			
@@ -1023,9 +1023,11 @@ function doHitScanShot(gunFrontPos, shotStartPos, shotDirection)
 			end
 			
 			while currBulletHealth > 0 do
+				DebugPrint(VecToString(fakeBullet.currentPos) .. " | " .. VecToString(fakeBullet.velocity))
+			
 				local hit, hitPoint, distance, normal, shape = raycast(fakeBullet.currentPos, VecDir(fakeBullet.currentPos, fakeBullet.velocity), distanceLeft)
 				
-				if not hit then
+				if not hit or distanceLeft < 0 then
 					currBulletHealth = 0
 					hitPoints[#hitPoints + 1] =  VecAdd(fakeBullet.currentPos, VecScale(shotDirection, distanceLeft))
 					break
@@ -1035,11 +1037,11 @@ function doHitScanShot(gunFrontPos, shotStartPos, shotDirection)
 				
 				local bulletDamage = getBulletDamage(shape, hitPoint)
 				
-				local bounced, bounceVel = projectileBounce(fakeBullet, normal)
-				
 				local distanceTraveled = VecDist(fakeBullet.currentPos, hitPoint)
 				
 				distanceLeft = distanceLeft - distanceTraveled
+				
+				local bounced, bounceVel = projectileBounce(fakeBullet, normal)
 				
 				if bounced then
 					fakeBullet.velocity = bounceVel
