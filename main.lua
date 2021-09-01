@@ -10,7 +10,7 @@ toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
 
 -- TODO: Add sound editor
--- TODO: Add projectile bouncyness (velocity * normal * bouncyness)
+-- TODO: Fix projectileBouncyness for hitscan (DONT USE THE PROJECTILE BOUNCE, REUSE THE EQUATION)
 -- TODO: Line color.
 -- TODO: Projectile lighting
 
@@ -265,6 +265,8 @@ function tick(dt)
 	handleFireTime(dt)
 	handleWarmup(dt)
 	
+	--bounceLaserTest()
+	
 	if needsReload() then
 		if getAmmoCount() <= 0 then
 			return
@@ -400,15 +402,15 @@ end
 
 -- Object handlers
 
-function projectileBounce(currShot, normal)
+function projectileBounce(currBullet, normal)
 	local bounceVel = nil
-	local bounced = currShot.projectileBouncyness > 0
+	local bounced = currBullet.projectileBouncyness > 0
 	
 	if bounced then
-		local velocity = VecScale(currShot.velocity, currShot.projectileBouncyness)
+		local velocity = VecScale(VecCopy(currBullet.velocity), currBullet.projectileBouncyness)
 		local dot = VecDot(normal, velocity)
 		
-		bounceVel = VecSub(currShot.velocity, VecScale(normal, dot * 2))
+		bounceVel = VecSub(currBullet.velocity, VecScale(normal, dot * 2))
 	end
 	
 	return bounced, bounceVel
@@ -759,6 +761,32 @@ function needsReload(dt)
 	return false
 end
 
+function bounceLaserTest()
+	local cameraTransform = GetCameraTransform()
+	
+	local localShotDirection = Vec(0, 0, -1)
+	
+	local currShotDirection = VecDir(cameraTransform.pos, TransformToParentPoint(cameraTransform, localShotDirection))
+	
+	local pos = VecCopy(cameraTransform.pos)
+	
+	local distTraveled = 0
+	
+	local maxSteps = 100
+	
+	while distTraveled < maxDistance and maxSteps > 0 do
+		maxSteps = maxSteps - 1
+		local hit, hitPoint, distance, normal, shape = raycast(pos, currShotDirection, distanceLeft)
+		
+		distTraveled = distTraveled + VecDist(hitPoint, pos)
+		
+		DrawLine(pos, hitPoint, 1, 0, 0)
+		
+		currShotDirection = VecSub(currShotDirection, VecScale(normal, VecDot(normal, currShotDirection) * 2))
+		pos = VecAdd(hitPoint, VecScale(normal, 0.01))
+	end
+end
+
 function reloadLogic(dt)
 	if additiveReload then
 		if reloadTime > 0 and currMag < magSize and additiveReloading then
@@ -963,7 +991,48 @@ function doBulletHoleAt(bullet, hitPoint, normal, hitParticles)
 	end
 end
 
-function doHitScanShot(gunFrontPos, shotStartPos, shotDirection)
+--[[function doHitScanSecondHit(fakeBullet, currBulletHealth, distanceLeft, hitPoints)
+	local currShotDirection = VecDir(fakeBullet.currentPos, fakeBullet.velocity)
+				
+	local hit, hitPoint, distance, normal, shape = raycast(fakeBullet.currentPos, currShotDirection, distanceLeft)
+	
+	if not hit or distanceLeft < 0 then
+		currBulletHealth = 0
+		hitPoints[#hitPoints + 1] =  VecAdd(fakeBullet.currentPos, VecScale(currShotDirection, distanceLeft))
+		return hit, currBulletHealth, distanceLeft
+	end
+	
+	doBulletHoleAt(fakeBullet, hitPoint, normal, hit)
+	
+	local bounced, bounceVel = projectileBounce(fakeBullet, normal)
+	
+	DebugPrint(VecToString(fakeBullet.currentPos) .. " | " .. VecToString(fakeBullet.velocity))
+			
+	if bounced then
+		fakeBullet.velocity = bounceVel
+		fakeBullet.currentPos = VecAdd(hitPoint, VecScale(normal, 0.01))
+	else
+		fakeBullet.currentPos = hitPoint
+	end
+	
+	DebugPrint(VecToString(fakeBullet.currentPos) .. " | " .. VecToString(fakeBullet.velocity))
+	
+	if applyForceOnHit and hit then
+		applyForceToHitObject(shape, hitPoint, currShotDirection)
+	end
+	
+	local bulletDamage = getBulletDamage(shape, hitPoint)
+	currBulletHealth = currBulletHealth - bulletDamage
+	
+	local distanceTraveled = VecDist(fakeBullet.currentPos, hitPoint)
+	distanceLeft = distanceLeft - distanceTraveled
+	
+	hitPoints[#hitPoints + 1] = fakeBullet.currentPos
+	
+	return hit, currBulletHealth, distanceLeft
+end
+
+function doHitScanShot(shotStartPos, shotDirection, gunFrontPos)
 	local hitPoints = { gunFrontPos }
 	
 	if infinitePenetration then
@@ -992,67 +1061,45 @@ function doHitScanShot(gunFrontPos, shotStartPos, shotDirection)
 		
 		hitPoints[1] = VecAdd(shotStartPos, VecScale(shotDirection, maxDistance))
 	else
+		local fakeBullet = createProjectileBullet(shotStartPos, shotDirection)
+		
 		local hit, hitPoint, distance, normal, shape = raycast(shotStartPos, shotDirection, maxDistance)
 	
 		if hit and bulletHealth > 0 then
 			local bulletDamage = getBulletDamage(shape, hitPoint)
+			fakeBullet.bulletHealth = fakeBullet.bulletHealth - bulletDamage
 			
-			local fakeBullet = createProjectileBullet(hitPoint, shotDirection)
-			
-			local bounced, bounceVel = projectileBounce(fakeBullet, normal)
-			
-			if bounced then
-				fakeBullet.velocity = bounceVel
-				fakeBullet.currentPos = VecAdd(hitPoint, VecScale(normal, 0.05))
-			else
-				fakeBullet.currentPos = hitPoint
-			end
-			
-			local currBulletHealth = bulletHealth - bulletDamage
-			
-			doBulletHoleAt(fakeBullet, hitPoint, normal, hit)
+			fakeBullet.currentPos = hitPoint
 			
 			hitPoints[#hitPoints + 1] = hitPoint
 			
 			local distanceTraveledFromStart = VecDist(shotStartPos, hitPoint)
 			
-			local distanceLeft = maxDistance - distanceTraveledFromStart
+			fakeBullet.lifetime = maxDistance - distanceTraveledFromStart
+			
+			doBulletHoleAt(fakeBullet, hitPoint, normal, hit)
 			
 			if applyForceOnHit and hit then
 				applyForceToHitObject(shape, hitPoint, shotDirection)
 			end
 			
-			while currBulletHealth > 0 do
-				DebugPrint(VecToString(fakeBullet.currentPos) .. " | " .. VecToString(fakeBullet.velocity))
+			local bounced, bounceVel = projectileBounce(fakeBullet, normal)
 			
-				local hit, hitPoint, distance, normal, shape = raycast(fakeBullet.currentPos, VecDir(fakeBullet.currentPos, fakeBullet.velocity), distanceLeft)
-				
-				if not hit or distanceLeft < 0 then
-					currBulletHealth = 0
-					hitPoints[#hitPoints + 1] =  VecAdd(fakeBullet.currentPos, VecScale(shotDirection, distanceLeft))
-					break
-				end
-				
-				doBulletHoleAt(fakeBullet, hitPoint, normal, hit)
-				
-				local bulletDamage = getBulletDamage(shape, hitPoint)
-				
-				local distanceTraveled = VecDist(fakeBullet.currentPos, hitPoint)
-				
-				distanceLeft = distanceLeft - distanceTraveled
-				
-				local bounced, bounceVel = projectileBounce(fakeBullet, normal)
-				
-				if bounced then
-					fakeBullet.velocity = bounceVel
-					fakeBullet.currentPos = VecAdd(hitPoint, VecScale(normal, 0.05))
-				else
-					fakeBullet.currentPos = hitPoint
-				end
-				
-				currBulletHealth = currBulletHealth - bulletDamage
-				
-				hitPoints[#hitPoints + 1] = fakeBullet.currentPos
+			DebugPrint(VecToString(fakeBullet.currentPos) .. " | " .. VecToString(fakeBullet.velocity))
+			
+			if bounced then
+				fakeBullet.velocity = bounceVel
+				fakeBullet.currentPos = VecAdd(hitPoint, VecScale(normal, 0.01))
+			else
+				fakeBullet.currentPos = hitPoint
+			end
+			
+			DebugPrint(VecToString(fakeBullet.currentPos) .. " | " .. VecToString(fakeBullet.velocity))
+			
+			while fakeBullet.bulletHealth > 0 do
+				local hit, newHealth, newDist = doHitScanSecondHit(fakeBullet, fakeBullet.bulletHealth, fakeBullet.lifetime, hitPoints)
+				fakeBullet.bulletHealth = newHealth
+				fakeBullet.lifetime = newDist
 			end
 		else
 			hitPoints[2] = VecAdd(shotStartPos, VecScale(shotDirection, maxDistance))
@@ -1081,7 +1128,88 @@ function doHitScanShot(gunFrontPos, shotStartPos, shotDirection)
 	end
 	
 	return hitPoints
-end
+end]]--
+
+function doHitScanShot(shotStartPos, shotDirection, gunFrontPos)
+	local hit, hitPoint, distance, normal, shape = raycast(shotStartPos, shotDirection, maxDistance)
+	
+	if not hit then
+		hitPoint = VecAdd(shotStartPos, VecScale(shotDirection, 500))
+		normal = VecDir(hitPoint, shotStartPos)
+	end
+	
+	local finalHitPoint = hitPoint
+	
+	if infinitePenetration then
+		local fakeBullet = fakeHitScanBullet()
+		
+		local startIndex = 0
+		
+		if explosiveBullets then
+			startIndex = infinitePenetrationHitScanStart + fakeBullet.explosiveSize * minExplosiveDistanceHitscanMultiplier
+		end
+		
+		for i = startIndex, maxDistance, infinitePenetrationHitScanDamageStep do
+			local currPos = VecAdd(shotStartPos, VecScale(shotDirection, i))
+			
+			doBulletHoleAt(fakeBullet, currPos, normal, i >= maxDistance)
+			
+			if projectileParticleSettings["enabled"] then
+				setupParticleFromSettings(projectileParticleSettings)
+				
+				SpawnParticle(currPos, shotDirection, projectileParticleSettings["lifetime"])
+			end
+		end
+	else
+		if hit and bulletHealth > 0 then
+			local bulletDamage = getBulletDamage(shape, hitPoint)
+			
+			local fakeBullet = fakeHitScanBullet()
+			
+			local currBulletHealth = bulletHealth - bulletDamage
+			
+			doBulletHoleAt(fakeBullet, hitPoint, normal, hit)
+			
+			while currBulletHealth > 0 do
+				local hit, hitPoint, distance, normal, shape = raycast(shotStartPos, shotDirection, maxDistance)
+				
+				if not hit then
+					currBulletHealth = 0
+					finalHitPoint = VecAdd(shotStartPos, VecScale(shotDirection, maxDistance))
+					break
+				end
+				
+				doBulletHoleAt(fakeBullet, hitPoint, normal, hit)
+				
+				local bulletDamage = getBulletDamage(shape, hitPoint)
+				
+				currBulletHealth = currBulletHealth - bulletDamage
+				
+				finalHitPoint = hitPoint
+			end
+		else
+			doBulletHoleAt(fakeHitScanBullet(), hitPoint, normal, hit)
+		end
+		
+		if projectileParticleSettings["enabled"] then
+			setupParticleFromSettings(projectileParticleSettings)
+			
+			local finalHitDistance = VecDist(shotStartPos, finalHitPoint)
+			
+			for i = 0, finalHitDistance, hitscanParticleStep do
+				local currentPos = VecAdd(shotStartPos, VecScale(shotDirection, i))
+				
+				SpawnParticle(currentPos, shotDirection, projectileParticleSettings["lifetime"])
+			end
+		end
+	end
+	
+	if applyForceOnHit and hit then
+		applyForceToHitObject(shape, hitPoint, shotDirection)
+	end
+		
+	return { gunFrontPos, finalHitPoint }
+end 
 
 function shootLogic()
 	currentShotCooldown = shotCooldownTime
@@ -1104,7 +1232,7 @@ function shootLogic()
 		local hitPoint = nil
 		
 		if hitscanBullets then
-			hitPoints = doHitScanShot(gunFrontPos, shotStartPos, shotDirection)
+			hitPoints = doHitScanShot(shotStartPos, shotDirection, gunFrontPos)
 		end
 		
 		if i == 1 then

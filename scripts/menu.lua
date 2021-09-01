@@ -516,7 +516,7 @@ function setupTextBoxes()
 		textBox27.limitsActive = true
 		textBox27.numberMin = 0
 		textBox27.numberMax = 1
-		textBox27.description = "How strong the projectile bounces on hit.\nBest results between 0.6 and 1.\n(Disabled in infinite penetration.)\nMin: 0 | Max: 1"
+		textBox27.description = "How strong the projectile bounces on hit.\nBest results between 0.6 and 1.\n(Disabled in infinite penetration & hitscan.)\nMin: 0 | Max: 1"
 		
 		projectileBouncynessBox = textBox27
 	end
