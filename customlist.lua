@@ -152,6 +152,18 @@ function EditCustomName(index, name)
 	customList[index].name = name
 end
 
+function CopySFXDataTo(fromIndex, toIndex)
+	local fromData = GetSettingsByIndex(fromIndex)
+	local toData = GetSettingsByIndex(toIndex)
+	
+	if not toData.customProfile then
+		return
+	end
+	
+	toData.sfx = fromData.sfx
+	toData.sfxLength = fromData.sfxLength
+end
+
 function DeleteCustom(index)
 	if not customList[index].customProfile then
 		return

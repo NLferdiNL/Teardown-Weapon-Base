@@ -77,6 +77,10 @@ local maxYSpreadBox = nil
 
 local projectileBouncynessBox = nil
 
+local soundCopyIndex = 1
+local customList = GetList()
+local customListBaseCount = GetCustomListDefaultCount()
+
 local textBoxCount = 0
 
 local weaponListScrollPosition = 0
@@ -524,7 +528,7 @@ end
 
 function modOptionsPage()
 	UiPush()
-		UiTranslate(0, 50)
+		UiTranslate(0, 100)
 		
 		drawToggle("Infinite Ammo: ", infiniteAmmo, function (i) infiniteAmmo = i; hasAValueBeenChanged = true end)
 				
@@ -900,9 +904,20 @@ function bottomMenuButtons()
 end
 --renderParticleInterpolationSelector
 function renderParticleStringVarSelector(settingData, settingKey, settingTypes)
-	local currentSettingIndex = settingData[settingKey]
-	local optionWidth = 175
-	local margin = 10
+	local oldIndex = settingData[settingKey]
+	local newIndex = selectionBox(oldIndex, settingTypes)
+	settingData[settingKey] = newIndex
+end
+
+function selectionBox(index, keys, triggerChange, optionWidth, margin, maxIndex, displayKey)
+	local currentSettingIndex = index
+	
+	triggerChange = triggerChange or true
+	
+	optionWidth = optionWidth or 175
+	margin = margin or 10
+	
+	maxIndex = maxIndex or #keys
 	
 	UiPush()
 		UiFont("regular.ttf", 26)
@@ -915,31 +930,39 @@ function renderParticleStringVarSelector(settingData, settingKey, settingTypes)
 			UiTranslate(-optionWidth / 2 + margin, 0)
 			if UiImageButton("MOD/sprites/arrow-left.png", 60, 60) then
 				currentSettingIndex = currentSettingIndex - 1
-				hasAValueBeenChanged = true
+				if triggerChange then
+					hasAValueBeenChanged = true
+				end
 				
 				if currentSettingIndex < 1 then
-					currentSettingIndex = #settingTypes
+					currentSettingIndex = maxIndex
 				end
 			end
 		UiPop()
 		
-		UiText(settingTypes[currentSettingIndex])
+		if displayKey ~= nil then
+			UiText(keys[currentSettingIndex][displayKey])
+		else
+			UiText(keys[currentSettingIndex])
+		end
 		
 		UiPush()
 			UiAlign("right middle")
 			UiTranslate(optionWidth / 2 - margin, 0)
 			if UiImageButton("MOD/sprites/arrow-right.png", 60, 60)	then
 				currentSettingIndex = currentSettingIndex + 1
-				hasAValueBeenChanged = true
+				if triggerChange then
+					hasAValueBeenChanged = true
+				end
 				
-				if currentSettingIndex > #settingTypes then
+				if currentSettingIndex > maxIndex then
 					currentSettingIndex = 1
 				end
 			end
 		UiPop()
-		
-		settingData[settingKey] = currentSettingIndex
 	UiPop()
+	
+	return currentSettingIndex
 end
 
 function renderParticleSetting(settingReadableName, settingName, hasParticleChanged)
@@ -999,7 +1022,7 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 			fadeInBox.onInputFinished = function(i) getCurrentParticle()[settingName][5] = tonumber(i) end
 		end
 		
-		if fadeOutBox then
+		if fadeOutNewBox then
 			fadeOutBox.name = "Fade Out"
 			fadeOutBox.value = settingData[6] .. ""
 			fadeOutBox.numbersOnly = true
@@ -1278,8 +1301,21 @@ end
 function soundSettings()
 	UiPush()
 		UiTranslate(0, 100)
-		UiFont("bold.ttf", 48)
-		UiText("Coming next update!")
+		UiFont("regular.ttf", 26)
+		
+		soundCopyIndex = selectionBox(soundCopyIndex, customList, false, 300, 10, customListBaseCount, "name")
+		
+		UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
+		
+		UiTranslate(0, 60)
+		
+		if UiTextButton("Copy sound settings to current profile", 400, 30) then
+			hasAValueBeenChanged = true
+			
+			CopySFXDataTo(soundCopyIndex, GetCurrentSelectedWeaponIndex())
+			
+			selectNewWeapon(GetCurrentSelectedWeaponIndex())
+		end
 	UiPop()
 end
 
@@ -1383,6 +1419,15 @@ function greenAttentionButtonStyle()
 	UiButtonImageBox("ui/common/box-outline-6.png", 6, 6, otherStrength, greenStrength, otherStrength, 1)
 end
 
+function drawVersionNumber()
+	UiPush()
+		c_UiColor(Color4.Gray)
+		UiFont("regular.ttf", 20)
+		
+		UiText(toolVersion)
+	UiPop()
+end
+
 function menu_draw(dt)
 	if not isMenuOpen() then
 		return
@@ -1405,6 +1450,14 @@ function menu_draw(dt)
 			UiTranslate(0, 40)
 			
 			bottomMenuButtons()
+		UiPop()
+		
+		UiPush()
+			UiTranslate(-UiWidth() * (menuWidth / 2), UiHeight() * menuHeight)
+			
+			UiAlign("left bottom")
+			
+			drawVersionNumber()
 		UiPop()
 		
 		if hasAValueBeenChanged or savedCustomProfiles ~= customProfiles then
