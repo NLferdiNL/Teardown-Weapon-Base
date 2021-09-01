@@ -406,11 +406,11 @@ function updateSettings(settings)
 			maxSpread = 10
 		end
 		
-		settings["minXSpread"] = minSpread / 10
-		settings["maxXSpread"] = maxSpread / 10
+		settings["minXSpread"] = minSpread
+		settings["maxXSpread"] = maxSpread
 		
-		settings["minYSpread"] = minSpread / 10
-		settings["maxYSpread"] = maxSpread / 10
+		settings["minYSpread"] = minSpread
+		settings["maxYSpread"] = maxSpread
 		
 		settings["minRndSpread"] = nil
 		settings["maxRndSpread"] = nil
