@@ -1,6 +1,6 @@
 blankProfile = {
 	name = "Blank Profile",
-	profileVersion = 7,
+	profileVersion = 8,
 	customProfile = true,
 	additiveReload = false,
 	magSize = 15,
@@ -41,6 +41,7 @@ blankProfile = {
 	projectileGravity = 0,
 	projectileBouncyness = 0,
 	drawProjectileLine = true,
+	finalHitDmgMultiplier = 1,
 	
 	hitParticleSettings = {
 		enabled = true,

@@ -40,6 +40,7 @@ forcegun = {
 	projectileGravity = 0,
 	projectileBouncyness = 0,
 	drawProjectileLine = true,
+	finalHitDmgMultiplier = 1,
 	
 	hitParticleSettings = {
 		enabled = false,

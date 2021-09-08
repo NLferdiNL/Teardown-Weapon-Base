@@ -39,6 +39,7 @@ pistol = {
 	projectileGravity = 0,
 	projectileBouncyness = 0,
 	drawProjectileLine = false,
+	finalHitDmgMultiplier = 1,
 	
 	hitParticleSettings = {
 		enabled = true,

@@ -77,6 +77,8 @@ local maxYSpreadBox = nil
 
 local projectileBouncynessBox = nil
 
+local finalHitDmgMultiplierBox = nil
+
 local soundCopyIndex = 1
 local customList = GetList()
 local customListBaseCount = GetCustomListDefaultCount()
@@ -198,7 +200,9 @@ function setupTextBoxes()
 	
 	local textBox27, newBox27 = textboxClass_getTextBox(27) -- projectileBouncyness
 	
-	textBoxCount = 27
+	local textBox28, newBox28 = textboxClass_getTextBox(28) -- finalHitDmgMultiplierBox
+	
+	textBoxCount = 28
 	
 	if newBox01 then
 		textBox01.name = "Spread"
@@ -524,6 +528,18 @@ function setupTextBoxes()
 		
 		projectileBouncynessBox = textBox27
 	end
+	
+	if newBox28 then
+		textBox28.name = "Final Hit DMG Multiplier"
+		textBox28.value = finalHitDmgMultiplier .. ""
+		textBox28.numbersOnly = true
+		textBox28.limitsActive = true
+		textBox28.numberMin = 0
+		textBox28.numberMax = 1000
+		textBox28.description = "Multiplies the regular damage when the last hit is processed.\nMin: 0 | Max: 1000"
+		
+		finalHitDmgMultiplierBox = textBox28
+	end
 end
 
 function modOptionsPage()
@@ -661,6 +677,10 @@ function middleSideTextInputMenu(dt, buttonCount)
 		UiTranslate(0, 50)
 		
 		textboxClass_render(hardRadiusMaxTextBox)
+		
+		UiTranslate(0, 50)
+		
+		textboxClass_render(finalHitDmgMultiplierBox)
 		
 		UiTranslate(0, 50)
 			
@@ -1674,6 +1694,10 @@ function menuUpdateActions()
 	if projectileBouncynessBox ~= nil then
 		projectileBouncynessBox.value = projectileBouncyness .. ""
 	end
+	
+	if finalHitDmgMultiplierBox ~= nil then
+		finalHitDmgMultiplierBox.value = finalHitDmgMultiplier .. ""
+	end
 end
 
 function menuCloseActions()
@@ -1742,6 +1766,8 @@ function saveToolValues()
 	maxYSpread = tonumber(maxYSpreadBox.value)
 	
 	projectileBouncyness = tonumber(projectileBouncynessBox.value)
+	
+	finalHitDmgMultiplier = tonumber(finalHitDmgMultiplierBox.value)
 	
 	if customProfile then
 		name = nameTextBox.value

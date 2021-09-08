@@ -1,32 +1,9 @@
 #include "scripts/utils.lua"
 #include "custom/blankProfile.lua"
-#include "custom/shotgun.lua"
-#include "custom/minigun.lua"
-#include "custom/pistol.lua"
-#include "custom/burstsmg.lua"
-#include "custom/rocketlauncher.lua"
-#include "custom/assaultrifle.lua"
-#include "custom/railgun.lua"
-#include "custom/lasercutter.lua"
-#include "custom/forcegun.lua"
-#include "custom/holecutter.lua"
-#include "custom/plasmapistol.lua"
+#include "custom/list.lua"
 
-local customList = {
-	shotgun,
-	minigun,
-	pistol,
-	burstsmg,
-	rocketlauncher,
-	assaultrifle,
-	railgun,
-	lasercutter,
-	forcegun,
-	holecutter,
-	plasmapistol,
-}
-
-local customListDefaultCount = #customList
+local customList = getCustomList()
+local customListDefaultCount = getCustomListDefaultCountFromListFile()
 
 local loadedSfx = {}
 
@@ -242,6 +219,7 @@ function ApplySettingsByIndex(index)
 	projectileGravity = newSettings.projectileGravity
 	projectileBouncyness = newSettings.projectileBouncyness
 	drawProjectileLine = newSettings.drawProjectileLine
+	finalHitDmgMultiplier = newSettings.finalHitDmgMultiplier
 end
 
 function SaveSettingsToProfile(index)
@@ -315,6 +293,7 @@ function loadSettingsToProfile(newSettings)
 	newSettings.projectileGravity = projectileGravity
 	newSettings.projectileBouncyness = projectileBouncyness
 	newSettings.drawProjectileLine = drawProjectileLine
+	newSettings.finalHitDmgMultiplier = finalHitDmgMultiplier
 end
 
 function checkSettingsUpToDate(settings)
@@ -427,6 +406,12 @@ function updateSettings(settings)
 		settings["minRndSpread"] = nil
 		settings["maxRndSpread"] = nil
 		
+	end
+	
+	if settings["profileVersion"] < 8 then
+		settings["profileVersion"] = 8
+		
+		settings["finalHitDmgMultiplier"] = 1
 	end
 	
 	return settings

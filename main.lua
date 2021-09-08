@@ -8,12 +8,13 @@
 
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
-toolVersion = "V2.0.0"
+toolVersion = "V2.0.2"
 
 -- TODO: Add sound editor
 -- TODO: Fix projectileBouncyness for hitscan (DONT USE THE PROJECTILE BOUNCE, REUSE THE EQUATION)
 -- TODO: Line color.
 -- TODO: Projectile lighting
+-- TODO: Fix final hit DMG MP on infinite pen.
 
 name = "Shotgun"
 customProfile = false
@@ -63,6 +64,7 @@ sfx = {} -- TODO: Add option to menu
 sfxLength = {}
 fireTime = 0
 drawProjectileLine = true
+finalHitDmgMultiplier = 1
 
 hitParticleSettings = {
 	enabled = true,
@@ -179,6 +181,7 @@ local bulletProjectileClass = {
 	bulletHealth = 0,
 	currentPos = nil,
 	velocity = nil,
+	speed = 1,
 	incendiary = false,
 	explosive = false,
 	infinitePenetration = false,
@@ -188,6 +191,7 @@ local bulletProjectileClass = {
 	hardRadius = 0,
 	projectileGravity = 0,
 	projectileBouncyness = 0,
+	finalHitDmgMultiplier = 1,
 }
 
 local firedProjectiles = {}
@@ -203,7 +207,7 @@ function init()
 	saveFileInit()
 	menu_init()
 	
-	RegisterTool(toolName, "Moddy Weapon", "MOD/vox/tool.vox")
+	RegisterTool(toolName, toolReadableName, "MOD/vox/tool.vox")
 	SetBool("game.tool." .. toolName .. ".enabled", true)
 end
 
@@ -375,6 +379,7 @@ function createProjectileBullet(startPos, direction)
 	firedProjectile.bulletHealth = bulletHealth
 	firedProjectile.currentPos = startPos
 	firedProjectile.velocity = VecScale(direction, projectileBulletSpeed)
+	firedProjectile.speed = projectileBulletSpeed
 	firedProjectile.incendiary = incendiaryBullets
 	firedProjectile.explosive = explosiveBullets
 	firedProjectile.infinitePenetration = infinitePenetration
@@ -385,6 +390,7 @@ function createProjectileBullet(startPos, direction)
 	firedProjectile.drawLine = drawProjectileLine
 	firedProjectile.projectileGravity = projectileGravity
 	firedProjectile.projectileBouncyness = projectileBouncyness
+	firedProjectile.finalHitDmgMultiplier = finalHitDmgMultiplier
 	
 	return firedProjectile
 end
@@ -454,7 +460,7 @@ function handleAllProjectiles(dt)
 			if (currShot.explosive and (VecDist(currPos, playerPos) > currShot.explosiveSize * minExplosiveDistanceMultiplier + math.abs(10 - distanceTraveled) or not smartExplosiveBullets)) or not currShot.explosive then
 				for i = 0, distanceTraveled, infinitePenetrationHitScanDamageStep do
 					local damageStepPos = VecAdd(currPos, VecScale(directionToNextPos, i))
-					doBulletHoleAt(currShot, damageStepPos, VecDir(damageStepPos, playerPos), false)
+					doBulletHoleAt(currShot, damageStepPos, VecDir(damageStepPos, playerPos), false, false)
 					if projectileParticleSettings["enabled"] then
 						setupParticleFromSettings(projectileParticleSettings)
 						SpawnParticle(damageStepPos, VecDir(damageStepPos, nextPos), projectileParticleSettings["lifetime"])
@@ -466,7 +472,6 @@ function handleAllProjectiles(dt)
 			
 			if hit then
 				local bulletDamage = getBulletDamage(shape, hitPoint)
-				doBulletHoleAt(currShot, hitPoint, normal, true)
 				
 				if applyForceOnHit then
 					applyForceToHitObject(shape, hitPoint, directionToNextPos)
@@ -477,6 +482,8 @@ function handleAllProjectiles(dt)
 				end
 				
 				currShot.bulletHealth = currShot.bulletHealth - bulletDamage
+				
+				doBulletHoleAt(currShot, hitPoint, normal, true, currShot.bulletHealth <= 0)
 				
 				if currShot.bulletHealth < 0 then
 					holeMade = true
@@ -517,7 +524,7 @@ function handleAllProjectiles(dt)
 
 		if currShot.lifetime <= 0 or holeMade then
 			if not holeMade and not currShot.infinitePenetration then
-				doBulletHoleAt(currShot, currPos, VecDir(currPos, GetPlayerTransform().pos), false)
+				doBulletHoleAt(currShot, currPos, VecDir(currPos, GetPlayerTransform().pos), false, true)
 			end
 			
 			table.remove(firedProjectiles, i, 1)
@@ -971,7 +978,7 @@ function getBulletDamage(shape, hitPoint)
 	return bulletDamage
 end
 
-function doBulletHoleAt(bullet, hitPoint, normal, hitParticles)
+function doBulletHoleAt(bullet, hitPoint, normal, hitParticles, finalhit)
 	if hitParticleSettings["enabled"] and hitParticles then
 		setupHitParticle()
 		SpawnParticle(hitPoint, normal, hitParticleSettings["lifetime"])
@@ -982,11 +989,22 @@ function doBulletHoleAt(bullet, hitPoint, normal, hitParticles)
 	end
 	
 	if bullet.explosive then
-		Explosion(hitPoint, bullet.explosiveSize)
+		if finalhit then
+			Explosion(hitPoint, bullet.explosiveSize * bullet.finalHitDmgMultiplier)
+		else
+			Explosion(hitPoint, bullet.explosiveSize)
+		end
 	else
 		local softRadius = bullet.softRadius
 		local mediumRadius = bullet.mediumRadius
 		local hardRadius = bullet.hardRadius
+		local bulletFinalHitDmgMultiplier = bullet.finalHitDmgMultiplier
+		
+		if finalhit then
+			softRadius = softRadius * bulletFinalHitDmgMultiplier
+			mediumRadius = mediumRadius * bulletFinalHitDmgMultiplier
+			hardRadius = hardRadius * bulletFinalHitDmgMultiplier
+		end
 	
 		MakeHole(hitPoint, softRadius, mediumRadius, hardRadius)
 	end
@@ -1153,7 +1171,7 @@ function doHitScanShot(shotStartPos, shotDirection, gunFrontPos)
 		for i = startIndex, maxDistance, infinitePenetrationHitScanDamageStep do
 			local currPos = VecAdd(shotStartPos, VecScale(shotDirection, i))
 			
-			doBulletHoleAt(fakeBullet, currPos, normal, i >= maxDistance)
+			doBulletHoleAt(fakeBullet, currPos, normal, i >= maxDistance, i / maxDistance >= 0.99)
 			
 			if projectileParticleSettings["enabled"] then
 				setupParticleFromSettings(projectileParticleSettings)
@@ -1169,7 +1187,7 @@ function doHitScanShot(shotStartPos, shotDirection, gunFrontPos)
 			
 			local currBulletHealth = bulletHealth - bulletDamage
 			
-			doBulletHoleAt(fakeBullet, hitPoint, normal, hit)
+			doBulletHoleAt(fakeBullet, hitPoint, normal, hit, currBulletHealth <= 0)
 			
 			while currBulletHealth > 0 do
 				local hit, hitPoint, distance, normal, shape = raycast(shotStartPos, shotDirection, maxDistance)
@@ -1180,16 +1198,16 @@ function doHitScanShot(shotStartPos, shotDirection, gunFrontPos)
 					break
 				end
 				
-				doBulletHoleAt(fakeBullet, hitPoint, normal, hit)
-				
 				local bulletDamage = getBulletDamage(shape, hitPoint)
 				
 				currBulletHealth = currBulletHealth - bulletDamage
 				
+				doBulletHoleAt(fakeBullet, hitPoint, normal, hit, currBulletHealth <= 0)
+				
 				finalHitPoint = hitPoint
 			end
 		else
-			doBulletHoleAt(fakeHitScanBullet(), hitPoint, normal, hit)
+			doBulletHoleAt(fakeHitScanBullet(), hitPoint, normal, hit, true)
 		end
 		
 		if projectileParticleSettings["enabled"] then
