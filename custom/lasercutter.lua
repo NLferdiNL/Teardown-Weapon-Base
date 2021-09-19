@@ -40,6 +40,10 @@ lasercutter = {
 	projectileBouncyness = 0,
 	drawProjectileLine = true,
 	finalHitDmgMultiplier = 1,
+	lineColorRed = 1,
+	lineColorGreen = 0,
+	lineColorBlue = 0,
+	lineColorAlpha = 0.75,
 	
 	hitParticleSettings = {
 		enabled = false,

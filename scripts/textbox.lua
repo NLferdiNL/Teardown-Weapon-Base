@@ -43,6 +43,7 @@ function textboxClass_render(me)
 
 	UiPush()
 		UiFont("regular.ttf", 26)
+		UiAlign("left middle")
 		
 		local labelString = me.name
 		local nameWidth, nameHeight = UiGetTextSize(labelString)
@@ -50,8 +51,7 @@ function textboxClass_render(me)
 		UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
 		
 		UiPush()
-			UiAlign("center right")
-			UiTranslate(-nameWidth / 2 - me.width / 2, me.height / 5)
+			UiAlign("right middle")
 			UiText(labelString)
 		UiPop()
 		
@@ -88,11 +88,11 @@ function textboxClass_render(me)
 		UiPop()
 		
 		UiPush()
-		if textboxClass_checkMouseInRect(me) and (me.description ~= nil and me.description ~= "") and not me.inputActive then
-			me.mouseOver = true
-		else
-			me.mouseOver = false
-		end
+			if textboxClass_checkMouseInRect(me) and (me.description ~= nil and me.description ~= "") and not me.inputActive then
+				me.mouseOver = true
+			else
+				me.mouseOver = false
+			end
 		UiPop()
 	UiPop()
 end
@@ -209,7 +209,7 @@ function textboxClass_checkMouseInRect(me)
 	end
 	
 	UiPush()
-		UiAlign("center middle")
+		UiAlign("left middle")
 		local isInsideMe = UiIsMouseInRect(me.width, me.height)
 	UiPop()
 	
@@ -232,7 +232,7 @@ function textboxClass_setActiveState(me, newState)
 				local tempVal = tonumber(me.value)
 				
 				if tempVal == nil then
-					me.value = me.numberMin
+					me.value = me.numberMin .. ""
 				elseif tempVal < me.numberMin then
 					me.value = me.numberMin .. ""
 				elseif tempVal > me.numberMax then

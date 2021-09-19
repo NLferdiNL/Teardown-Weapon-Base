@@ -40,6 +40,10 @@ burstsmg = {
 	projectileBouncyness = 0,
 	drawProjectileLine = false,
 	finalHitDmgMultiplier = 1,
+	lineColorRed = 1,
+	lineColorGreen = 1,
+	lineColorBlue = 1,
+	lineColorAlpha = 1,
 	
 	hitParticleSettings = {
 		enabled = true,

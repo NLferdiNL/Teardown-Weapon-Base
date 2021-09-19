@@ -40,6 +40,10 @@ holecutter = {
 	projectileBouncyness = 0,
 	drawProjectileLine = true,
 	finalHitDmgMultiplier = 1,
+	lineColorRed = 0,
+	lineColorGreen = 0.75,
+	lineColorBlue = 1,
+	lineColorAlpha = 0.75,
 	
 	hitParticleSettings = {
 		enabled = false,

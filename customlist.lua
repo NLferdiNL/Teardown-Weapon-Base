@@ -220,6 +220,10 @@ function ApplySettingsByIndex(index)
 	projectileBouncyness = newSettings.projectileBouncyness
 	drawProjectileLine = newSettings.drawProjectileLine
 	finalHitDmgMultiplier = newSettings.finalHitDmgMultiplier
+	lineColorRed = newSettings.lineColorRed
+	lineColorGreen = newSettings.lineColorGreen
+	lineColorBlue = newSettings.lineColorBlue
+	lineColorAlpha = newSettings.lineColorAlpha
 end
 
 function SaveSettingsToProfile(index)
@@ -294,6 +298,10 @@ function loadSettingsToProfile(newSettings)
 	newSettings.projectileBouncyness = projectileBouncyness
 	newSettings.drawProjectileLine = drawProjectileLine
 	newSettings.finalHitDmgMultiplier = finalHitDmgMultiplier
+	newSettings.lineColorRed = lineColorRed
+	newSettings.lineColorGreen = lineColorGreen
+	newSettings.lineColorBlue = lineColorBlue
+	newSettings.lineColorAlpha = lineColorAlpha
 end
 
 function checkSettingsUpToDate(settings)
@@ -408,10 +416,19 @@ function updateSettings(settings)
 		
 	end
 	
-	if settings["profileVersion"] < 8 then
+	if settings["profileVersion"] < 8 then -- Below version 8
 		settings["profileVersion"] = 8
 		
 		settings["finalHitDmgMultiplier"] = 1
+	end
+	
+	if settings["profileVersion"] < 9 then -- Below version 9
+		settings["profileVersion"] = 9
+		
+		settings["lineColorRed"] = 1
+		settings["lineColorGreen"] = 1
+		settings["lineColorBlue"] = 1
+		settings["lineColorAlpha"] = 1
 	end
 	
 	return settings

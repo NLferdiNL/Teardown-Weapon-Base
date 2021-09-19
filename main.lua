@@ -8,7 +8,7 @@
 
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
-toolVersion = "V2.0.2"
+toolVersion = "V2.1.0"
 
 -- TODO: Add sound editor
 -- TODO: Fix projectileBouncyness for hitscan (DONT USE THE PROJECTILE BOUNCE, REUSE THE EQUATION)
@@ -65,6 +65,10 @@ sfxLength = {}
 fireTime = 0
 drawProjectileLine = true
 finalHitDmgMultiplier = 1
+lineColorRed = 1
+lineColorGreen = 1
+lineColorBlue = 1
+lineColorAlpha = 1
 
 hitParticleSettings = {
 	enabled = true,
@@ -134,24 +138,6 @@ projectileParticleSettings = {
 	ParticleCollide = 	{ true, 1, 1, 1, 0, 1},
 }
 
---[[
-exampleParticle = {
-	enabled = true,
-	ParticleType = 1,
-	ParticleTile = 0,
-	lifetime = 3,
-	ParticleColor = {0.25, 0.25, 0.25, 1, 1, 1},
-	ParticleRadius = 	{ true, 0.5, 1, 1, 0, 1},
-	ParticleAlpha = 	{ false, 1, 1, 1, 0, 1},
-	ParticleGravity = 	{ true, 1, 1, 1, 0, 1},
-	ParticleDrag = 		{ false, 0, 0, 1, 0, 1},
-	ParticleEmissive = 	{ false, 0, 0, 1, 0, 1},
-	ParticleRotation = 	{ false, 0, 0, 1, 0, 1},
-	ParticleStretch = 	{ false, 0, 0, 1, 0, 1},
-	ParticleSticky = 	{ false, 0, 0, 1, 0, 1},
-	ParticleCollide = 	{ true, 1, 1, 1, 0, 1},
-}--]]--
-
 -- MISC/UNSORTED:
 infinitePenetrationHitScanStart = 5
 minExplosiveDistanceMultiplier = 6
@@ -173,6 +159,7 @@ particleTypes = { "Smoke", "Plain", }
 local firedShotLineClass = {
 	lifetime = 0.4,
 	points = {},
+	lineColor = {1, 1, 1, 1},
 }
 
 local bulletProjectileClass = {
@@ -192,6 +179,7 @@ local bulletProjectileClass = {
 	projectileGravity = 0,
 	projectileBouncyness = 0,
 	finalHitDmgMultiplier = 1,
+	lineColor = {1, 1, 1, 1},
 }
 
 local firedProjectiles = {}
@@ -217,24 +205,6 @@ function tick(dt)
 	end
 
 	menu_tick(dt)
-	
-	--[[
-	local currPart = getCurrentParticle()
-	
-	DebugWatch("enabled", currPart.enabled)
-	DebugWatch("ParticleType", currPart.ParticleType)
-	DebugWatch("ParticleTile", currPart.ParticleTile)
-	DebugWatch("lifetime", currPart.lifetime)
-	DebugWatch("ParticleColor", tableToText(currPart.ParticleColor, true, false, false))
-	DebugWatch("ParticleRadius", tableToText(currPart.ParticleRadius, true, false, false))
-	DebugWatch("ParticleAlpha", tableToText(currPart.ParticleAlpha, true, false, false))
-	DebugWatch("ParticleGravity", tableToText(currPart.ParticleGravity, true, false, false))
-	DebugWatch("ParticleDrag", tableToText(currPart.ParticleDrag, true, false, false))
-	DebugWatch("ParticleEmissive", tableToText(currPart.ParticleEmissive, true, false, false))
-	DebugWatch("ParticleRotation", tableToText(currPart.ParticleRotation, true, false, false))
-	DebugWatch("ParticleStretch", tableToText(currPart.ParticleStretch, true, false, false))
-	DebugWatch("ParticleSticky", tableToText(currPart.ParticleSticky, true, false, false))
-	DebugWatch("ParticleCollide", tableToText(currPart.ParticleCollide, true, false, false))--]]--
 	
 	cooldownLogic(dt)
 	
@@ -372,6 +342,10 @@ end
 
 -- Creation Functions
 
+function createColorTable()
+	return {lineColorRed, lineColorGreen, lineColorBlue, lineColorAlpha}
+end
+
 function createProjectileBullet(startPos, direction)
 	local firedProjectile = deepcopy(bulletProjectileClass)
 	
@@ -391,6 +365,7 @@ function createProjectileBullet(startPos, direction)
 	firedProjectile.projectileGravity = projectileGravity
 	firedProjectile.projectileBouncyness = projectileBouncyness
 	firedProjectile.finalHitDmgMultiplier = finalHitDmgMultiplier
+	firedProjectile.lineColor = createColorTable()
 	
 	return firedProjectile
 end
@@ -399,6 +374,9 @@ function createFiredShot(startPos, points)
 	local firedShot = deepcopy(firedShotLineClass)
 	
 	firedShot.points[1] = startPos
+	firedShot.lineColor = createColorTable()
+	firedShot.startAlpha = firedShot.lineColor[4]
+	
 	
 	for i = 1, #points do
 		firedShot.points[i + 1] = points[i]
@@ -454,7 +432,7 @@ function handleAllProjectiles(dt)
 			DebugWatch("velocity", math.abs(10 - distanceTraveled))--]]--
 			
 			if currShot.drawLine then
-				DrawLine(currPos, nextPos)
+				c_DrawLine(currPos, nextPos, currShot.lineColor)
 			end
 			
 			if (currShot.explosive and (VecDist(currPos, playerPos) > currShot.explosiveSize * minExplosiveDistanceMultiplier + math.abs(10 - distanceTraveled) or not smartExplosiveBullets)) or not currShot.explosive then
@@ -478,7 +456,7 @@ function handleAllProjectiles(dt)
 				end
 				
 				if currShot.drawLine then
-					DrawLine(currPos, hitPoint)
+					c_DrawLine(currPos, nextPos, currShot.lineColor)
 				end
 				
 				currShot.bulletHealth = currShot.bulletHealth - bulletDamage
@@ -505,7 +483,7 @@ function handleAllProjectiles(dt)
 				end
 				
 				if currShot.drawLine then
-					DrawLine(currPos, nextPos)
+					c_DrawLine(currPos, nextPos, currShot.lineColor)
 				end
 			end
 			
@@ -544,12 +522,14 @@ function handleAllFiredShotLines(dt)
 		if currShot.lifetime <= 0 then
 			table.remove(firedShotLines, i, 1)
 		else
-			local alpha = currShot.lifetime / firedShotLineClass.lifetime
+			local lineColorAlpha = currShot.lifetime / firedShotLineClass.lifetime * currShot.startAlpha
 			for j = 1, #currShot.points - 1 do
 				local pointA = currShot.points[j]
 				local pointB = currShot.points[j + 1]
 				
-				DrawLine(pointA, pointB, 1, 1, 1, alpha)
+				currShot.lineColor[4] = lineColorAlpha
+				
+				c_DrawLine(pointA, pointB, currShot.lineColor)
 			end
 		end
 	end
@@ -1360,4 +1340,8 @@ function checkRandomValues()
 		minRndhardRadiusMinSpread = hardRadiusMax
 		hardRadiusMax = backup
 	end
+end
+
+function c_DrawLine(from, to, color)
+	DrawLine(from, to, color[1], color[2], color[3], color[4])
 end

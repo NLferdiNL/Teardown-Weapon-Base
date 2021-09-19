@@ -79,6 +79,11 @@ local projectileBouncynessBox = nil
 
 local finalHitDmgMultiplierBox = nil
 
+local lineRedBox = nil
+local lineGreenBox = nil
+local lineBlueBox = nil
+local lineAlphaBox = nil
+
 local soundCopyIndex = 1
 local customList = GetList()
 local customListBaseCount = GetCustomListDefaultCount()
@@ -202,7 +207,12 @@ function setupTextBoxes()
 	
 	local textBox28, newBox28 = textboxClass_getTextBox(28) -- finalHitDmgMultiplierBox
 	
-	textBoxCount = 28
+	local textBox29, newBox29 = textboxClass_getTextBox(29) -- Line Red
+	local textBox30, newBox30 = textboxClass_getTextBox(30) -- Line Green
+	local textBox31, newBox31 = textboxClass_getTextBox(31) -- Line Blue
+	local textBox32, newBox32 = textboxClass_getTextBox(32) -- Line Alpha
+	
+	textBoxCount = 32
 	
 	if newBox01 then
 		textBox01.name = "Spread"
@@ -540,6 +550,58 @@ function setupTextBoxes()
 		
 		finalHitDmgMultiplierBox = textBox28
 	end
+	
+	if newBox29 then
+		textBox29.name = "Projectile Line Color" -- RED
+		textBox29.value = lineColorRed .. ""
+		textBox29.numbersOnly = true
+		textBox29.limitsActive = true
+		textBox29.numberMin = 0
+		textBox29.numberMax = 1
+		textBox29.description = "Red color of the projectile line.\nMin: 0 | Max: 1"
+		textBox29.width = 50
+		
+		lineRedBox = textBox29
+	end
+	
+	if newBox30 then
+		textBox30.name = "" -- LINE COLOR GREEN
+		textBox30.value = lineColorGreen .. ""
+		textBox30.numbersOnly = true
+		textBox30.limitsActive = true
+		textBox30.numberMin = 0
+		textBox30.numberMax = 1
+		textBox30.description = "Green color of the projectile line.\nMin: 0 | Max: 1"
+		textBox30.width = 50
+		
+		lineGreenBox = textBox30
+	end
+	
+	if newBox31 then
+		textBox31.name = "" -- LINE COLOR BLUE
+		textBox31.value = lineColorBlue .. ""
+		textBox31.numbersOnly = true
+		textBox31.limitsActive = true
+		textBox31.numberMin = 0
+		textBox31.numberMax = 1
+		textBox31.description = "Blue color of the projectile line.\nMin: 0 | Max: 1"
+		textBox31.width = 50
+		
+		lineBlueBox = textBox31
+	end
+	
+	if newBox32 then
+		textBox32.name = "" -- LINE COLOR ALPHA
+		textBox32.value = lineColorAlpha .. ""
+		textBox32.numbersOnly = true
+		textBox32.limitsActive = true
+		textBox32.numberMin = 0
+		textBox32.numberMax = 1
+		textBox32.description = "Transparancy of the projectile line.\nMin: 0 | Max: 1"
+		textBox32.width = 50
+		
+		lineAlphaBox = textBox32
+	end
 end
 
 function modOptionsPage()
@@ -619,7 +681,7 @@ function leftsideTextInputMenu(dt, buttonCount)
 			
 		UiPush()
 			UiTranslate(spreadTextBox.width, 0)
-
+			
 			textboxClass_render(spreadTextBox)
 			
 			UiTranslate(0, 50)
@@ -649,6 +711,26 @@ function leftsideTextInputMenu(dt, buttonCount)
 			UiTranslate(0, 50)
 			
 			textboxClass_render(maxXSpreadBox)
+			
+			UiTranslate(0, 50)
+			
+			UiPush()
+				UiTranslate(-100, 0)
+				
+				textboxClass_render(lineRedBox)
+				
+				UiTranslate(50, 0)
+				
+				textboxClass_render(lineGreenBox)
+				
+				UiTranslate(50, 0)
+				
+				textboxClass_render(lineBlueBox)
+				
+				UiTranslate(50, 0)
+				
+				textboxClass_render(lineAlphaBox)				
+			UiPop()
 		UiPop()
 	UiPop()
 end
@@ -679,16 +761,16 @@ function middleSideTextInputMenu(dt, buttonCount)
 		textboxClass_render(hardRadiusMaxTextBox)
 		
 		UiTranslate(0, 50)
-		
-		textboxClass_render(finalHitDmgMultiplierBox)
-		
-		UiTranslate(0, 50)
 			
 		textboxClass_render(minYSpreadBox)
 		
 		UiTranslate(0, 50)
 		
 		textboxClass_render(maxYSpreadBox)
+		
+		UiTranslate(0, 50)
+		
+		textboxClass_render(finalHitDmgMultiplierBox)
 	UiPop()
 end
 
@@ -741,7 +823,10 @@ function mainSettings()
 		UiTranslate(0, 50)
 		
 		UiPush()
-			textboxClass_render(nameTextBox)
+			UiPush()
+				UiTranslate(-nameTextBox.width / 2, 0)
+				textboxClass_render(nameTextBox)
+			UiPop()
 			
 			if nameTextBox.inputActive or nameTextBox.lastInputActive then
 				name = nameTextBox.value
@@ -1062,7 +1147,7 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 		
 		UiPush()
 			UiAlign("center middle")
-			UiTranslate(75, 0)
+			UiTranslate(40, 0)
 			
 			textboxClass_render(minBox)
 			
@@ -1070,11 +1155,11 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 			
 			textboxClass_render(maxBox)
 			
-			UiTranslate(150, 0)
+			UiTranslate(200, 0)
 			
 			renderParticleStringVarSelector(settingData, 4, interpolationMethods)
 			
-			UiTranslate(225, 0)
+			UiTranslate(175, 0)
 			
 			textboxClass_render(fadeInBox)
 			
@@ -1085,7 +1170,7 @@ function renderParticleSetting(settingReadableName, settingName, hasParticleChan
 	UiPop()
 end
 
-function drawParticleColorPicker(hasParticleChanged, offset, description)
+function drawColorPicker(valuesChanged, offset, description)
 	UiPush()
 		local currentParticle = getCurrentParticle()
 		local settingData = currentParticle["ParticleColor"]
@@ -1104,6 +1189,7 @@ function drawParticleColorPicker(hasParticleChanged, offset, description)
 			redBox.numberMin = 0
 			redBox.numberMax = 1
 			redBox.description = "Red value\nMin: 0 | Max: 1"
+			redBox.width = 50
 			
 			if description ~= nil then
 				redBox.description = description .. redBox.description
@@ -1120,6 +1206,7 @@ function drawParticleColorPicker(hasParticleChanged, offset, description)
 			greenBox.numberMin = 0
 			greenBox.numberMax = 1
 			greenBox.description = "Green value\nMin: 0 | Max: 1"
+			greenBox.width = 50
 			
 			if description ~= nil then
 				greenBox.description = description .. greenBox.description
@@ -1136,6 +1223,7 @@ function drawParticleColorPicker(hasParticleChanged, offset, description)
 			blueBox.numberMin = 0
 			blueBox.numberMax = 1
 			blueBox.description = "Blue value\nMin: 0 | Max: 1"
+			blueBox.width = 50
 			
 			if description ~= nil then
 				blueBox.description = description .. blueBox.description
@@ -1144,7 +1232,7 @@ function drawParticleColorPicker(hasParticleChanged, offset, description)
 			blueBox.onInputFinished = function(i) getCurrentParticle()["ParticleColor"][3 + offset] = tonumber(i) end
 		end
 		
-		if hasParticleChanged then
+		if valuesChanged then
 			redBox.value = settingData[1 + offset] .. ""
 			greenBox.value = settingData[2 + offset] .. ""
 			blueBox.value = settingData[3 + offset] .. ""
@@ -1156,11 +1244,11 @@ function drawParticleColorPicker(hasParticleChanged, offset, description)
 			
 			textboxClass_render(redBox)
 			
-			UiTranslate(150, 0)
+			UiTranslate(75, 0)
 			
 			textboxClass_render(greenBox)
 			
-			UiTranslate(150, 0)
+			UiTranslate(75, 0)
 			
 			textboxClass_render(blueBox)
 		UiPop()
@@ -1291,15 +1379,15 @@ function particleSettings()
 			
 			UiPush()
 				UiTranslate(-70, 0)
-				drawParticleColorPicker(updateParticleSettings, 0, "Start color.\n")
+				drawColorPicker(updateParticleSettings, 0, "Start color.\n")
 				
-				UiTranslate(500, 0)
+				UiTranslate(350, 0)
 				
 				UiText("to")
 				
-				UiTranslate(-40, 0)
+				UiTranslate(-75, 0)
 				
-				drawParticleColorPicker(updateParticleSettings, 3, "End color.\n")
+				drawColorPicker(updateParticleSettings, 3, "End color.\n")
 			UiPop()
 			
 			UiTranslate(0, 50)
@@ -1698,6 +1786,22 @@ function menuUpdateActions()
 	if finalHitDmgMultiplierBox ~= nil then
 		finalHitDmgMultiplierBox.value = finalHitDmgMultiplier .. ""
 	end
+	
+	if lineRedBox ~= nil then
+		lineRedBox.value = lineColorRed .. ""
+	end
+	
+	if lineGreenBox ~= nil then
+		lineGreenBox.value = lineColorGreen .. ""
+	end
+	
+	if lineBlueBox ~= nil then
+		lineBlueBox.value = lineColorBlue .. ""
+	end
+	
+	if lineAlphaBox ~= nil then
+		lineAlphaBox.value = lineColorAlpha .. ""
+	end
 end
 
 function menuCloseActions()
@@ -1768,6 +1872,11 @@ function saveToolValues()
 	projectileBouncyness = tonumber(projectileBouncynessBox.value)
 	
 	finalHitDmgMultiplier = tonumber(finalHitDmgMultiplierBox.value)
+	
+	lineColorRed = tonumber(lineRedBox.value)
+	lineColorGreen = tonumber(lineGreenBox.value)
+	lineColorBlue = tonumber(lineBlueBox.value)
+	lineColorAlpha = tonumber(lineAlphaBox.value)
 	
 	if customProfile then
 		name = nameTextBox.value

@@ -1,6 +1,6 @@
 blankProfile = {
 	name = "Blank Profile",
-	profileVersion = 8,
+	profileVersion = 9,
 	customProfile = true,
 	additiveReload = false,
 	magSize = 15,
@@ -42,6 +42,10 @@ blankProfile = {
 	projectileBouncyness = 0,
 	drawProjectileLine = true,
 	finalHitDmgMultiplier = 1,
+	lineColorRed = 1,
+	lineColorGreen = 1,
+	lineColorBlue = 1,
+	lineColorAlpha = 1,
 	
 	hitParticleSettings = {
 		enabled = true,
