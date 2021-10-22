@@ -10,6 +10,7 @@
 #include "custom/forcegun.lua"
 #include "custom/holecutter.lua"
 #include "custom/plasmapistol.lua"
+#include "custom/fireextinguisher.lua"
 
 -- And add the array name here. (NOT name = "Shotgun", the one at the top of the file)
 local customList = {
@@ -24,6 +25,7 @@ local customList = {
 	forcegun,
 	holecutter,
 	plasmapistol,
+	fireextinguisher,
 }
 
 -- You can ignore the rest, this is just to link this file to the rest of the code.

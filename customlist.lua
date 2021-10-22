@@ -431,6 +431,15 @@ function updateSettings(settings)
 		settings["lineColorAlpha"] = 1
 	end
 	
+	if settings["profileVersion"] < 10 then -- Below version 9
+		settings["profileVersion"] = 10
+		
+		settings["hitParticleSettings"]["flags"] = 0
+		settings["shotSmokeParticleSettings"]["flags"] = 0
+		settings["shotFireParticleSettings"]["flags"] = 0
+		settings["projectileParticleSettings"]["flags"] = 0
+	end
+	
 	return settings
 end
 

@@ -1368,6 +1368,9 @@ function particleSettings()
 				
 				UiTranslate(200, 0)
 				renderParticleStringVarSelector(currentParticle, "ParticleType", particleTypes)
+				
+				UiTranslate(300, 0)
+				drawToggle("Extinguish fires: ", currentParticle["flags"] == 256, function(i) if i then currentParticle["flags"] = 256 else currentParticle["flags"] = 0 end end, "Particle extinguishes fires?")
 			UiPop()
 			
 			UiPush()

@@ -868,6 +868,8 @@ function setupParticleFromSettings(settings)
 					  particleColorSettings[4], particleColorSettings[5], particleColorSettings[6])
 	end
 	
+	ParticleFlags(settings["flags"])
+	
 	setupParticleLerpSetting(settings["ParticleRadius"], ParticleRadius)
 	setupParticleLerpSetting(settings["ParticleAlpha"], ParticleAlpha)
 	setupParticleLerpSetting(settings["ParticleGravity"], ParticleGravity)
