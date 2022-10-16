@@ -8,7 +8,7 @@
 
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
-toolVersion = "V2.1.0"
+toolVersion = "V2.2.0"
 
 -- TODO: Add sound editor
 -- TODO: Fix projectileBouncyness for hitscan (DONT USE THE PROJECTILE BOUNCE, REUSE THE EQUATION)

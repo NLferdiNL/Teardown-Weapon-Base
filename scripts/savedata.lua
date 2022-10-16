@@ -8,11 +8,6 @@ local customList = GetList()
 
 function saveFileInit()
 	saveVersion = GetInt(moddataPrefix .. "Version")
-	customProfiles = GetInt(moddataPrefix .. "CustomProfiles")
-	infiniteAmmo = GetBool(moddataPrefix .. "InfiniteAmmo")
-	infiniteMag = GetBool(moddataPrefix .. "InfiniteMag")	
-	soundEnabled = GetBool(moddataPrefix .. "SoundEnabled")
-	menuOpenKey = GetString(moddataPrefix .. "OpenMenuKey")
 	
 	if saveVersion < 1 or saveVersion == nil then
 		saveVersion = 1
@@ -35,9 +30,27 @@ function saveFileInit()
 		soundEnabled = true
 		SetBool(moddataPrefix .. "SoundEnabled", soundEnabled)
 		
-		menuOpenKey = "m"
-		SetString(moddataPrefix .. "OpenMenuKey", menuOpenKey)
+		--menuOpenKey = "m"
+		SetString(moddataPrefix .. "OpenMenuKey", binds["Open_Menu"])
 	end
+	
+	if saveVersion < 3 then
+		saveVersion = 3
+		SetInt(moddataPrefix .. "Version", saveVersion)
+		
+		SetString(moddataPrefix .. "Reload", binds["Reload"])
+		SetString(moddataPrefix .. "Prev_Weapon", binds["Prev_Weapon"])
+		SetString(moddataPrefix .. "Next_Weapon", binds["Next_Weapon"])
+	end
+	
+	customProfiles = GetInt(moddataPrefix .. "CustomProfiles")
+	infiniteAmmo = GetBool(moddataPrefix .. "InfiniteAmmo")
+	infiniteMag = GetBool(moddataPrefix .. "InfiniteMag")	
+	soundEnabled = GetBool(moddataPrefix .. "SoundEnabled")
+	binds["Open_Menu"] = GetString(moddataPrefix .. "OpenMenuKey")
+	binds["Reload"] = GetString(moddataPrefix .. "Reload")
+	binds["Prev_Weapon"] = GetString(moddataPrefix .. "Prev_Weapon")
+	binds["Next_Weapon"] = GetString(moddataPrefix .. "Next_Weapon")
 	
 	if customList ~= nil and customProfiles > 0 then
 		loadCustomProfiles()
@@ -49,7 +62,10 @@ function saveSettings()
 	SetBool(moddataPrefix .. "InfiniteAmmo", infiniteAmmo)
 	SetBool(moddataPrefix .. "InfiniteMag", infiniteMag)	
 	SetBool(moddataPrefix .. "SoundEnabled", soundEnabled)
-	SetString(moddataPrefix .. "OpenMenuKey", menuOpenKey)
+	SetString(moddataPrefix .. "OpenMenuKey", binds["Open_Menu"])
+	SetString(moddataPrefix .. "Reload", binds["Reload"])
+	SetString(moddataPrefix .. "Prev_Weapon", binds["Prev_Weapon"])
+	SetString(moddataPrefix .. "Next_Weapon", binds["Next_Weapon"])
 end
 
 function loadCustomProfiles()

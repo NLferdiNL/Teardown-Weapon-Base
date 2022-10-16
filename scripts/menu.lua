@@ -14,6 +14,9 @@ binds = {
 local bindBackup = deepcopy(binds)
 
 local bindOrder = {
+	"Prev_Weapon",
+	"Next_Weapon",
+	"Reload",
 	"Open_Menu"
 }
 		
@@ -107,8 +110,10 @@ local particleReadableNames = {"Particle Radius", "Particle Alpha", "Particle Gr
 local hasAValueBeenChanged = false
 local updateParticleSettings = false
 
+local resettingKeys = 0
+
 function menu_init()
-	binds["Open_Menu"] = menuOpenKey
+	--binds["Open_Menu"] = menuOpenKey
 end
 
 function menu_tick(dt)
@@ -118,6 +123,10 @@ function menu_tick(dt)
 		if not menuOpened then
 			menuCloseActions()
 		end
+	end
+	
+	if resettingKeys > 0 then
+		resettingKeys = resettingKeys - dt
 	end
 	
 	checkValuesChanged()
@@ -630,7 +639,23 @@ function modOptionsPage()
 			end
 		UiPop()
 		
-		--UiTranslate(0, 50 * (#bindOrder + 1))
+		UiTranslate(0, 50 * (#bindOrder + 1))
+		
+		UiPush()
+			UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
+		if resettingKeys <= 0 then
+			if UiTextButton("Reset Keybinds") then
+				resettingKeys = 5
+			end
+		else
+			UiColor(1, 0, 0, 1)
+			
+			if UiTextButton("Are you sure?") then
+				resettingKeys = 0
+				binds = deepcopy(bindBackup)
+			end
+		end
+		UiPop()
 	UiPop()
 end
 
@@ -1813,7 +1838,8 @@ function menuCloseActions()
 	deletingProfile = 0
 	saveToolValues()
 	
-	updateSavedBinds()
+	--updateSavedBinds()
+	resettingKeys = 0
 
 	saveSettings()
 end
@@ -1824,9 +1850,9 @@ function checkValuesChanged()
 	end
 end
 
-function updateSavedBinds()
+--[[function updateSavedBinds()
 	menuOpenKey = binds["Open_Menu"]
-end
+end]]--
 
 
 function saveToolValues()
