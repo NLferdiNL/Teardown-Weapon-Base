@@ -1,6 +1,6 @@
 blankProfile = {
 	name = "Blank Profile",
-	profileVersion = 10,
+	profileVersion = 11,
 	customProfile = true,
 	additiveReload = false,
 	magSize = 15,
@@ -46,6 +46,9 @@ blankProfile = {
 	lineColorGreen = 1,
 	lineColorBlue = 1,
 	lineColorAlpha = 1,
+	finalHitExplosion = false,
+	laserSeeker = false,
+	laserSeekerTurnSpeed = 1,
 	
 	hitParticleSettings = {
 		enabled = true,

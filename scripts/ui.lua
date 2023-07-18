@@ -37,21 +37,24 @@ function c_UiButtonPressColor(color4)
 	UiButtonPressColor(color4.r, color4.g, color4.b, color4.a)
 end
 
-function drawToggle(label, value, callback, description)
+function drawToggle(label, value, callback, description, width, height)
 	local enabledText = "Enabled"
 	local disabledText = "Disabled"
+	
+	width = width or 400
+	height = height or 40
 
 	UiPush()
 		UiButtonImageBox("ui/common/box-outline-6.png", 6, 6)
 		
-		local isInsideMe = UiIsMouseInRect(400, 40)
+		local isInsideMe = UiIsMouseInRect(width, height)
 		
 		if isInsideMe then
 			activeDescription = description
 		end
 		
 		
-		if UiTextButton(label .. (value and enabledText or disabledText), 400, 40) then
+		if UiTextButton(label .. (value and enabledText or disabledText), width, height) then
 			callback(not value)
 		end
 	UiPop()

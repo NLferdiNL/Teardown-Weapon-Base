@@ -224,6 +224,9 @@ function ApplySettingsByIndex(index)
 	lineColorGreen = newSettings.lineColorGreen
 	lineColorBlue = newSettings.lineColorBlue
 	lineColorAlpha = newSettings.lineColorAlpha
+	finalHitExplosion = newSettings.finalHitExplosion
+	laserSeeker = newSettings.laserSeeker
+	laserSeekerTurnSpeed = newSettings.laserSeekerTurnSpeed
 end
 
 function SaveSettingsToProfile(index)
@@ -302,6 +305,9 @@ function loadSettingsToProfile(newSettings)
 	newSettings.lineColorGreen = lineColorGreen
 	newSettings.lineColorBlue = lineColorBlue
 	newSettings.lineColorAlpha = lineColorAlpha
+	newSettings.finalHitExplosion = finalHitExplosion
+	newSettings.laserSeeker = laserSeeker
+	newSettings.laserSeekerTurnSpeed = laserSeekerTurnSpeed
 end
 
 function checkSettingsUpToDate(settings)
@@ -431,13 +437,21 @@ function updateSettings(settings)
 		settings["lineColorAlpha"] = 1
 	end
 	
-	if settings["profileVersion"] < 10 then -- Below version 9
+	if settings["profileVersion"] < 10 then -- Below version 10
 		settings["profileVersion"] = 10
 		
 		settings["hitParticleSettings"]["flags"] = 0
 		settings["shotSmokeParticleSettings"]["flags"] = 0
 		settings["shotFireParticleSettings"]["flags"] = 0
 		settings["projectileParticleSettings"]["flags"] = 0
+	end
+	
+	if settings["profileVersion"] < 11 then -- Below version 11
+		settings["profileVersion"] = 11
+		
+		settings["finalHitExplosion"] = false
+		settings["laserSeeker"] = false
+		settings["laserSeekerTurnSpeed"] = 1
 	end
 	
 	return settings

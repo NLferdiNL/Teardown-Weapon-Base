@@ -45,6 +45,9 @@ forcegun = {
 	lineColorGreen = 0.25,
 	lineColorBlue = 1,
 	lineColorAlpha = 0.4,
+	finalHitExplosion = false,
+	laserSeeker = false,
+	laserSeekerTurnSpeed = 1,
 	
 	hitParticleSettings = {
 		enabled = false,

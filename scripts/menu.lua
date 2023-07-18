@@ -87,6 +87,8 @@ local lineGreenBox = nil
 local lineBlueBox = nil
 local lineAlphaBox = nil
 
+local laserSeekerTurnSpeedTextBox = nil
+
 local soundCopyIndex = 1
 local customList = GetList()
 local customListBaseCount = GetCustomListDefaultCount()
@@ -221,7 +223,9 @@ function setupTextBoxes()
 	local textBox31, newBox31 = textboxClass_getTextBox(31) -- Line Blue
 	local textBox32, newBox32 = textboxClass_getTextBox(32) -- Line Alpha
 	
-	textBoxCount = 32
+	local textBox33, newBox33 = textboxClass_getTextBox(33) -- Laser Seeking Turn Speed
+	
+	textBoxCount = 33
 	
 	if newBox01 then
 		textBox01.name = "Spread"
@@ -611,6 +615,19 @@ function setupTextBoxes()
 		
 		lineAlphaBox = textBox32
 	end
+	
+	if newBox33 then
+		textBox33.name = "" -- LINE COLOR ALPHA
+		textBox33.value = laserSeekerTurnSpeed .. ""
+		textBox33.numbersOnly = true
+		textBox33.limitsActive = false
+		textBox33.numberMin = 0.01
+		textBox33.numberMax = 100
+		textBox33.description = "Speed at which the projectile turns for laser seeking.\nMin: 0.01 | Max: 100"
+		textBox33.width = 100
+		
+		laserSeekerTurnSpeedTextBox = textBox33
+	end
 end
 
 function modOptionsPage()
@@ -664,38 +681,54 @@ function mainToggleButtons(dt)
 		UiTranslate(0, 50)
 		
 		UiPush()
-			UiTranslate(-UiWidth() * (menuWidth / 4.5), 0)
-			drawToggle("Hitscan bullets: ", hitscanBullets, function (i) hitscanBullets = i; hasAValueBeenChanged = true end, "Instant bullets, for ex. classic Doom.")
+			UiTranslate(-UiWidth() * (menuWidth / 3.25), 0)
+			drawToggle("Hitscan bullets: ", hitscanBullets, function (i) hitscanBullets = i; hasAValueBeenChanged = true end, "Instant bullets, for ex. classic Doom.", 350, 40)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Apply Force To Hit Objects: ", applyForceOnHit, function (i) applyForceOnHit = i; hasAValueBeenChanged = true end, "Push an object when hit by a projectile.\nInfinite Penetration: Overrides this and disables it.")
+			drawToggle("Apply Force To Hit Objects: ", applyForceOnHit, function (i) applyForceOnHit = i; hasAValueBeenChanged = true end, "Push an object when hit by a projectile.\nInfinite Penetration: Overrides this and disables it.", 350, 40)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Explosive Bullets: ", explosiveBullets, function (i) explosiveBullets = i; hasAValueBeenChanged = true end, "Explode on impact bullets.\nInfinite Penetration: Creates constant explosions as it travels.")
+			drawToggle("Explosive Bullets: ", explosiveBullets, function (i) explosiveBullets = i; hasAValueBeenChanged = true end, "Explode on impact bullets.\nInfinite Penetration: Creates constant explosions as it travels.", 350, 40)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Incendiary Bullets: ", incendiaryBullets, function (i) incendiaryBullets = i; hasAValueBeenChanged = true end, "Burn on impact bullets.\nInfinite Penetration: Creates constant fires as it travels.")
+			drawToggle("Incendiary Bullets: ", incendiaryBullets, function (i) incendiaryBullets = i; hasAValueBeenChanged = true end, "Burn on impact bullets.\nInfinite Penetration: Creates constant fires as it travels.", 350, 40)
 		UiPop()
 		
 		UiPush()
-			UiTranslate(UiWidth() * (menuWidth / 4.5), 0)
+			--UiTranslate(UiWidth() * (menuWidth / 3.25), 0)
 			
-			drawToggle("Full Auto: ", fullAuto, function (i) fullAuto = i; hasAValueBeenChanged = true end, "Hold to repeatedly fire, limited by shot cooldown time.")
-			
-			UiTranslate(0, 50)
-			
-			drawToggle("Infinite Penetration: ", infinitePenetration, function (i) infinitePenetration = i; hasAValueBeenChanged = true end, "Enabling this will mean the bullet will not stop for anything and keep traveling.\nEven if it cannot destroy whatever it touches.")
+			drawToggle("Full Auto: ", fullAuto, function (i) fullAuto = i; hasAValueBeenChanged = true end, "Hold to repeatedly fire, limited by shot cooldown time.", 350, 40)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Additive(Shotgun) Reload: ", additiveReload, function (i) additiveReload = i; hasAValueBeenChanged = true end, "Reload bullets one by one, rather than by magazine.")
+			drawToggle("Infinite Penetration: ", infinitePenetration, function (i) infinitePenetration = i; hasAValueBeenChanged = true end, "Enabling this will mean the bullet will not stop for anything and keep traveling.\nEven if it cannot destroy whatever it touches.", 350, 40)
 			
 			UiTranslate(0, 50)
 			
-			drawToggle("Draw Projectile Line: ", drawProjectileLine, function (i) drawProjectileLine = i; hasAValueBeenChanged = true end, "Draw a line where the projectile is.")
+			drawToggle("Additive(Shotgun) Reload: ", additiveReload, function (i) additiveReload = i; hasAValueBeenChanged = true end, "Reload bullets one by one, rather than by magazine.", 350, 40)
+			
+			UiTranslate(0, 50)
+			
+			drawToggle("Draw Projectile Line: ", drawProjectileLine, function (i) drawProjectileLine = i; hasAValueBeenChanged = true end, "Draw a line where the projectile is.", 350, 40)
+		UiPop()
+		
+		UiPush()
+			UiTranslate(UiWidth() * (menuWidth / 3.25), 0)
+			
+			drawToggle("Final Hit Explosion: ", finalHitExplosion, function (i) finalHitExplosion = i; hasAValueBeenChanged = true end, "Explode when final hit triggers? Uses explosive range settings.", 350, 40)
+		
+			UiTranslate(-50, 50)
+			
+			drawToggle("Laser seeker: ", laserSeeker, function (i) laserSeeker = i; hasAValueBeenChanged = true end, "Does projectile try to follow a laser from the gun? Doesn't work with hitscan because that already hits instantly.", 250, 40)
+		
+			UiTranslate(125, 0)
+			
+			textboxClass_render(laserSeekerTurnSpeedTextBox)
+			
+			--UiTranslate(-75, 50)
 		UiPop()
 	UiPop()
 end
@@ -1830,6 +1863,10 @@ function menuUpdateActions()
 	if lineAlphaBox ~= nil then
 		lineAlphaBox.value = lineColorAlpha .. ""
 	end
+	
+	if laserSeekerTurnSpeedTextBox ~= nil then
+		laserSeekerTurnSpeedTextBox.value = laserSeekerTurnSpeed .. ""
+	end
 end
 
 function menuCloseActions()
@@ -1906,6 +1943,8 @@ function saveToolValues()
 	lineColorGreen = tonumber(lineGreenBox.value)
 	lineColorBlue = tonumber(lineBlueBox.value)
 	lineColorAlpha = tonumber(lineAlphaBox.value)
+	
+	laserSeekerTurnSpeed = tonumber(laserSeekerTurnSpeedTextBox.value)
 	
 	if customProfile then
 		name = nameTextBox.value

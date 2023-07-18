@@ -8,7 +8,7 @@
 
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
-toolVersion = "V2.2.0"
+toolVersion = "V2.3.0"
 
 -- TODO: Add sound editor
 -- TODO: Fix projectileBouncyness for hitscan (DONT USE THE PROJECTILE BOUNCE, REUSE THE EQUATION)
@@ -69,6 +69,9 @@ lineColorRed = 1
 lineColorGreen = 1
 lineColorBlue = 1
 lineColorAlpha = 1
+finalHitExplosion = false
+laserSeeker = false
+laserSeekerTurnSpeed = 1
 
 hitParticleSettings = {
 	enabled = true,
@@ -167,7 +170,8 @@ local bulletProjectileClass = {
 	lifetime = maxDistance,
 	bulletHealth = 0,
 	currentPos = nil,
-	velocity = nil,
+	direction = nil,
+	velocity = 0,
 	speed = 1,
 	incendiary = false,
 	explosive = false,
@@ -179,7 +183,10 @@ local bulletProjectileClass = {
 	projectileGravity = 0,
 	projectileBouncyness = 0,
 	finalHitDmgMultiplier = 1,
+	finalHitExplosion = false,
 	lineColor = {1, 1, 1, 1},
+	laserSeeker = false,
+	laserSeekerTurnSpeed = 1
 }
 
 local firedProjectiles = {}
@@ -187,6 +194,8 @@ local firedShotLines = {}
 
 local currentSelectedWeapon = 1
 local prevFrameSelectedWeapon = 1
+
+local laserEndPoint = Vec()
 
 name = GetNameByIndex(currentSelectedWeapon)
 ApplySettingsByIndex(currentSelectedWeapon)
@@ -228,6 +237,23 @@ function tick(dt)
 		end
 		
 		return
+	end
+	
+	
+	local gunFrontPos, gunFrontDir, cameraPos, shotDirection = GenerateBulletTrajectory(true)
+	
+	local hit, hitPoint = raycast(cameraPos, shotDirection)
+	
+	gunFrontPos = VecSub(gunFrontPos, VecScale(gunFrontDir, 0.2))
+	
+	if hit then
+		laserEndPoint = hitPoint
+	else
+		laserEndPoint = VecAdd(gunFrontPos, VecScale(gunFrontDir, 200))
+	end
+	
+	if laserSeeker then
+		DrawLine(gunFrontPos, laserEndPoint, 1, 0, 0, 1)
 	end
 	
 	if isMenuOpen() then
@@ -352,7 +378,8 @@ function createProjectileBullet(startPos, direction)
 	firedProjectile.lifetime = maxDistance
 	firedProjectile.bulletHealth = bulletHealth
 	firedProjectile.currentPos = startPos
-	firedProjectile.velocity = VecScale(direction, projectileBulletSpeed)
+	firedProjectile.direction = direction
+	firedProjectile.velocity = projectileBulletSpeed
 	firedProjectile.speed = projectileBulletSpeed
 	firedProjectile.incendiary = incendiaryBullets
 	firedProjectile.explosive = explosiveBullets
@@ -366,6 +393,9 @@ function createProjectileBullet(startPos, direction)
 	firedProjectile.projectileBouncyness = projectileBouncyness
 	firedProjectile.finalHitDmgMultiplier = finalHitDmgMultiplier
 	firedProjectile.lineColor = createColorTable()
+	firedProjectile.finalHitExplosion = finalHitExplosion
+	firedProjectile.laserSeeker = laserSeeker
+	firedProjectile.laserSeekerTurnSpeed = laserSeekerTurnSpeed
 	
 	return firedProjectile
 end
@@ -392,10 +422,10 @@ function projectileBounce(currBullet, normal)
 	local bounced = currBullet.projectileBouncyness > 0
 	
 	if bounced then
-		local velocity = VecScale(VecCopy(currBullet.velocity), currBullet.projectileBouncyness)
+		local velocity = VecScale(VecCopy(currBullet.direction), currBullet.projectileBouncyness)
 		local dot = VecDot(normal, velocity)
 		
-		bounceVel = VecSub(currBullet.velocity, VecScale(normal, dot * 2))
+		bounceVel = VecSub(currBullet.direction, VecScale(normal, dot * 2))
 	end
 	
 	return bounced, bounceVel
@@ -411,13 +441,23 @@ function handleAllProjectiles(dt)
 		
 		local currPos = currShot.currentPos
 		
-		local nextPos = VecAdd(currPos, VecScale(currShot.velocity, dt * 10))
-		
-		if currShot.projectileGravity ~= 0 then
-			currShot.velocity = VecAdd(currShot.velocity, Vec(0, currShot.projectileGravity * dt, 0))
+		if currShot.laserSeeker then
+			local dirFromShotToEnd = VecDir(currPos, laserEndPoint)
+			
+			local newDir = VecLerp(currShot.direction, dirFromShotToEnd, currShot.laserSeekerTurnSpeed * dt)
+			
+			currShot.direction = newDir
 		end
 		
-		local directionToNextPos = VecNormalize(currShot.velocity)
+		local currMovement = VecScale(currShot.direction, currShot.velocity)
+		
+		local nextPos = VecAdd(currPos, VecScale(currMovement, dt * 10))
+		
+		if currShot.projectileGravity ~= 0 then
+			currShot.direction = VecAdd(currShot.direction, Vec(0, currShot.projectileGravity * dt, 0))
+		end
+		
+		local directionToNextPos = VecNormalize(currMovement)
 		
 		local distanceTraveled = VecDist(currPos, nextPos)
 		
@@ -469,7 +509,7 @@ function handleAllProjectiles(dt)
 					local bounced, bounceVel = projectileBounce(currShot, normal)
 					
 					if bounced then
-						currShot.velocity = bounceVel
+						currShot.direction = bounceVel
 						hitPoint = VecAdd(hitPoint, VecScale(normal, 0.05))
 					end
 					
@@ -908,7 +948,9 @@ function GenerateRandomSpread()
 	return Vec(xSpread, ySpread, 0)
 end
 
-function GenerateBulletTrajectory()
+function GenerateBulletTrajectory(laser)
+	laser = laser or false
+
 	local gunBody = GetToolBody()
 	local gunTransform = GetBodyTransform(gunBody)
 	
@@ -926,7 +968,9 @@ function GenerateBulletTrajectory()
 	local localShotDirection = Vec(0, 0, -1)
 	local spreadVec = GenerateRandomSpread()
 	
-	localShotDirection = VecAdd(localShotDirection, spreadVec)
+	if not laser then
+		localShotDirection = VecAdd(localShotDirection, spreadVec)
+	end
 	
 	local shotDirection = VecDir(cameraTransform.pos, TransformToParentPoint(cameraTransform, localShotDirection))
 	
@@ -983,11 +1027,16 @@ function doBulletHoleAt(bullet, hitPoint, normal, hitParticles, finalhit)
 		local bulletFinalHitDmgMultiplier = bullet.finalHitDmgMultiplier
 		
 		if finalhit then
-			softRadius = softRadius * bulletFinalHitDmgMultiplier
-			mediumRadius = mediumRadius * bulletFinalHitDmgMultiplier
-			hardRadius = hardRadius * bulletFinalHitDmgMultiplier
+			if bullet.finalHitExplosion then
+				Explosion(hitPoint, bullet.explosiveSize * bullet.finalHitDmgMultiplier)
+				return
+			else
+				softRadius = softRadius * bulletFinalHitDmgMultiplier
+				mediumRadius = mediumRadius * bulletFinalHitDmgMultiplier
+				hardRadius = hardRadius * bulletFinalHitDmgMultiplier
+			end
 		end
-	
+		
 		MakeHole(hitPoint, softRadius, mediumRadius, hardRadius)
 	end
 end

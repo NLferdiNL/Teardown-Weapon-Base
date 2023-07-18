@@ -44,6 +44,9 @@ holecutter = {
 	lineColorGreen = 0.75,
 	lineColorBlue = 1,
 	lineColorAlpha = 0.75,
+	finalHitExplosion = false,
+	laserSeeker = false,
+	laserSeekerTurnSpeed = 1,
 	
 	hitParticleSettings = {
 		enabled = false,

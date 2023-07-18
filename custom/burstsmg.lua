@@ -44,6 +44,9 @@ burstsmg = {
 	lineColorGreen = 1,
 	lineColorBlue = 1,
 	lineColorAlpha = 1,
+	finalHitExplosion = false,
+	laserSeeker = false,
+	laserSeekerTurnSpeed = 1,
 	
 	hitParticleSettings = {
 		enabled = true,

@@ -44,6 +44,9 @@ lasercutter = {
 	lineColorGreen = 0,
 	lineColorBlue = 0,
 	lineColorAlpha = 0.75,
+	finalHitExplosion = false,
+	laserSeeker = false,
+	laserSeekerTurnSpeed = 1,
 	
 	hitParticleSettings = {
 		enabled = false,
