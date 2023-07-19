@@ -47,6 +47,8 @@ plasmapistol = {
 	finalHitExplosion = false,
 	laserSeeker = false,
 	laserSeekerTurnSpeed = 1,
+	targetSeeker = false,
+	targetSeekerOffset = false,
 	
 	hitParticleSettings = {
 		enabled = true,

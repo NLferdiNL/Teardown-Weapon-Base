@@ -45,8 +45,10 @@ heatseekingrocketlauncher = {
 	lineColorBlue = 1,
 	lineColorAlpha = 1,
 	finalHitExplosion = false,
-	laserSeeker = true,
+	laserSeeker = false,
 	laserSeekerTurnSpeed = 3.5,
+	targetSeeker = true,
+	targetSeekerOffset = true,
 	
 	hitParticleSettings = {
 		enabled = false,

@@ -617,14 +617,15 @@ function setupTextBoxes()
 	end
 	
 	if newBox33 then
-		textBox33.name = "" -- LINE COLOR ALPHA
+		textBox33.name = "" -- Laser/Target Seeker Turn Speed
 		textBox33.value = laserSeekerTurnSpeed .. ""
 		textBox33.numbersOnly = true
 		textBox33.limitsActive = false
 		textBox33.numberMin = 0.01
 		textBox33.numberMax = 100
-		textBox33.description = "Speed at which the projectile turns for laser seeking.\nMin: 0.01 | Max: 100"
+		textBox33.description = "Speed at which the projectile turns for laser/target seeking.\n100 is optimal for fast projectiles around 100 speed.\nMin: 0.01 | Max: 100"
 		textBox33.width = 100
+		textBox33.height = 90
 		
 		laserSeekerTurnSpeedTextBox = textBox33
 	end
@@ -718,17 +719,24 @@ function mainToggleButtons(dt)
 		UiPush()
 			UiTranslate(UiWidth() * (menuWidth / 3.25), 0)
 			
-			drawToggle("Final Hit Explosion: ", finalHitExplosion, function (i) finalHitExplosion = i; hasAValueBeenChanged = true end, "Explode when final hit triggers? Uses explosive range settings.", 350, 40)
+			drawToggle("Final Hit Explosion: ", finalHitExplosion, function (i) finalHitExplosion = i; hasAValueBeenChanged = true end, "Explode when final hit triggers?\nUses explosive range settings and final hit multiplier..", 350, 40)
 		
 			UiTranslate(-50, 50)
 			
-			drawToggle("Laser seeker: ", laserSeeker, function (i) laserSeeker = i; hasAValueBeenChanged = true end, "Does projectile try to follow a laser from the gun? Doesn't work with hitscan because that already hits instantly.", 250, 40)
+			drawToggle("Laser Seeker: ", laserSeeker, function (i) laserSeeker = i; targetSeeker = false; hasAValueBeenChanged = true end, "Does projectile try to follow a laser from the gun?\nDoesn't work with hitscan because that already hits instantly.", 250, 40)
 		
-			UiTranslate(125, 0)
+			UiTranslate(125, 25)
 			
 			textboxClass_render(laserSeekerTurnSpeedTextBox)
 			
-			--UiTranslate(-75, 50)
+			UiTranslate(-125, 25)
+			
+			drawToggle("Target Seeker: ", targetSeeker, function (i) targetSeeker = i; laserSeeker = false; hasAValueBeenChanged = true end, "Does projectile try to follow a target from the gun?\nDoesn't work with hitscan because that already hits instantly.", 250, 40)
+			
+			UiTranslate(50, 50)
+			
+			drawToggle("Target seeker offset: ", targetSeekerOffset, function (i) targetSeekerOffset = i; hasAValueBeenChanged = true end, "When target seeking, try to hit exact spot shot at?", 350, 40)
+			
 		UiPop()
 	UiPop()
 end

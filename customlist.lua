@@ -41,6 +41,28 @@ function GetSettingsByIndex(index)
 	return settings, sfx
 end
 
+function GetProjectileSettingsByIndex(index, settingName)
+	if index == nil then
+		return nil
+	end
+	
+	if index < 1 or index > #customList then
+		return nil
+	end
+	
+	if settingName == nil then
+		return nil
+	end
+	
+	local settings = customList[index]
+	
+	if settings[settingName] == nil then
+		return nil
+	end
+	
+	return settings[settingName]
+end
+
 function GetNameByIndex(index)
 	if index == nil then
 		return nil
@@ -227,6 +249,8 @@ function ApplySettingsByIndex(index)
 	finalHitExplosion = newSettings.finalHitExplosion
 	laserSeeker = newSettings.laserSeeker
 	laserSeekerTurnSpeed = newSettings.laserSeekerTurnSpeed
+	targetSeeker = newSettings.targetSeeker
+	targetSeekerOffset = newSettings.targetSeekerOffset
 end
 
 function SaveSettingsToProfile(index)
@@ -308,6 +332,8 @@ function loadSettingsToProfile(newSettings)
 	newSettings.finalHitExplosion = finalHitExplosion
 	newSettings.laserSeeker = laserSeeker
 	newSettings.laserSeekerTurnSpeed = laserSeekerTurnSpeed
+	newSettings.targetSeeker = targetSeeker
+	newSettings.targetSeekerOffset = targetSeekerOffset
 end
 
 function checkSettingsUpToDate(settings)
@@ -452,6 +478,18 @@ function updateSettings(settings)
 		settings["finalHitExplosion"] = false
 		settings["laserSeeker"] = false
 		settings["laserSeekerTurnSpeed"] = 1
+	end
+	
+	if settings["profileVersion"] < 12 then -- Below version 12
+		settings["profileVersion"] = 12
+		
+		settings["targetSeeker"] = false
+	end
+	
+	if settings["profileVersion"] < 13 then -- Below version 13
+		settings["profileVersion"] = 13
+		
+		settings["targetSeekerOffset"] = false
 	end
 	
 	return settings

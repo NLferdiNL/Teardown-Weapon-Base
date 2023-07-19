@@ -1,6 +1,6 @@
 blankProfile = {
 	name = "Blank Profile",
-	profileVersion = 11,
+	profileVersion = 13,
 	customProfile = true,
 	additiveReload = false,
 	magSize = 15,
@@ -49,6 +49,8 @@ blankProfile = {
 	finalHitExplosion = false,
 	laserSeeker = false,
 	laserSeekerTurnSpeed = 1,
+	targetSeeker = false,
+	targetSeekerOffset = false,
 	
 	hitParticleSettings = {
 		enabled = true,

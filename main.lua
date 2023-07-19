@@ -8,7 +8,7 @@
 
 toolName = "moddyweapon"
 toolReadableName = "Moddy Weapon"
-toolVersion = "V2.3.0"
+toolVersion = "V2.3.2"
 
 -- TODO: Add sound editor
 -- TODO: Fix projectileBouncyness for hitscan (DONT USE THE PROJECTILE BOUNCE, REUSE THE EQUATION)
@@ -72,6 +72,8 @@ lineColorAlpha = 1
 finalHitExplosion = false
 laserSeeker = false
 laserSeekerTurnSpeed = 1
+targetSeeker = false
+targetSeekerOffset = false
 
 hitParticleSettings = {
 	enabled = true,
@@ -166,6 +168,7 @@ local firedShotLineClass = {
 }
 
 local bulletProjectileClass = {
+	bulletSettingsIndex = nil,
 	drawLine = true,
 	lifetime = maxDistance,
 	bulletHealth = 0,
@@ -186,7 +189,9 @@ local bulletProjectileClass = {
 	finalHitExplosion = false,
 	lineColor = {1, 1, 1, 1},
 	laserSeeker = false,
-	laserSeekerTurnSpeed = 1
+	laserSeekerTurnSpeed = 1,
+	targetSeekerShape = -1,
+	targetSeekerOffset = nil,
 }
 
 local firedProjectiles = {}
@@ -196,6 +201,7 @@ local currentSelectedWeapon = 1
 local prevFrameSelectedWeapon = 1
 
 local laserEndPoint = Vec()
+local laserTargetShape = -1
 
 name = GetNameByIndex(currentSelectedWeapon)
 ApplySettingsByIndex(currentSelectedWeapon)
@@ -242,17 +248,27 @@ function tick(dt)
 	
 	local gunFrontPos, gunFrontDir, cameraPos, shotDirection = GenerateBulletTrajectory(true)
 	
-	local hit, hitPoint = raycast(cameraPos, shotDirection)
+	local hit, hitPoint, distance, normal, shape = raycast(cameraPos, shotDirection)
 	
 	gunFrontPos = VecSub(gunFrontPos, VecScale(gunFrontDir, 0.2))
 	
 	if hit then
 		laserEndPoint = hitPoint
+		laserTargetShape = shape
 	else
 		laserEndPoint = VecAdd(gunFrontPos, VecScale(gunFrontDir, 200))
+		laserTargetShape = -1
 	end
 	
-	if laserSeeker then
+	if laserSeeker or targetSeeker then
+		if targetSeeker and laserTargetShape > -1 then
+			DrawShapeOutline(laserTargetShape, 1, 0, 0, 1)
+		end
+		
+		if hit then
+			PointLight(hitPoint, 1, 0, 0, 0.2)
+		end
+	
 		DrawLine(gunFrontPos, laserEndPoint, 1, 0, 0, 1)
 	end
 	
@@ -347,7 +363,7 @@ function drawWeaponSelection()
 	local nextWeaponName = GetNameByIndex(nextIndex)
 	
 	UiPush()
-		UiAlign("center bottom")
+		UiAlign("center middle")
 		local yPosAdd = 0
 		
 		if infiniteAmmo and infiniteMag then
@@ -355,10 +371,34 @@ function drawWeaponSelection()
 		end
 		
 		UiTranslate(UiWidth() * 0.5, UiHeight() * (0.93 + yPosAdd))
+		
+		UiTranslate(0, -45)
+		
 		UiFont("regular.ttf", 26)
 		UiTextShadow(0, 0, 0, 0.5, 2.0)
 		
-		UiText("[" .. binds["Prev_Weapon"]:upper() .. "] " .. prevWeaponName .. " | " .. currWeaponName .. " | [" .. binds["Next_Weapon"]:upper() .. "] " .. nextWeaponName)
+		UiPush()
+			local textDist = 60
+			UiAlign("right middle")
+			UiTranslate(-textDist, 0)
+			
+			UiText(prevWeaponName)
+			
+			UiAlign("center middle")
+			UiTranslate(textDist, 0)
+			
+			UiText(" < [" .. binds["Prev_Weapon"]:upper() .. "] - [" .. binds["Next_Weapon"]:upper() .. "] > ")
+			
+			UiAlign("left middle")
+			UiTranslate(textDist, 0)
+			
+			UiText(nextWeaponName)
+			
+		UiPop()
+		
+		UiTranslate(0, 25)
+		
+		UiText(currWeaponName)
 		
 		UiTranslate(0, 25)
 		
@@ -375,6 +415,7 @@ end
 function createProjectileBullet(startPos, direction)
 	local firedProjectile = deepcopy(bulletProjectileClass)
 	
+	firedProjectile.bulletSettingsIndex = currentSelectedWeapon
 	firedProjectile.lifetime = maxDistance
 	firedProjectile.bulletHealth = bulletHealth
 	firedProjectile.currentPos = startPos
@@ -396,6 +437,16 @@ function createProjectileBullet(startPos, direction)
 	firedProjectile.finalHitExplosion = finalHitExplosion
 	firedProjectile.laserSeeker = laserSeeker
 	firedProjectile.laserSeekerTurnSpeed = laserSeekerTurnSpeed
+	
+	if targetSeeker then
+		if targetSeekerOffset then
+			local shapeTransform = GetShapeWorldTransform(laserTargetShape)
+			
+			firedProjectile.laserSeekerOffset = TransformToLocalPoint(shapeTransform, laserEndPoint)
+		end
+		
+		firedProjectile.targetSeekerShape = laserTargetShape
+	end
 	
 	return firedProjectile
 end
@@ -441,8 +492,12 @@ function handleAllProjectiles(dt)
 		
 		local currPos = currShot.currentPos
 		
-		if currShot.laserSeeker then
-			local dirFromShotToEnd = VecDir(currPos, laserEndPoint)
+		local currLaserEndPoint = getLaserEndPoint(currShot)
+		
+		if currLaserEndPoint == "end" then
+			currShot.lifetime = 0
+		elseif currLaserEndPoint ~= nil then
+			local dirFromShotToEnd = VecDir(currPos, currLaserEndPoint)
 			
 			local newDir = VecLerp(currShot.direction, dirFromShotToEnd, currShot.laserSeekerTurnSpeed * dt)
 			
@@ -479,9 +534,12 @@ function handleAllProjectiles(dt)
 				for i = 0, distanceTraveled, infinitePenetrationHitScanDamageStep do
 					local damageStepPos = VecAdd(currPos, VecScale(directionToNextPos, i))
 					doBulletHoleAt(currShot, damageStepPos, VecDir(damageStepPos, playerPos), false, false)
-					if projectileParticleSettings["enabled"] then
-						setupParticleFromSettings(projectileParticleSettings)
-						SpawnParticle(damageStepPos, VecDir(damageStepPos, nextPos), projectileParticleSettings["lifetime"])
+					
+					local currProjectileParticleSettings = GetProjectileSettingsByIndex(currShot.bulletSettingsIndex, "projectileParticleSettings")
+					
+					if currProjectileParticleSettings["enabled"] then
+						setupParticleFromSettings(currProjectileParticleSettings)
+						SpawnParticle(damageStepPos, VecDir(damageStepPos, nextPos), currProjectileParticleSettings["lifetime"])
 					end
 				end
 			end
@@ -517,9 +575,11 @@ function handleAllProjectiles(dt)
 					distanceTraveled = VecDist(currPos, nextPos)
 				end
 			else
-				if projectileParticleSettings["enabled"] then
-					setupParticleFromSettings(projectileParticleSettings)
-					SpawnParticle(currPos, directionToNextPos, projectileParticleSettings["lifetime"])
+				local currProjectileParticleSettings = GetProjectileSettingsByIndex(currShot.bulletSettingsIndex, "projectileParticleSettings")
+			
+				if currProjectileParticleSettings["enabled"] then
+					setupParticleFromSettings(currProjectileParticleSettings)
+					SpawnParticle(currPos, directionToNextPos, currProjectileParticleSettings["lifetime"])
 				end
 				
 				if currShot.drawLine then
@@ -527,11 +587,13 @@ function handleAllProjectiles(dt)
 				end
 			end
 			
-			if projectileParticleSettings["enabled"] then
-				setupParticleFromSettings(projectileParticleSettings)
+			local currProjectileParticleSettings = GetProjectileSettingsByIndex(currShot.bulletSettingsIndex, "projectileParticleSettings")
+			
+			if currProjectileParticleSettings["enabled"] then
+				setupParticleFromSettings(currProjectileParticleSettings)
 				for i = 0, distanceTraveled, infinitePenetrationHitScanDamageStep do
 					local damageStepPos = VecAdd(currPos, VecScale(directionToNextPos, i))
-					SpawnParticle(damageStepPos, VecDir(damageStepPos, nextPos), projectileParticleSettings["lifetime"])
+					SpawnParticle(damageStepPos, VecDir(damageStepPos, nextPos), currProjectileParticleSettings["lifetime"])
 				end
 			end
 		end
@@ -722,6 +784,34 @@ function isFiringGun()
 	local isBurstFiring = not fullAuto and InputDown("usetool") and burstFireMax > 0
 	
 	return (isFiringFullAuto or isFiringSingleFire or isBurstFiring) and isHoldingGun
+end
+
+function getLaserEndPoint(currShot)
+	if currShot.targetSeekerShape > -1 then
+		if currShot.laserSeekerOffset ~= nil then
+			local shapeTransform = GetShapeWorldTransform(currShot.targetSeekerShape)
+			
+			return TransformToParentPoint(shapeTransform, currShot.laserSeekerOffset)
+		end
+		
+		local sMin, sMax = GetShapeBounds(currShot.targetSeekerShape)
+		local center = VecLerp(sMin, sMax, 0.5)
+		
+		--DebugWatch("currShot.currentPos", currShot.currentPos)
+		--DebugWatch("center", center)
+		--DebugWatch("dist", VecDist(currShot.currentPos, center))
+		--DebugWatch("currShot.velocity * 2", currShot.velocity * 2)
+		
+		--[[if VecDist(currShot.currentPos, center) < currShot.velocity * 0.25 then
+			return "end"
+		end]]--
+		
+		return center
+	elseif currShot.laserSeeker then
+		return laserEndPoint
+	end
+	
+	return nil
 end
 
 function hasChangedSettings()
@@ -977,7 +1067,7 @@ function GenerateBulletTrajectory(laser)
 	return gunFrontPos, gunFrontDir, cameraTransform.pos, shotDirection
 end
 
-function fakeHitScanBullet(pos, dir)
+function fakeHitScanBullet()--pos, dir)
 	local newBullet = createProjectileBullet(Vec(0, 0, 0), Vec(0, 0, 0))
 
 	return newBullet
@@ -1005,9 +1095,11 @@ function getBulletDamage(shape, hitPoint)
 end
 
 function doBulletHoleAt(bullet, hitPoint, normal, hitParticles, finalhit)
-	if hitParticleSettings["enabled"] and hitParticles then
-		setupHitParticle()
-		SpawnParticle(hitPoint, normal, hitParticleSettings["lifetime"])
+	local currHitParticleSettings = GetProjectileSettingsByIndex(bullet.bulletSettingsIndex, "hitParticleSettings")
+
+	if currHitParticleSettings["enabled"] and hitParticles then
+		setupParticleFromSettings(currHitParticleSettings)
+		SpawnParticle(hitPoint, normal, currHitParticleSettings["lifetime"])
 	end
 	
 	if bullet.incendiary then
@@ -1204,10 +1296,12 @@ function doHitScanShot(shotStartPos, shotDirection, gunFrontPos)
 			
 			doBulletHoleAt(fakeBullet, currPos, normal, i >= maxDistance, i / maxDistance >= 0.99)
 			
-			if projectileParticleSettings["enabled"] then
-				setupParticleFromSettings(projectileParticleSettings)
+			local currProjectileParticleSettings = GetProjectileSettingsByIndex(fakeBullet.bulletSettingsIndex, "projectileParticleSettings")
+			
+			if currProjectileParticleSettings["enabled"] then
+				setupParticleFromSettings(currProjectileParticleSettings)
 				
-				SpawnParticle(currPos, shotDirection, projectileParticleSettings["lifetime"])
+				SpawnParticle(currPos, shotDirection, currProjectileParticleSettings["lifetime"])
 			end
 		end
 	else
